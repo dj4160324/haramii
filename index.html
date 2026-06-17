@@ -869,7 +869,19 @@
         tbody.innerHTML = htmlBuffer;
         renderPaginationUI(totalPages);
     }
-
+    
+function renderPaginationUI(totalPages) {
+        const container = document.getElementById('paginationContainer');
+        container.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            btn.innerText = i;
+            btn.onclick = () => { currentPage = i; applyPagination(); };
+            container.appendChild(btn);
+        }
+    }
+    
     function applyBatchOff(dayIdx) {
         const rows = document.querySelectorAll("#staffEditTable tbody tr");
         rows.forEach(tr => {
