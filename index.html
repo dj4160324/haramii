@@ -171,6 +171,12 @@
         .floating-scroll:hover { opacity: 1; }
         .floating-scroll button { background-color: #2d3748; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); padding: 0; display:flex; align-items:center; justify-content:center; }
 
+        .btn-cal-day.p-leave { background-color: #e53e3e !important; color: white !important; }
+        .btn-cal-day.p-d { background-color: #4db6ac !important; color: white !important; }
+        .btn-cal-day.p-e { background-color: #f0a500 !important; color: white !important; }
+        .btn-cal-day.p-n { background-color: #e056fd !important; color: white !important; }
+        .btn-cal-day.p-m { background-color: #fc8181 !important; color: white !important; }
+        
         #toast { visibility: hidden; min-width: 250px; color: #fff; text-align: center; border-radius: 8px; padding: 16px 20px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 900; font-size: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
     </style>
 </head>
@@ -354,7 +360,7 @@
                     <tr>
                         <th style="width: 4%;">일괄<br><input type="checkbox" id="masterBatchCheck" onclick="toggleAllBatch(this)" style="cursor:pointer; transform:scale(1.2);"></th>
                         <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
-                        <th style="width: 25%;">특이사항 (권한/신규/보건/보호/파견)</th>
+                        <th style="width: 12%;">🌴 지정 연차<br><span style="font-size:10px; color:#718096; font-weight:normal;">(*(전날 N근무 최대한 배제)*)</span></th>
                         <th style="width: 12%;">🌴 지정 연차 <span class="mark-optional">(달력 드래그)</span></th>
                         <th style="width: 24%;">📌 날짜 지정 신청 근무 <span class="mark-optional">(🎨 브러쉬 드래그)</span></th>
                         <th style="width: 25%;">❌ 매주 고정 OFF 요일 선택 <span class="mark-optional">(멀티)</span></th>
@@ -945,6 +951,7 @@
 
     window.doDrag = function(btn) { if (window.isDragging) window.applyDragAction(btn); };
 
+// 🚀 달력 실시간 드래그 렌더링 초고속 연산화 패치
     window.applyDragAction = function(btn) {
         const day = parseInt(btn.getAttribute('data-day'));
         const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
@@ -971,7 +978,14 @@
                 btn.classList.add(`p-${window.dragTargetState.toLowerCase()}`);
                 let tagStr = window.dragTargetState === 'M' ? '보건' : window.dragTargetState;
                 if (window.dragTargetState.startsWith('x')) tagStr = `🚫${window.dragTargetState.substring(1)}`;
-                btn.innerHTML += `<span class="cal-sub-tag">${tagStr}</span>`;
+                
+                // 구조적 span 노드 주입으로 화면 프리징 현상 근본적 차단
+                const span = document.createElement('span');
+                span.className = 'cal-sub-tag';
+                span.style.fontSize = '10px';
+                span.style.display = 'block';
+                span.innerText = tagStr;
+                btn.appendChild(span);
             }
         }
     };
@@ -1301,7 +1315,10 @@
                     let currentOffStreak = window.getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
                     let canTakeOff = (!activeMaxOffLimit || currentOffStreak < maxOffStreakAllowed);
 
-                    if (curPureOffCount < baseRequiredOff && canTakeOff) { row.monthShifts[idx] = 'OFF'; return; }
+                    // 💡 마지노선 설정값(fallbackMinOffCount)을 반영하여 오프 기준점을 강제로 수호합니다.
+                    let finalMinOffGoal = Math.max(baseRequiredOff, fallbackMinOffCount);
+
+                    if (curPureOffCount < finalMinOffGoal && canTakeOff) { row.monthShifts[idx] = 'OFF'; return; }
                     if (curPureOffCount < maxAllowedOff && canTakeOff && Math.random() < 0.2) { row.monthShifts[idx] = 'OFF'; return; }
 
                     let availableShifts = [];
