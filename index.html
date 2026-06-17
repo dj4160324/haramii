@@ -1006,13 +1006,21 @@
         document.getElementById('tab1').classList.add('active');
     }
 
-    function validateAndGoToStep2() {
-        document.getElementById('step1Section').classList.remove('active');
-        document.getElementById('step2Section').classList.add('active');
-        document.getElementById('tab1').classList.remove('active');
-        document.getElementById('tab2').classList.add('active');
-        syncStaffRows(); 
-        update4WeekDateText();
+   function validateAndGoToStep2() {
+        try {
+            document.getElementById('step1Section').classList.remove('active');
+            document.getElementById('step2Section').classList.add('active');
+            document.getElementById('tab1').classList.remove('active');
+            document.getElementById('tab2').classList.add('active');
+            
+            syncStaffRows(); 
+            update4WeekDateText();
+            window.scrollTo({top: 0, behavior: 'smooth'}); // 넘어갈 때 화면 맨 위로 예쁘게 올려주는 기능 추가
+        } catch (error) {
+            // 엔진이 멈추면 어디서 고장 났는지 정확한 줄 번호와 원인을 팝업으로 띄워줍니다!
+            alert("🚨 2단계 진입 실패 원인:\n" + error.message + "\n\n" + error.stack);
+            console.error(error);
+        }
     }
 
     function goToStep3() {
