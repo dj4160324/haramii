@@ -458,41 +458,41 @@
 </div>
 
 <script>
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    window.delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    const koreanHolidays = {
+    window.koreanHolidays = {
         "2026": { "1-1": "신정", "2-16": "설날 연휴", "2-17": "설날", "2-18": "설날 연휴", "2-19": "대체공휴일", "3-1": "삼일절", "3-2": "대체공휴일", "5-5": "어린이날", "5-24": "부처님오신날", "5-25": "대체공휴일", "6-6": "현충일", "8-15": "광복절", "8-17": "대체공휴일", "9-24": "추석 연휴", "9-25": "추석", "9-26": "추석 연휴", "10-3": "개천절", "10-5": "대체공휴일", "10-9": "한글날", "12-25": "성탄절" },
         "2027": { "1-1": "신정", "2-6": "설날 연휴", "2-7": "설날", "2-8": "설날 연휴", "2-9": "대체공휴일", "3-1": "삼일절", "5-5": "어린이날", "5-13": "부처님오신날", "6-6": "현충일", "8-15": "광복절", "8-16": "대체공휴일", "9-14": "추석 연휴", "9-15": "추석", "9-16": "추석 연휴", "10-3": "개천절", "10-4": "대체공휴일", "10-9": "한글날", "12-25": "성탄절" }
     };
 
-    let globalStaffData = []; 
-    let globalLastDate = 30;
-    let globalDateDetails = [];
-    let globalCalculatedMatrix = [];
+    window.globalStaffData = []; 
+    window.globalLastDate = 30;
+    window.globalDateDetails = [];
+    window.globalCalculatedMatrix = [];
     
-    let globalShiftTemplates = { 
+    window.globalShiftTemplates = { 
         'D': '<span class="day">D</span>', 'E': '<span class="evening">E</span>', 'N': '<span class="night">N</span>', 
         'OFF': '<span class="off">O</span>', 'LEAVE': '<span class="requested-leave">연차</span>',
         'M-LEAVE': '<span class="m-leave">보건</span>', 'DISPATCH': '<span class="dispatch">파견</span>' 
     };
 
-    let currentActiveStaffId = null;
-    let currentActiveFieldType = null;
-    let currentSelectedShiftBrush = 'D';
-    let isScheduleGenerated = false;
-    let currentPage = 1; 
-    let currentFilterChip = 'ALL';
+    window.currentActiveStaffId = null;
+    window.currentActiveFieldType = null;
+    window.currentSelectedShiftBrush = 'D';
+    window.isScheduleGenerated = false;
+    window.currentPage = 1; 
+    window.currentFilterChip = 'ALL';
+    window.isDragging = false;
+    window.dragTargetState = null; 
 
-    let isDragging = false;
-    let dragTargetState = null; 
-    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.searchTimer2 = null;
+    window.searchTimer3 = null;
+    window.searchTimer4 = null;
 
-    let searchTimer2 = null;
-    let searchTimer3 = null;
-    let searchTimer4 = null;
+    window.addEventListener('mouseup', () => { window.isDragging = false; });
 
-    function normalizeStaffData() {
-        globalStaffData.forEach(item => {
+    window.normalizeStaffData = function() {
+        window.globalStaffData.forEach(item => {
             if (!item.leaveDates) item.leaveDates = [];
             if (!item.reqShiftsMap) item.reqShiftsMap = {};
             if (!item.offDayIndicesArray) item.offDayIndicesArray = [];
@@ -501,9 +501,9 @@
             if (typeof item.isMLeaveActive === 'undefined') item.isMLeaveActive = document.getElementById('ruleMenstruationLeave').checked;
             if (!item.mLeaveOption) item.mLeaveOption = 'EXTRA';
         });
-    }
+    };
 
-    function showToast(msg, isSuccess = true) {
+    window.showToast = function(msg, isSuccess = true) {
         const toast = document.getElementById('toast');
         toast.innerText = msg;
         toast.style.backgroundColor = isSuccess ? '#38a169' : '#e53e3e';
@@ -515,9 +515,9 @@
             toast.style.bottom = '30px';
             setTimeout(() => toast.style.visibility = 'hidden', 300);
         }, 3000);
-    }
+    };
 
-    function switchScheduleTypeUI() {
+    window.switchScheduleTypeUI = function() {
         const type = document.querySelector('input[name="schType"]:checked').value;
         const cycleZone = document.getElementById('cycleStartZone');
         const label = document.getElementById('periodLabel');
@@ -533,10 +533,10 @@
             select.innerHTML = "";
             for(let i=1; i<=13; i++) select.innerHTML += `<option value="${i}">${i}주기 턴</option>`;
         }
-        update4WeekDateText();
-    }
+        window.update4WeekDateText();
+    };
 
-    function update4WeekDateText() {
+    window.update4WeekDateText = function() {
         const type = document.querySelector('input[name="schType"]:checked').value;
         const txtNode = document.getElementById('cycleDateRangeText');
         const year = document.getElementById('schYear').value;
@@ -555,17 +555,17 @@
         let cycleStart = new Date(baseDate.getTime() + (cycleIdx * 28 * 24 * 60 * 60 * 1000));
         let cycleEnd = new Date(cycleStart.getTime() + (27 * 24 * 60 * 60 * 1000));
 
-        txtNode.innerText = `🔄 선택 주기 실제 날짜: ${formatDateStr(cycleStart)} ~ ${formatDateStr(cycleEnd)} (총 28일 고정)`;
-    }
+        txtNode.innerText = `🔄 선택 주기 실제 날짜: ${window.formatDateStr(cycleStart)} ~ ${window.formatDateStr(cycleEnd)} (총 28일 고정)`;
+    };
 
-    function formatDateStr(d) { return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`; }
+    window.formatDateStr = function(d) { return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`; };
 
-    function debounceSearch2() { if(searchTimer2) clearTimeout(searchTimer2); searchTimer2 = setTimeout(() => { currentPage = 1; applyPagination(); }, 300); }
-    function debounceSearch3() { if(searchTimer3) clearTimeout(searchTimer3); searchTimer3 = setTimeout(() => { renderResultTable('scheduleTable', 'monthShifts'); }, 300); }
-    function debounceSearch4() { if(searchTimer4) clearTimeout(searchTimer4); searchTimer4 = setTimeout(() => { renderResultTable('finalAdjustedTable', 'finalShifts'); }, 300); }
+    window.debounceSearch2 = function() { if(window.searchTimer2) clearTimeout(window.searchTimer2); window.searchTimer2 = setTimeout(() => { window.currentPage = 1; window.applyPagination(); }, 300); };
+    window.debounceSearch3 = function() { if(window.searchTimer3) clearTimeout(window.searchTimer3); window.searchTimer3 = setTimeout(() => { window.renderResultTable('scheduleTable', 'monthShifts'); }, 300); };
+    window.debounceSearch4 = function() { if(window.searchTimer4) clearTimeout(window.searchTimer4); window.searchTimer4 = setTimeout(() => { window.renderResultTable('finalAdjustedTable', 'finalShifts'); }, 300); };
 
-    function setFilterChip(chipVal) {
-        currentFilterChip = chipVal;
+    window.setFilterChip = function(chipVal) {
+        window.currentFilterChip = chipVal;
         document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
         if(chipVal === 'ALL') document.getElementById('chip-all').classList.add('active');
         if(chipVal === 'SENIOR') document.getElementById('chip-senior').classList.add('active');
@@ -573,51 +573,51 @@
         if(chipVal === 'PREG') document.getElementById('chip-preg').classList.add('active');
         if(chipVal === 'DISPATCH') document.getElementById('chip-dispatch').classList.add('active');
         if(chipVal === 'NO_MLEAVE') document.getElementById('chip-nomleave').classList.add('active');
-        currentPage = 1; applyPagination();
-    }
+        window.currentPage = 1; window.applyPagination();
+    };
 
-    function toggleGlobalMLeave() {
+    window.toggleGlobalMLeave = function() {
         const isGlobalOn = document.getElementById('ruleMenstruationLeave').checked;
-        globalStaffData.forEach(item => { item.isMLeaveActive = isGlobalOn; });
-        applyPagination();
-    }
+        window.globalStaffData.forEach(item => { item.isMLeaveActive = isGlobalOn; });
+        window.applyPagination();
+    };
 
-    function toggleMLeaveSelect(checkbox) {
+    window.toggleMLeaveSelect = function(checkbox) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id'));
-        if(globalStaffData[sid-1]) globalStaffData[sid-1].isMLeaveActive = checkbox.checked;
-        applyPagination();
-    }
+        if(window.globalStaffData[sid-1]) window.globalStaffData[sid-1].isMLeaveActive = checkbox.checked;
+        window.applyPagination();
+    };
 
-    function toggleMutualExclusion(checkbox, type) {
+    window.toggleMutualExclusion = function(checkbox, type) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id'));
-        const item = globalStaffData.find(x => x.id === sid);
+        const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return;
 
         if (type === 'SENIOR' && checkbox.checked) { item.isSenior = true; item.isNewbie = false; item.precId = 0; } 
         else if (type === 'NEWBIE' && checkbox.checked) { item.isSenior = false; item.isNewbie = true; } 
         else if (type === 'NEWBIE' && !checkbox.checked) { item.isNewbie = false; item.precId = 0; } 
         else if (type === 'SENIOR' && !checkbox.checked) { item.isSenior = false; }
-        applyPagination();
-    }
+        window.applyPagination();
+    };
 
-    function updatePreceptorDropdownsRealtime(inputNode, sid) {
-        const item = globalStaffData.find(x => x.id === sid);
+    window.updatePreceptorDropdownsRealtime = function(inputNode, sid) {
+        const item = window.globalStaffData.find(x => x.id === sid);
         if(item) item.name = inputNode.value.trim();
-    }
+    };
 
-    function updateMemoryFields(node, type) {
+    window.updateMemoryFields = function(node, type) {
         const sid = parseInt(node.getAttribute('data-staff-id'));
-        const item = globalStaffData.find(x => x.id === sid);
+        const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return;
 
         if(type === 'PREG') item.isPregnant = node.checked;
         if(type === 'DISPATCH') item.isDispatch = node.checked;
         if(type === 'MLEAVE_OPT') item.mLeaveOption = node.value;
         if(type === 'PREC') item.precId = parseInt(node.value);
-    }
+    };
 
-    function handleMemoryDayToggle(btn, sid, idx) {
-        const item = globalStaffData.find(x => x.id === sid);
+    window.handleMemoryDayToggle = function(btn, sid, idx) {
+        const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return;
 
         btn.classList.toggle('selected-off');
@@ -634,26 +634,26 @@
         allButtons.forEach(b => b.classList.remove('active-single', 'active-multi'));
         if (activeCount === 1) group.querySelector('.selected-off').classList.add('active-single');
         else if (activeCount >= 2) group.querySelectorAll('.selected-off').forEach(b => b.classList.add('active-multi'));
-    }
+    };
 
-    function updateSeniorCheckboxes() {
+    window.updateSeniorCheckboxes = function() {
         const seniorCountInput = parseInt(document.getElementById('seniorStaff').value) || 0;
-        globalStaffData.forEach((item, index) => {
+        window.globalStaffData.forEach((item, index) => {
             item.isSenior = index < seniorCountInput;
             if(item.isSenior) item.isNewbie = false;
         });
-        applyPagination();
-    }
+        window.applyPagination();
+    };
 
-    function syncStaffRows() {
+    window.syncStaffRows = function() {
         const total = parseInt(document.getElementById('totalStaff').value) || 15;
         const seniorCount = parseInt(document.getElementById('seniorStaff').value) || 0;
         const isGlobalMLeaveOn = document.getElementById('ruleMenstruationLeave').checked;
 
-        if (globalStaffData.length < total) {
-            for (let i = globalStaffData.length; i < total; i++) {
+        if (window.globalStaffData.length < total) {
+            for (let i = window.globalStaffData.length; i < total; i++) {
                 const sid = i + 1;
-                globalStaffData.push({
+                window.globalStaffData.push({
                     id: sid, name: `간호사 ${sid}`,
                     isSenior: i < seniorCount, isNewbie: false, isPregnant: false, isDispatch: false,
                     isMLeaveActive: isGlobalMLeaveOn, mLeaveOption: 'EXTRA', precId: 0,
@@ -661,36 +661,35 @@
                     offBreakdown: { pure:0, mLeave:0, sleep:0, preg:0, total:0 } 
                 });
             }
-        } else if (globalStaffData.length > total) { globalStaffData.splice(total); }
-        normalizeStaffData();
-        applyPagination();
-    }
+        } else if (window.globalStaffData.length > total) { window.globalStaffData.splice(total); }
+        window.normalizeStaffData();
+        window.applyPagination();
+    };
 
-    function applyPagination() {
+    window.applyPagination = function() {
         const pageSize = parseInt(document.getElementById('pageSize').value) || 10;
         const searchKeyword = document.getElementById('step2Search').value.trim().toLowerCase();
         const sortVal = document.getElementById('step2Sort').value;
         const tbody = document.querySelector("#staffEditTable tbody");
 
-        let filteredData = [...globalStaffData];
+        let filteredData = [...window.globalStaffData];
         if (searchKeyword) filteredData = filteredData.filter(item => item.name.toLowerCase().includes(searchKeyword));
         
-        if (currentFilterChip === 'SENIOR') filteredData = filteredData.filter(item => item.isSenior);
-        if (currentFilterChip === 'NEWBIE') filteredData = filteredData.filter(item => item.isNewbie);
-        if (currentFilterChip === 'PREG') filteredData = filteredData.filter(item => item.isPregnant);
-        if (currentFilterChip === 'DISPATCH') filteredData = filteredData.filter(item => item.isDispatch);
-        if (currentFilterChip === 'NO_MLEAVE') filteredData = filteredData.filter(item => !item.isMLeaveActive);
+        if (window.currentFilterChip === 'SENIOR') filteredData = filteredData.filter(item => item.isSenior);
+        if (window.currentFilterChip === 'NEWBIE') filteredData = filteredData.filter(item => item.isNewbie);
+        if (window.currentFilterChip === 'PREG') filteredData = filteredData.filter(item => item.isPregnant);
+        if (window.currentFilterChip === 'DISPATCH') filteredData = filteredData.filter(item => item.isDispatch);
+        if (window.currentFilterChip === 'NO_MLEAVE') filteredData = filteredData.filter(item => !item.isMLeaveActive);
 
-        // 💡 2단계 정렬 원복
         if (sortVal === 'RANK') filteredData.sort((a, b) => (b.isSenior - a.isSenior) || (a.isNewbie - b.isNewbie) || (a.id - b.id));
         else if (sortVal === 'ABC') filteredData.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
-        else filteredData.sort((a, b) => a.id - b.id); // 더미 항목들은 기본적으로 ID순(입력순)으로 방어 처리
+        else filteredData.sort((a, b) => a.id - b.id); 
 
         const totalRows = filteredData.length;
         const totalPages = Math.ceil(totalRows / pageSize) || 1;
-        if (currentPage > totalPages) currentPage = totalPages;
+        if (window.currentPage > totalPages) window.currentPage = totalPages;
 
-        const sliceData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+        const sliceData = filteredData.slice((window.currentPage - 1) * pageSize, window.currentPage * pageSize);
         
         let htmlBuffer = "";
         sliceData.forEach(item => {
@@ -704,7 +703,7 @@
             let dayBtns = getBtn(1, '월') + getBtn(2, '화') + getBtn(3, '수') + getBtn(4, '목') + getBtn(5, '금') + getBtn(6, '토', '#2b6cb0') + getBtn(0, '일', '#c53030');
 
             let preceptorOptions = '<option value="0">지정 안함</option>';
-            globalStaffData.forEach(p => {
+            window.globalStaffData.forEach(p => {
                 if (p.id !== item.id) preceptorOptions += `<option value="${p.id}" ${item.precId === p.id ? 'selected' : ''}>${p.name}</option>`;
             });
 
@@ -758,22 +757,22 @@
         });
         
         tbody.innerHTML = htmlBuffer;
-        renderPaginationUI(totalPages);
-    }
+        window.renderPaginationUI(totalPages);
+    };
 
-    function renderPaginationUI(totalPages) {
+    window.renderPaginationUI = function(totalPages) {
         const container = document.getElementById('paginationContainer');
         container.innerHTML = "";
         for (let i = 1; i <= totalPages; i++) {
             const btn = document.createElement('button');
-            btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+            btn.className = `page-btn ${i === window.currentPage ? 'active' : ''}`;
             btn.innerText = i;
-            btn.onclick = () => { currentPage = i; applyPagination(); };
+            btn.onclick = () => { window.currentPage = i; window.applyPagination(); };
             container.appendChild(btn);
         }
-    }
+    };
 
-    function applyBatchOff(dayIdx) {
+    window.applyBatchOff = function(dayIdx) {
         const rows = document.querySelectorAll("#staffEditTable tbody tr");
         rows.forEach(tr => {
             const batchCheck = tr.querySelector('.check-batch');
@@ -781,36 +780,36 @@
                 const btn = tr.querySelector(`.btn-day-toggle[data-day-idx="${dayIdx}"]`);
                 if (btn && !btn.classList.contains('selected-off')) {
                     const sid = parseInt(tr.getAttribute('data-staff-id'));
-                    handleMemoryDayToggle(btn, sid, dayIdx);
+                    window.handleMemoryDayToggle(btn, sid, dayIdx);
                 }
                 batchCheck.checked = false; 
             }
         });
         const masterCheck = document.getElementById('masterBatchCheck');
         if(masterCheck) masterCheck.checked = false; 
-    }
+    };
 
-    function clearBatchOff() {
+    window.clearBatchOff = function() {
         const rows = document.querySelectorAll("#staffEditTable tbody tr");
         rows.forEach(tr => {
             const batchCheck = tr.querySelector('.check-batch');
             if (batchCheck && batchCheck.checked) {
                 const sid = parseInt(tr.getAttribute('data-staff-id'));
                 const btns = tr.querySelectorAll('.btn-day-toggle.selected-off');
-                btns.forEach(btn => { const idx = parseInt(btn.getAttribute('data-day-idx')); handleMemoryDayToggle(btn, sid, idx); });
+                btns.forEach(btn => { const idx = parseInt(btn.getAttribute('data-day-idx')); window.handleMemoryDayToggle(btn, sid, idx); });
                 batchCheck.checked = false;
             }
         });
         const masterCheck = document.getElementById('masterBatchCheck');
         if(masterCheck) masterCheck.checked = false;
-    }
+    };
 
-    function toggleAllBatch(source) {
+    window.toggleAllBatch = function(source) {
         const visibleRows = document.querySelectorAll("#staffEditTable tbody tr");
         visibleRows.forEach(tr => { const cb = tr.querySelector('.check-batch'); if(cb) cb.checked = source.checked; });
-    }
+    };
 
-    function applyBatchMLeave() {
+    window.applyBatchMLeave = function() {
         const isGlobalOn = document.getElementById('ruleMenstruationLeave').checked;
         if(!isGlobalOn) return alert('1단계에서 보건휴가 적용이 해제되어 있습니다.');
         const val = document.getElementById('batchMLeaveSelect').value;
@@ -825,7 +824,7 @@
                 const container = tr.querySelector('.mleave-container');
                 if (cb && sel) { 
                     cb.checked = true; container.classList.remove('disabled'); sel.disabled = false; sel.value = val; 
-                    const item = globalStaffData.find(x => x.id === sid);
+                    const item = window.globalStaffData.find(x => x.id === sid);
                     if(item) { item.isMLeaveActive = true; item.mLeaveOption = val; }
                 }
                 batchCheck.checked = false; count++;
@@ -834,27 +833,27 @@
         const masterCheck = document.getElementById('masterBatchCheck');
         if(masterCheck) masterCheck.checked = false;
         if(count > 0) alert(`${count}명의 보건휴가 옵션이 일괄 적용되었습니다.`);
-    }
+    };
 
-    function toggleQuotaInputs(type) {
+    window.toggleQuotaInputs = function(type) {
         const isChecked = document.getElementById(`use${type}Quota`).checked;
         const container = document.getElementById(`quota-container-${type}`);
         const inputs = container.querySelectorAll('input[type="number"]');
         if (isChecked) { container.classList.remove('disabled'); inputs.forEach(inp => inp.disabled = false); } 
         else { container.classList.add('disabled'); inputs.forEach(inp => inp.disabled = true); }
-    }
+    };
 
-    function selectBrush(brush) {
-        currentSelectedShiftBrush = brush;
+    window.selectBrush = function(brush) {
+        window.currentSelectedShiftBrush = brush;
         document.querySelectorAll('#modalPalette .brush-btn').forEach(btn => {
             btn.classList.remove('active');
             if (btn.getAttribute('data-brush') === brush) btn.classList.add('active');
         });
-    }
+    };
 
-    function openCalendarModal(staffId, type) {
-        currentActiveStaffId = staffId;
-        currentActiveFieldType = type;
+    window.openCalendarModal = function(staffId, type) {
+        window.currentActiveStaffId = staffId;
+        window.currentActiveFieldType = type;
 
         const schType = document.querySelector('input[name="schType"]:checked').value;
         const year = document.getElementById('schYear').value;
@@ -881,7 +880,7 @@
         document.getElementById('modalHeader').innerText = `${schLabel} - ${titleLabel}`;
 
         const paletteNode = document.getElementById('modalPalette');
-        if (type === 'req') { paletteNode.style.display = 'flex'; selectBrush('D'); } 
+        if (type === 'req') { paletteNode.style.display = 'flex'; window.selectBrush('D'); } 
         else { paletteNode.style.display = 'none'; }
 
         const grid = document.getElementById('modalCalendarGrid');
@@ -902,7 +901,7 @@
 
         for(let s=0; s<startDayIndex; s++) grid.innerHTML += `<div></div>`;
 
-        const staffItem = globalStaffData.find(x => x.id === staffId);
+        const staffItem = window.globalStaffData.find(x => x.id === staffId);
         const isPregnant = staffItem ? staffItem.isPregnant : false;
 
         for(let d=1; d<=lastDate; d++) {
@@ -924,32 +923,32 @@
             grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="startDrag(this)" onmouseenter="doDrag(this)">${btnLabel} ${subTag}</button>`;
         }
         document.getElementById('calendarModal').style.display = 'flex';
-    }
+    };
 
-    function startDrag(btn) {
-        isDragging = true;
+    window.startDrag = function(btn) {
+        window.isDragging = true;
         const day = parseInt(btn.getAttribute('data-day'));
         const isPreg = btn.getAttribute('data-preg') === 'true';
-        const staff = globalStaffData.find(x => x.id === currentActiveStaffId);
+        const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
 
-        if (currentActiveFieldType === 'leave') {
-            dragTargetState = btn.classList.contains('p-leave') ? 'remove' : 'add';
+        if (window.currentActiveFieldType === 'leave') {
+            window.dragTargetState = btn.classList.contains('p-leave') ? 'remove' : 'add';
         } else {
-            if (isPreg && currentSelectedShiftBrush === 'N') { alert("🚨 임산부는 야간(N) 근무 배정이 불가합니다."); isDragging = false; return; }
-            if (staff.reqShiftsMap[day] === currentSelectedShiftBrush) dragTargetState = 'ERASE';
-            else dragTargetState = currentSelectedShiftBrush;
+            if (isPreg && window.currentSelectedShiftBrush === 'N') { alert("🚨 임산부는 야간(N) 근무 배정이 불가합니다."); window.isDragging = false; return; }
+            if (staff.reqShiftsMap[day] === window.currentSelectedShiftBrush) window.dragTargetState = 'ERASE';
+            else window.dragTargetState = window.currentSelectedShiftBrush;
         }
-        applyDragAction(btn);
-    }
+        window.applyDragAction(btn);
+    };
 
-    function doDrag(btn) { if (isDragging) applyDragAction(btn); }
+    window.doDrag = function(btn) { if (window.isDragging) window.applyDragAction(btn); };
 
-    function applyDragAction(btn) {
+    window.applyDragAction = function(btn) {
         const day = parseInt(btn.getAttribute('data-day'));
-        const staff = globalStaffData.find(x => x.id === currentActiveStaffId);
+        const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
 
-        if (currentActiveFieldType === 'leave') {
-            if (dragTargetState === 'add') {
+        if (window.currentActiveFieldType === 'leave') {
+            if (window.dragTargetState === 'add') {
                 if(!staff.leaveDates.includes(day)) { staff.leaveDates.push(day); btn.classList.add('p-leave'); }
             } else {
                 let idx = staff.leaveDates.indexOf(day);
@@ -957,30 +956,30 @@
             }
         } else {
             const isPreg = btn.getAttribute('data-preg') === 'true';
-            if (isPreg && dragTargetState === 'N') return;
+            if (isPreg && window.dragTargetState === 'N') return;
 
             btn.classList.remove('p-d', 'p-e', 'p-n', 'p-m', 'p-xd', 'p-xe', 'p-xn');
             const subTagNode = btn.querySelector('.cal-sub-tag');
             if(subTagNode) subTagNode.remove();
 
-            if (dragTargetState === 'ERASE') {
+            if (window.dragTargetState === 'ERASE') {
                 delete staff.reqShiftsMap[day];
             } else {
-                staff.reqShiftsMap[day] = dragTargetState;
-                btn.classList.add(`p-${dragTargetState.toLowerCase()}`);
-                let tagStr = dragTargetState === 'M' ? '보건' : dragTargetState;
-                if (dragTargetState.startsWith('x')) tagStr = `🚫${dragTargetState.substring(1)}`;
+                staff.reqShiftsMap[day] = window.dragTargetState;
+                btn.classList.add(`p-${window.dragTargetState.toLowerCase()}`);
+                let tagStr = window.dragTargetState === 'M' ? '보건' : window.dragTargetState;
+                if (window.dragTargetState.startsWith('x')) tagStr = `🚫${window.dragTargetState.substring(1)}`;
                 btn.innerHTML += `<span class="cal-sub-tag">${tagStr}</span>`;
             }
         }
-    }
+    };
 
-    function closeCalendarModal() {
+    window.closeCalendarModal = function() {
         document.getElementById('calendarModal').style.display = 'none';
-        applyPagination(); 
-    }
+        window.applyPagination(); 
+    };
 
-    function parseMultiDates(dateStr) {
+    window.parseMultiDates = function(dateStr) {
         if (!dateStr || dateStr.trim() === "") return [];
         const resultDates = new Set();
         const parts = dateStr.split(",");
@@ -997,35 +996,32 @@
             }
         });
         return Array.from(resultDates);
-    }
+    };
 
-    function goToStep1() {
+    window.goToStep1 = function() {
         document.getElementById('step2Section').classList.remove('active');
         document.getElementById('step1Section').classList.add('active');
         document.getElementById('tab2').classList.remove('active');
         document.getElementById('tab1').classList.add('active');
-    }
+    };
 
-   function validateAndGoToStep2() {
+    window.validateAndGoToStep2 = function() {
         try {
             document.getElementById('step1Section').classList.remove('active');
             document.getElementById('step2Section').classList.add('active');
             document.getElementById('tab1').classList.remove('active');
             document.getElementById('tab2').classList.add('active');
-            
-            syncStaffRows(); 
-            update4WeekDateText();
-            window.scrollTo({top: 0, behavior: 'smooth'}); // 넘어갈 때 화면 맨 위로 예쁘게 올려주는 기능 추가
-        } catch (error) {
-            // 엔진이 멈추면 어디서 고장 났는지 정확한 줄 번호와 원인을 팝업으로 띄워줍니다!
-            alert("🚨 2단계 진입 실패 원인:\n" + error.message + "\n\n" + error.stack);
-            console.error(error);
+            window.syncStaffRows(); 
+            window.update4WeekDateText();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        } catch(e) {
+            alert("2단계 진입 에러:\n" + e.message);
         }
-    }
+    };
 
-    function goToStep3() {
+    window.goToStep3 = function() {
         const totalStaff = parseInt(document.getElementById('totalStaff').value) || 0;
-        let activeStaffCount = globalStaffData.filter(x => !x.isDispatch).length;
+        let activeStaffCount = window.globalStaffData.filter(x => !x.isDispatch).length;
 
         const useWeekday = document.getElementById('useWeekdayQuota').checked;
         const reqDayWeekday = useWeekday ? (parseInt(document.getElementById('minStaffDayWeekday').value) || 0) : 0;
@@ -1042,17 +1038,31 @@
         document.getElementById('step3Section').classList.add('active');
         document.getElementById('tab2').classList.remove('active');
         document.getElementById('tab3').classList.add('active');
-    }
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
 
-    function backToStep2() { document.getElementById('step3Section').classList.remove('active'); document.getElementById('step2Section').classList.add('active'); document.getElementById('tab3').classList.remove('active'); document.getElementById('tab2').classList.add('active'); }
-    function backToStep3() { document.getElementById('step4Section').classList.remove('active'); document.getElementById('step3Section').classList.add('active'); document.getElementById('tab4').classList.remove('active'); document.getElementById('tab3').classList.add('active'); }
+    window.backToStep2 = function() { 
+        document.getElementById('step3Section').classList.remove('active'); 
+        document.getElementById('step2Section').classList.add('active'); 
+        document.getElementById('tab3').classList.remove('active'); 
+        document.getElementById('tab2').classList.add('active'); 
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+    
+    window.backToStep3 = function() { 
+        document.getElementById('step4Section').classList.remove('active'); 
+        document.getElementById('step3Section').classList.add('active'); 
+        document.getElementById('tab4').classList.remove('active'); 
+        document.getElementById('tab3').classList.add('active'); 
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
 
-    // ⚡ 3단계 핵심 스케줄러 엔진 (공평성 알고리즘 복구 완료본)
-    async function runSmartScheduling() {
-        normalizeStaffData();
-        applyPagination();
+    // ⚡ 3단계 스케줄러 엔진 (공평성 알고리즘 복구 완료)
+    window.runSmartScheduling = async function() {
+        window.normalizeStaffData();
+        window.applyPagination();
         
-        if (isScheduleGenerated) {
+        if (window.isScheduleGenerated) {
             const proceed = confirm("🚨 이미 작성된 근무표가 존재합니다.\n새로 생성하시겠습니까? (기존 데이터는 덮어쓰기 됩니다)");
             if (!proceed) return;
         }
@@ -1061,7 +1071,7 @@
         const backToStep2Btn = document.getElementById('backToStep2Btn');
         const progressBarFill = document.getElementById('progressBarFill');
         const progressPercentage = document.getElementById('progressPercentage');
-        const progressLog = document.getElementById('progressLog');
+        const progressText = document.getElementById('progressText');
         const thead = document.querySelector("#scheduleTable thead");
         const tbody = document.querySelector("#scheduleTable tbody");
         const feedbackContainer = document.getElementById('feedbackContainer');
@@ -1118,7 +1128,7 @@
             const newbieMaxNCount = parseInt(document.getElementById('newbieMaxNCount').value) || 0;
             const isNewbieNoAllNewbie = document.getElementById('newbieNoAllNewbie').checked;
 
-            const parsedHospitalHolidays = parseMultiDates(hospitalHolidaysInput);
+            const parsedHospitalHolidays = window.parseMultiDates(hospitalHolidaysInput);
             let lastDate = 30;
             const dateDetails = [];
             const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
@@ -1129,9 +1139,9 @@
                     const dateObj = new Date(year, month - 1, d);
                     const dayIndex = dateObj.getDay();
                     const holidayKey = `${month}-${d}`;
-                    const isLegalHoliday = koreanHolidays[year] && koreanHolidays[year][holidayKey];
+                    const isLegalHoliday = window.koreanHolidays[year] && window.koreanHolidays[year][holidayKey];
                     const isInternalHoliday = parsedHospitalHolidays.includes(d);
-                    const holidayName = isLegalHoliday ? koreanHolidays[year][holidayKey] : (isInternalHoliday ? "병원 휴일" : null);
+                    const holidayName = isLegalHoliday ? window.koreanHolidays[year][holidayKey] : (isInternalHoliday ? "병원 휴일" : null);
 
                     dateDetails.push({ 
                         dateText: `${month}/${d}`, date: d, dayIndex: dayIndex, dayName: dayNames[dayIndex], 
@@ -1148,9 +1158,9 @@
                     let curr = new Date(cycleStart.getTime() + (d * 24 * 60 * 60 * 1000));
                     let dayIndex = curr.getDay();
                     let holidayKey = `${curr.getMonth()+1}-${curr.getDate()}`;
-                    let isLegalHoliday = koreanHolidays[curr.getFullYear()] && koreanHolidays[curr.getFullYear()][holidayKey];
+                    let isLegalHoliday = window.koreanHolidays[curr.getFullYear()] && window.koreanHolidays[curr.getFullYear()][holidayKey];
                     let isInternalHoliday = parsedHospitalHolidays.includes(curr.getDate());
-                    let holidayName = isLegalHoliday ? koreanHolidays[curr.getFullYear()][holidayKey] : (isInternalHoliday ? "병원 휴일" : null);
+                    let holidayName = isLegalHoliday ? window.koreanHolidays[curr.getFullYear()][holidayKey] : (isInternalHoliday ? "병원 휴일" : null);
 
                     dateDetails.push({ 
                         dateText: `${curr.getMonth()+1}/${curr.getDate()}`, date: d + 1, dayIndex: dayIndex, dayName: dayNames[dayIndex], 
@@ -1158,14 +1168,14 @@
                     });
                 }
             }
-            globalLastDate = lastDate;
-            globalDateDetails = dateDetails;
+            window.globalLastDate = lastDate;
+            window.globalDateDetails = dateDetails;
 
             progressText.innerText = "연산 최적화 매칭 중...";
             progressBarFill.style.width = "20%"; progressPercentage.innerText = "20%";
             tbody.innerHTML = `<tr><td colspan="${lastDate + 5}" style="color:#3182ce; font-weight:bold; padding:20px;">⏳ [AI 이퀄라이저 동작 중]...</td></tr>`;
 
-            const scheduleMatrix = globalStaffData.map(staff => {
+            const scheduleMatrix = window.globalStaffData.map(staff => {
                 let clonedStaff = JSON.parse(JSON.stringify(staff));
                 clonedStaff.offBreakdown = { pure:0, mLeave:0, sleep:0, preg:0, total:0 };
                 return { staff: clonedStaff, monthShifts: Array(lastDate).fill(null), finalShifts: Array(lastDate).fill(null) };
@@ -1206,12 +1216,11 @@
                         let unassignedSeniors = scheduleMatrix.filter(r => 
                             r.staff.isSenior && !r.staff.isDispatch && r.monthShifts[idx] === null &&
                             !(shift === 'N' && r.staff.isPregnant && isPregNoNight) &&
-                            checkPhysicalGardeRule(r.monthShifts, idx, shift) &&
+                            window.checkPhysicalGardeRule(r.monthShifts, idx, shift) &&
                             !(r.staff.reqShiftsMap[currentDayNum] === 'x' + shift)
                         );
 
                         if (unassignedSeniors.length > 0) {
-                            // 💡 공평성 알고리즘 복구: 해당 듀티 개수가 가장 적은 선임자부터 우선 투입
                             unassignedSeniors.sort((a, b) => {
                                 if (shift === 'N') {
                                     let aNextLeave = a.staff.leaveDates.includes(currentDayNum + 1) ? 1 : 0;
@@ -1236,9 +1245,8 @@
                     let need = quota - currentCount;
 
                     if (need > 0) {
-                        let candidates = talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
+                        let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
                         
-                        // 💡 공평성 알고리즘 복구: 신청자 우선 배정 후, 해당 듀티 개수가 가장 적은 사람을 최우선 투입
                         candidates.sort((a, b) => {
                             if (shift === 'N') {
                                 let aNextLeave = a.staff.leaveDates.includes(currentDayNum + 1) ? 1 : 0;
@@ -1270,13 +1278,12 @@
                         }
 
                         if (currentCount < quota) {
-                            let stealable = allRows.filter(r => r.monthShifts[idx] === null && r.staff.reqShiftsMap[currentDayNum] && r.staff.reqShiftsMap[currentDayNum] !== shift && checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight));
-                            // 💡 공평성 복구: 강제 투입 시에도 듀티가 가장 적은 사람부터 빼앗아옴
+                            let stealable = allRows.filter(r => r.monthShifts[idx] === null && r.staff.reqShiftsMap[currentDayNum] && r.staff.reqShiftsMap[currentDayNum] !== shift && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight));
                             stealable.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                             for(let r of stealable) { delete r.staff.reqShiftsMap[currentDayNum]; r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             
                             if (currentCount < quota) {
-                                let forced = allRows.filter(r => r.monthShifts[idx] === null && checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight));
+                                let forced = allRows.filter(r => r.monthShifts[idx] === null && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight));
                                 forced.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                                 for(let r of forced) { r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             }
@@ -1293,7 +1300,7 @@
                         let prec = scheduleMatrix.find(x => x.staff.id === pId);
                         if (prec && prec.monthShifts[idx]) {
                             let target = prec.monthShifts[idx];
-                            if (['D','E','N'].includes(target) && checkPhysicalGardeRule(nb.monthShifts, idx, target)) nb.monthShifts[idx] = target;
+                            if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) nb.monthShifts[idx] = target;
                             else if (['OFF','LEAVE'].includes(target)) nb.monthShifts[idx] = 'OFF';
                         }
                     }
@@ -1302,7 +1309,7 @@
                 scheduleMatrix.forEach(row => {
                     if (row.monthShifts[idx] === null && ['D','E','N'].includes(row.staff.reqShiftsMap[currentDayNum])) {
                         let s = row.staff.reqShiftsMap[currentDayNum];
-                        if(checkPhysicalGardeRule(row.monthShifts, idx, s)) row.monthShifts[idx] = s;
+                        if(window.checkPhysicalGardeRule(row.monthShifts, idx, s)) row.monthShifts[idx] = s;
                     }
                 });
 
@@ -1310,7 +1317,6 @@
                 let currentDCount = allRows.filter(r => r.monthShifts[idx] === 'D').length;
                 let currentECount = allRows.filter(r => r.monthShifts[idx] === 'E').length;
 
-                // 💡 공평성 알고리즘 복구: 남은 인원 중 OFF가 가장 부족한 사람부터 강제 OFF 부여
                 unassignedRows.sort((a,b) => {
                     let offA = a.monthShifts.filter(s => s==='OFF').length;
                     let offB = b.monthShifts.filter(s => s==='OFF').length;
@@ -1319,15 +1325,15 @@
 
                 unassignedRows.forEach(row => {
                     let curPureOffCount = row.monthShifts.filter(s => s === 'OFF').length;
-                    let currentOffStreak = getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
+                    let currentOffStreak = window.getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
                     let canTakeOff = (!activeMaxOffLimit || currentOffStreak < maxOffStreakAllowed);
 
                     if (curPureOffCount < baseRequiredOff && canTakeOff) { row.monthShifts[idx] = 'OFF'; return; }
                     if (curPureOffCount < maxAllowedOff && canTakeOff && Math.random() < 0.2) { row.monthShifts[idx] = 'OFF'; return; }
 
                     let availableShifts = [];
-                    if (checkPhysicalGardeRule(row.monthShifts, idx, 'D') && row.staff.reqShiftsMap[currentDayNum] !== 'xD') availableShifts.push('D');
-                    if (checkPhysicalGardeRule(row.monthShifts, idx, 'E') && row.staff.reqShiftsMap[currentDayNum] !== 'xE') availableShifts.push('E');
+                    if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'D') && row.staff.reqShiftsMap[currentDayNum] !== 'xD') availableShifts.push('D');
+                    if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'E') && row.staff.reqShiftsMap[currentDayNum] !== 'xE') availableShifts.push('E');
 
                     if (availableShifts.length === 0) row.monthShifts[idx] = 'OFF';
                     else if (availableShifts.length === 1) {
@@ -1353,54 +1359,52 @@
                 row.staff.offBreakdown.total = pureOffCnt + row.staff.offBreakdown.mLeave;
             });
 
-            isScheduleGenerated = true;
-            globalCalculatedMatrix = scheduleMatrix;
+            window.isScheduleGenerated = true;
+            window.globalCalculatedMatrix = scheduleMatrix;
             
             let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
-            globalDateDetails.forEach(item => { 
+            window.globalDateDetails.forEach(item => { 
                 let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
                 headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
             });
             headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
-            globalDateDetails.forEach(item => { 
+            window.globalDateDetails.forEach(item => { 
                 let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
                 headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
             });
             headerHtml += `</tr>`;
             thead.innerHTML = headerHtml;
 
-            renderResultTable('scheduleTable', 'monthShifts');
+            window.renderResultTable('scheduleTable', 'monthShifts');
 
             progressText.innerText = "발행 완료"; progressBarFill.style.width = "100%"; progressPercentage.innerText = "100%";
             feedbackContainer.style.display = "block";
-            showToast("✅ 스케줄 생성이 완료되었습니다!");
+            window.showToast("✅ 스케줄 생성이 완료되었습니다!");
 
         } catch (error) {
             progressText.innerText = "연산 실패"; progressBarFill.style.width = "0%";
-            tbody.innerHTML = `<tr><td colspan="${lastDate + 5}" style="color:#e53e3e; font-weight:bold; padding:20px;">🚨 ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${window.globalLastDate + 5}" style="color:#e53e3e; font-weight:bold; padding:20px;">🚨 ${error.message}</td></tr>`;
             alert(error.message);
         } finally {
-            // 💡 3단계 버튼 먹통 에러 완벽 해결 (실패하든 성공하든 무조건 잠금 해제)
             submitBtn.disabled = false; 
             backToStep2Btn.disabled = false;
         }
-    }
+    };
 
-    function renderResultTable(tableId, arrayName) {
+    window.renderResultTable = function(tableId, arrayName) {
         const tbody = document.querySelector(`#${tableId} tbody`);
         const searchKeyword = document.getElementById(tableId === 'scheduleTable' ? 'step3Search' : 'step4Search').value.trim().toLowerCase();
         const sortVal = document.getElementById(tableId === 'scheduleTable' ? 'step3Sort' : 'step4Sort').value;
 
-        let displayMatrix = JSON.parse(JSON.stringify(globalCalculatedMatrix));
+        let displayMatrix = JSON.parse(JSON.stringify(window.globalCalculatedMatrix));
 
         if (searchKeyword) displayMatrix = displayMatrix.filter(r => r.staff.name.toLowerCase().includes(searchKeyword));
         
-        // 💡 3/4단계 정렬 옵션 100% 동기화 적용
         if (sortVal === 'ABC') displayMatrix.sort((a,b) => a.staff.name.localeCompare(b.staff.name, 'ko'));
         else if (sortVal === 'NIGHT') displayMatrix.sort((a,b) => b[arrayName].filter(s=>s==='N').length - a[arrayName].filter(s=>s==='N').length);
         else if (sortVal === 'OFF') displayMatrix.sort((a,b) => (b.staff.offBreakdown.total + b[arrayName].filter(s=>s==='LEAVE').length) - (a.staff.offBreakdown.total + a[arrayName].filter(s=>s==='LEAVE').length));
         else if (sortVal === 'RANK') displayMatrix.sort((a, b) => (b.staff.isSenior - a.staff.isSenior) || (a.staff.isNewbie - b.staff.isNewbie) || (a.staff.id - b.staff.id));
-        else displayMatrix.sort((a,b) => a.staff.id - b.staff.id); // 기본 ID(입력순) 및 더미 옵션 대응
+        else displayMatrix.sort((a,b) => a.staff.id - b.staff.id); 
 
         let htmlBuffer = "";
 
@@ -1414,9 +1418,9 @@
             const targetArray = row[arrayName];
 
             targetArray.forEach((shift, dIdx) => {
-                const dayInfo = globalDateDetails[dIdx];
+                const dayInfo = window.globalDateDetails[dIdx];
                 let cellClass = (dayInfo.dayIndex === 0 || dayInfo.isHoliday) ? "class='sun-cell'" : (dayInfo.dayIndex === 6 ? "class='sat-cell'" : "");
-                let borderStyle = ""; let displayShift = globalShiftTemplates[shift] || '';
+                let borderStyle = ""; let displayShift = window.globalShiftTemplates[shift] || '';
 
                 let requested = (row.staff.reqShiftsMap || {})[dayInfo.date];
                 if(requested === shift && shift !== 'M') {
@@ -1441,19 +1445,19 @@
                         </td></tr>`;
         });
 
-        let totalPregnant = globalStaffData.filter(r => r.isPregnant).length;
-        let totalDispatch = globalStaffData.filter(r => r.isDispatch).length;
-        let totalNewbie = globalStaffData.filter(r => r.isNewbie).length;
+        let totalPregnant = window.globalStaffData.filter(r => r.isPregnant).length;
+        let totalDispatch = window.globalStaffData.filter(r => r.isDispatch).length;
+        let totalNewbie = window.globalStaffData.filter(r => r.isNewbie).length;
 
         htmlBuffer += `<tr><td class="staff-name-col" style="background-color:#cbd5e0; font-weight:bold; color:#2d3748;">일별 총계</td>`;
-        for (let d = 0; d < globalLastDate; d++) {
+        for (let d = 0; d < window.globalLastDate; d++) {
             let dCnt = 0, eCnt = 0, nCnt = 0, offCnt = 0;
-            globalCalculatedMatrix.forEach(row => {
+            window.globalCalculatedMatrix.forEach(row => {
                 let s = row[arrayName][d];
                 if (s === 'D') dCnt++; else if (s === 'E') eCnt++; else if (s === 'N') nCnt++;
                 else if (['OFF', 'LEAVE', 'M-LEAVE', 'DISPATCH'].includes(s)) offCnt++;
             });
-            const dayInfo = globalDateDetails[d];
+            const dayInfo = window.globalDateDetails[d];
             let cellClass = (dayInfo.dayIndex === 0 || dayInfo.isHoliday) ? "class='sun-cell'" : (dayInfo.dayIndex === 6 ? "class='sat-cell'" : "");
             htmlBuffer += `<td ${cellClass} style="font-size:10px; line-height:1.3; padding:4px; background-color:#edf2f7; border-top:2px solid #a0aec0; font-weight:bold;">
                 <span style="color:#2b6cb0;">D: ${dCnt}</span><br><span style="color:#d69e2e;">E: ${eCnt}</span><br><span style="color:#805ad5;">N: ${nCnt}</span><br><span style="color:#e53e3e; font-size:9px;">휴: ${offCnt}</span>
@@ -1462,16 +1466,16 @@
         htmlBuffer += `<td colspan="4" style="background-color:#cbd5e0; font-size:11px; font-weight:900; color:#2d3748; text-align:right; padding-right:15px; border-top:2px solid #a0aec0;">💡 병동 인력: 임산부 ${totalPregnant}명 / 신규 ${totalNewbie}명 / 파견 ${totalDispatch}명</td></tr>`;
         
         tbody.innerHTML = htmlBuffer;
-    }
+    };
 
-    function checkPhysicalGardeRule(shiftsArray, idx, targetShift) {
+    window.checkPhysicalGardeRule = function(shiftsArray, idx, targetShift) {
         if (idx === 0) return true; const prevShift = shiftsArray[idx - 1];
         if (prevShift === 'E' && targetShift === 'D') return false;
         if (prevShift === 'N' && (targetShift === 'D' || targetShift === 'E')) return false;
         return true; 
-    }
+    };
 
-    function getCustomOffStreak(shiftsArray, currentIdx, option) {
+    window.getCustomOffStreak = function(shiftsArray, currentIdx, option) {
         let streak = 0;
         for (let i = currentIdx - 1; i >= 0; i--) {
             const job = shiftsArray[i];
@@ -1480,13 +1484,140 @@
             else break;
         }
         return streak;
-    }
+    };
 
-    function talentsAvailableForShift(rows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight) {
+    window.talentsAvailableForShift = function(rows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight) {
         return rows.filter(row => {
             if (row.monthShifts[idx] !== null) return false;
-            if (!checkPhysicalGardeRule(row.monthShifts, idx, shift)) return false;
+            if (!window.checkPhysicalGardeRule(row.monthShifts, idx, shift)) return false;
             if (shift === 'N' && row.staff.isPregnant && isPregNoNight) return false;
-            if (row.staff.reqShiftsMap[globalDateDetails[idx].date] === 'x' + shift) return false;
+            if (row.staff.reqShiftsMap[window.globalDateDetails[idx].date] === 'x' + shift) return false;
 
             let available = ['D', 'E', 'N', 'OFF'];
+            if (activeNightLimit && row.monthShifts.filter(s => s === 'N').length >= maxNightAllowed) available = available.filter(s => s !== 'N');
+            if (activeMaxNight && idx >= maxConsecutiveNightDays) {
+                let cn = 0; for(let i=1; i<=maxConsecutiveNightDays; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
+                if(cn === maxConsecutiveNightDays) available = available.filter(s => s !== 'N');
+            }
+            if (activeNoNOD && idx >= 2 && row.monthShifts[idx-2] === 'N' && row.monthShifts[idx-1] === 'OFF') available = available.filter(s => s !== 'D');
+            if (activeMaxConsecutive && idx >= maxConsecutiveWorkDays) {
+                let wc = 0; for(let i=1; i<=maxConsecutiveWorkDays; i++) { if(row.monthShifts[idx-i] !== 'OFF' && row.monthShifts[idx-i] !== 'LEAVE' && row.monthShifts[idx-i] !== 'M-LEAVE' && row.monthShifts[idx-i] !== null) wc++; }
+                if(wc >= maxConsecutiveWorkDays) available = ['OFF'];
+            }
+            let currentOffStreak = window.getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
+            if (activeMaxOffLimit && currentOffStreak >= maxOffStreakAllowed) available = available.filter(s => s !== 'OFF');
+
+            return available.includes(shift);
+        });
+    };
+
+    window.processFeedbackAndGoToStep4 = async function() {
+        const feedbackText = document.getElementById('aiFeedbackInput').value.trim();
+        if(!feedbackText) return alert("피드백 지시 사항을 입력해 주세요.");
+
+        document.getElementById('step3Section').classList.remove('active');
+        document.getElementById('step4Section').classList.add('active');
+        document.getElementById('tab3').classList.remove('active');
+        document.getElementById('tab4').classList.add('active');
+
+        const step4Log = document.getElementById('step4Log');
+        step4Log.innerHTML = `> [AI 비서 백오피스] 피드백 조합 연산 중...<br>`;
+        
+        window.globalCalculatedMatrix.forEach(row => { row.finalShifts = [...row.monthShifts]; });
+        await window.delay(300);
+
+        let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
+        window.globalDateDetails.forEach(item => { 
+            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+            headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
+        });
+        headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
+        window.globalDateDetails.forEach(item => { 
+            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+            headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
+        });
+        headerHtml += `</tr>`;
+        document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
+
+        window.renderResultTable('finalAdjustedTable', 'finalShifts');
+        step4Log.innerHTML += `✨ [조율 성공] 최종 조율이 무결점으로 인출되었습니다.`;
+    };
+
+    window.onload = function() {
+        window.syncStaffRows();
+    };
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwNFmaUTlowPNCJOUmJX5XQUWd76_2gJ0",
+        authDomain: "haramii.firebaseapp.com",
+        projectId: "haramii",
+        storageBucket: "haramii.firebasestorage.app",
+        messagingSenderId: "181032107844",
+        appId: "1:181032107844:web:15cb791c92ebf8646ae111"
+    };
+
+    try {
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('firebaseSaveBtn').addEventListener('click', async () => {
+            window.showToast("⏳ 클라우드에 저장 중입니다...", true);
+            try {
+                const schType = document.querySelector('input[name="schType"]:checked').value;
+                const saveData = {
+                    staffData: window.globalStaffData,
+                    schType: schType,
+                    schYear: document.getElementById('schYear').value,
+                    schMonth: document.getElementById('schMonth').value,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                await setDoc(doc(db, "ward_settings", "current_duty"), saveData);
+                window.showToast("✅ 성공적으로 저장되었습니다!");
+            } catch (error) {
+                console.error(error);
+                window.showToast("❌ 저장 실패: 파이어베이스 규칙을 확인해주세요.", false);
+                alert("저장 에러: " + error.message);
+            }
+        });
+
+        document.getElementById('firebaseLoadBtn').addEventListener('click', async () => {
+            window.showToast("⏳ 데이터를 가져오는 중...", true);
+            try {
+                const docSnap = await getDoc(doc(db, "ward_settings", "current_duty"));
+                if (docSnap.exists()) {
+                    const loadedData = docSnap.data();
+                    window.globalStaffData = loadedData.staffData;
+                    
+                    if(loadedData.schType) {
+                        const radioBtn = document.querySelector(`input[name="schType"][value="${loadedData.schType}"]`);
+                        if(radioBtn) radioBtn.checked = true;
+                        window.switchScheduleTypeUI();
+                    }
+                    if(loadedData.schYear) document.getElementById('schYear').value = loadedData.schYear;
+                    if(loadedData.schMonth) document.getElementById('schMonth').value = loadedData.schMonth;
+                    
+                    window.normalizeStaffData(); 
+                    window.applyPagination();
+                    window.update4WeekDateText();
+                    window.showToast("📂 셋팅이 완벽하게 복구되었습니다!");
+                } else {
+                    window.showToast("❓ 저장된 데이터가 없습니다.", false);
+                }
+            } catch (error) {
+                console.error(error);
+                window.showToast("❌ 불러오기 실패", false);
+                alert("불러오기 에러: " + error.message);
+            }
+        });
+    } catch(e) {
+        console.warn("파이어베이스 설정 오류: " + e.message);
+    }
+</script>
+</body>
+</html>
