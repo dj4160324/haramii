@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (검색 최적화판)</title>
+    <title>우리 병원 근무 관리 시스템 (초고속 렌더링판)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        h1 { color: #1a5c8a; border-bottom: 3px solid #cbd5e0; padding-bottom: 15px; margin-top: 0; font-size: 26px; }
+        
+        /* 🆕 상단 헤더 및 버튼 우측 정렬 레이아웃 */
+        .top-header-row { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #cbd5e0; padding-bottom: 15px; margin-bottom: 25px; }
+        h1 { color: #1a5c8a; margin: 0; font-size: 26px; }
+        .cloud-btn-group { display: flex; gap: 10px; }
         
         .step-indicator { display: flex; margin-bottom: 30px; background-color: #fff; padding: 8px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid #e2e8f0; }
         .step-tab { flex: 1; text-align: center; padding: 14px; font-weight: bold; color: #a0aec0; border-radius: 8px; transition: all 0.3s; font-size: 14px; cursor: default; }
@@ -63,7 +67,6 @@
         .inline-select { padding: 4px 8px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; font-weight: bold; color: #4a5568; }
 
         .highlight-box { background-color: #f0fdf4; border: 1px solid #9ae6b4; padding: 15px; border-radius: 8px; margin: 10px 0; }
-
         .custom-rule-textarea { width: 98%; height: 75px; padding: 15px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 14px; font-family: inherit; resize: none; color:#4a5568; background-color: #fffaf0; }
 
         .filter-control-panel { background-color: #fff; border: 1px solid #e2e8f0; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 15px; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -76,14 +79,14 @@
         .sort-select { padding: 9px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; color: #2d3748; font-weight: 800; background-color: #fff; cursor: pointer; }
 
         .staff-edit-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        .staff-edit-table th, .staff-edit-table td { border: 1px solid #e2e8f0; padding: 12px 10px; text-align: center; vertical-align: middle; }
-        .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 14px; border-bottom: 2px solid #cbd5e0; }
-        .input-staff-name { padding: 8px; border: 1px solid #cbd5e0; border-radius: 6px; font-weight: bold; width: 90%; text-align: center; font-size: 14px; }
+        .staff-edit-table th, .staff-edit-table td { border: 1px solid #e2e8f0; padding: 10px 8px; text-align: center; vertical-align: middle; }
+        .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 13px; border-bottom: 2px solid #cbd5e0; }
+        .input-staff-name { padding: 6px; border: 1px solid #cbd5e0; border-radius: 4px; font-weight: bold; width: 85%; text-align: center; font-size: 13px; }
         
-        .picker-click-box { background: #fff; border: 1px dashed #3182ce; padding: 10px; border-radius: 6px; font-size: 12px; color: #2b6cb0; font-weight: bold; cursor: pointer; text-align: center; min-height: 24px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center; transition: background 0.2s; }
+        .picker-click-box { background: #fff; border: 1px dashed #3182ce; padding: 8px; border-radius: 6px; font-size: 12px; color: #2b6cb0; font-weight: bold; cursor: pointer; text-align: center; min-height: 24px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center; transition: background 0.2s; }
         .picker-click-box:hover { background: #ebf8ff; border-style: solid; }
         
-        .badge-date { font-weight: bold; padding: 3px 6px; border-radius: 4px; font-size: 11px; color: white; background-color: #3182ce; }
+        .badge-date { font-weight: bold; padding: 3px 5px; border-radius: 4px; font-size: 11px; color: white; background-color: #3182ce; }
         .badge-date.leave { background-color: #e53e3e; }
         .badge-date.shift-d { background-color: #4db6ac; color: #fff; }
         .badge-date.shift-e { background-color: #f0a500; color: #fff; }
@@ -93,8 +96,8 @@
         .badge-date.shift-xe, .btn-cal-day.p-xe { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500 !important; color: white !important; border: 1px solid #e53e3e; }
         .badge-date.shift-xn, .btn-cal-day.p-xn { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd !important; color: white !important; border: 1px solid #e53e3e; }
 
-        .day-toggle-group { display: flex; gap: 4px; justify-content: center; background-color: #f8fafc; padding: 6px; border-radius: 8px; border: 1px solid #e2e8f0; width: max-content; margin: 0 auto; align-items: center;}
-        .btn-day-toggle { border: 1px solid #cbd5e0; background-color: #fff; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; color: #4a5568; transition: all 0.2s; }
+        .day-toggle-group { display: flex; gap: 4px; justify-content: center; background-color: #f8fafc; padding: 4px; border-radius: 8px; border: 1px solid #e2e8f0; width: max-content; margin: 0 auto; align-items: center;}
+        .btn-day-toggle { border: 1px solid #cbd5e0; background-color: #fff; padding: 4px 10px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; color: #4a5568; transition: all 0.2s; }
         .btn-day-toggle:hover { background-color: #edf2f7; }
         .btn-day-toggle.selected-off.active-single { background-color: #3182ce !important; color: white !important; border-color: #2b6cb0; }
         .btn-day-toggle.selected-off.active-multi { background-color: #805ad5 !important; color: white !important; border-color: #6b46c1; }
@@ -106,109 +109,81 @@
         .page-btn { padding: 8px 14px; border: 1px solid #cbd5e0; background: #fff; cursor: pointer; border-radius: 6px; font-weight: bold; color: #4a5568; transition: all 0.2s;}
         .page-btn:hover { background: #edf2f7; }
         .page-btn.active { background: #3182ce; color: #fff; border-color: #2b6cb0; }
-        .page-divider { color: #a0aec0; font-weight: bold; }
-
-        .progress-container { background-color: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
-        .progress-header { display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 12px; color: #2d3748; font-size: 16px; }
-        .progress-bar-bg { background-color: #edf2f7; border-radius: 12px; height: 24px; width: 100%; overflow: hidden; margin-bottom: 15px; border: 1px solid #e2e8f0; }
-        .progress-bar-fill { background-color: #48bb78; height: 100%; width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .progress-status-log { font-size: 13px; color: #a0aec0; font-family: 'Consolas', monospace; background: #1a202c; padding: 15px; border-radius: 8px; max-height: 180px; overflow-y: auto; line-height: 1.5; }
-
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .modal-content { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 400px; user-select: none; }
-        .modal-header { font-size: 18px; font-weight: 900; color: #1a5c8a; margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; text-align: center; }
         
-        .brush-btn { padding: 6px 10px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #f8fafc; color: #4a5568; transition: all 0.2s; }
-        .brush-btn:hover { background-color: #edf2f7; }
-        .brush-btn[data-brush="D"].active { border-color: #4db6ac; background-color: #e6fffa; color: #234e52; box-shadow: 0 2px 4px rgba(77, 182, 172, 0.3); }
-        .brush-btn[data-brush="E"].active { border-color: #f0a500; background-color: #feebc8; color: #744210; box-shadow: 0 2px 4px rgba(240, 165, 0, 0.3); }
-        .brush-btn[data-brush="N"].active { border-color: #e056fd; background-color: #faf5ff; color: #44337a; box-shadow: 0 2px 4px rgba(224, 86, 253, 0.3); }
-        .brush-btn[data-brush="M"].active { border-color: #fc8181; background-color: #fff5f5; color: #c53030; box-shadow: 0 2px 4px rgba(252, 129, 129, 0.3); }
-        
-        .brush-btn[data-brush="xD"].active { border-color: #e53e3e; background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #4db6ac; color: white; }
-        .brush-btn[data-brush="xE"].active { border-color: #e53e3e; background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500; color: white; }
-        .brush-btn[data-brush="xN"].active { border-color: #e53e3e; background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd; color: white; }
-        .brush-btn[data-brush="ERASE"].active { border-color: #a0aec0; background-color: #edf2f7; }
-
-        .modal-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-bottom: 20px; }
-        .modal-cal-head { font-size: 13px; font-weight: 800; color: #718096; padding: 6px 0; background-color: #f8fafc; border-radius: 4px; }
-        
-        .btn-cal-day { border: 1px solid #e2e8f0; background: #fff; padding: 12px 0; font-size: 14px; font-weight: 800; border-radius: 6px; cursor: pointer; color: #2d3748; display: flex; flex-direction: column; align-items: center; gap: 3px; user-select: none; touch-action: none; position: relative; transition: border 0.2s; }
-        .btn-cal-day:hover { border-color: #cbd5e0; background-color: #f8fafc; }
-        .btn-cal-day.p-leave { background-color: #e53e3e !important; color: white !important; border: 1px solid #c53030; }
-        .btn-cal-day.p-d { background-color: #4db6ac !important; color: white !important; }
-        .btn-cal-day.p-e { background-color: #f0a500 !important; color: white !important; }
-        .btn-cal-day.p-n { background-color: #e056fd !important; color: white !important; }
-        .btn-cal-day.p-m { background-color: #fc8181 !important; color: white !important; border: 1px dotted #fff; }
-
-        .cal-sub-tag { font-size: 10px; opacity: 0.95; pointer-events: none; font-weight: 900;}
-
-        .modal-footer { display: flex; gap: 10px; justify-content: flex-end; align-items:center; border-top: 1px solid #edf2f7; padding-top: 15px; }
-        .drag-notice { font-size:12px; color:#718096; flex:1; text-align:left; font-weight:bold; line-height: 1.4; }
-        .btn-modal-close { background: #3182ce; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: 800; transition: background 0.2s; }
-        .btn-modal-close:hover { background: #2b6cb0; }
-        
+        /* 🆕 3단계 결과표 다이어트 (배율 축소 및 폰트 최소화) */
         .table-responsive { overflow-x: auto; margin-top: 10px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        table.result-calendar { width: 100%; border-collapse: collapse; background: white; min-width: 1500px; }
-        table.result-calendar th, table.result-calendar td { border: 1px solid #cbd5e0; padding: 12px 5px; text-align: center; font-size: 14px; }
-        table.result-calendar th { background-color: #2d3748; color: white; font-size: 13px; font-weight: 800; }
+        table.result-calendar { width: 100%; border-collapse: collapse; background: white; min-width: 1200px; }
+        table.result-calendar th, table.result-calendar td { border: 1px solid #cbd5e0; padding: 5px 3px; text-align: center; font-size: 12px; }
+        table.result-calendar th { background-color: #2d3748; color: white; font-size: 11px; font-weight: 800; padding: 6px 3px; }
         table.result-calendar th.sun { background-color: #e53e3e !important; color: white !important; border-color: #c53030 !important; } 
         table.result-calendar th.sat { background-color: #2b6cb0; }
         table.result-calendar td.sun-cell { background-color: #fff5f5; } table.result-calendar td.sat-cell { background-color: #ebf8ff; }
 
-        .staff-name-col { min-width: 120px; background-color: #edf2f7; position: sticky; left: 0; z-index: 2; font-weight: 800; text-align: center; vertical-align: middle; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
-        th.summary-header { background-color: #4a5568; font-weight: bold; color: #fff; min-width: 45px; line-height: 1.3;}
+        .staff-name-col { min-width: 90px; background-color: #edf2f7; position: sticky; left: 0; z-index: 2; font-weight: 800; text-align: center; vertical-align: middle; box-shadow: 2px 0 5px rgba(0,0,0,0.05); font-size: 12px; }
+        th.summary-header { background-color: #4a5568; font-weight: bold; color: #fff; min-width: 35px; line-height: 1.3;}
         td.summary-cell { background-color: #f8fafc; font-weight: 900; color: #2d3748; position: relative; }
 
-        .tooltip-container { display: inline-block; cursor: help; color: #2b6cb0; margin-left: 4px; font-weight: 900; background: #ebf8ff; border-radius: 50%; width: 18px; height: 18px; line-height: 18px; text-align: center; font-size: 12px; border: 1px solid #90cdf4; }
-        .tooltip-container .tooltip-text { visibility: hidden; width: 280px; background-color: #2d3748; color: #fff; text-align: left; border-radius: 8px; padding: 10px 14px; position: absolute; z-index: 10; bottom: 135%; right: 0; opacity: 0; transition: opacity 0.3s; font-size: 13px; font-weight: normal; line-height: 1.6; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
+        .day { background-color: #e6fffa; color: #234e52; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
+        .evening { background-color: #feebc8; color: #744210; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
+        .night { background-color: #fed7d7; color: #742a2a; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
+        .off { background-color: #edf2f7; color: #718096; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
+        .requested-leave { background-color: #e53e3e; color: white; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; border: 1px solid #c53030; }
+        .m-leave { background-color: #fff5f5; color: #c53030; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; border: 1px dotted #fc8181; }
+        .dispatch { background-color: #e2e8f0; color: #4a5568; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; border: 1px dotted #a0aec0; }
+
+        .tooltip-container { display: inline-block; cursor: help; color: #2b6cb0; margin-left: 2px; font-weight: 900; background: #ebf8ff; border-radius: 50%; width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 10px; border: 1px solid #90cdf4; }
+        .tooltip-container .tooltip-text { visibility: hidden; width: 250px; background-color: #2d3748; color: #fff; text-align: left; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 10; bottom: 135%; right: 0; opacity: 0; transition: opacity 0.3s; font-size: 12px; font-weight: normal; line-height: 1.5; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
         .tooltip-container .tooltip-text::after { content: ""; position: absolute; top: 100%; right: 12px; margin-left: -6px; border-width: 6px; border-style: solid; border-color: #2d3748 transparent transparent transparent; }
         .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
         .mleave-container.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
         .mleave-container.disabled select { background-color: #e2e8f0; color: #a0aec0; }
         
-        .preceptor-container { display: none; margin-top: 6px; background: #ebf8ff; padding: 6px 8px; border-radius: 6px; border: 1px solid #90cdf4; animation: fadeIn 0.3s; }
+        .preceptor-container { display: none; margin-top: 6px; background: #ebf8ff; padding: 4px 6px; border-radius: 6px; border: 1px solid #90cdf4; animation: fadeIn 0.3s; }
         .preceptor-container.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .day { background-color: #e6fffa; color: #234e52; font-weight: 800; border-radius: 4px; padding: 3px 6px; font-size: 12px; }
-        .evening { background-color: #feebc8; color: #744210; font-weight: 800; border-radius: 4px; padding: 3px 6px; font-size: 12px; }
-        .night { background-color: #fed7d7; color: #742a2a; font-weight: 800; border-radius: 4px; padding: 3px 6px; font-size: 12px; }
-        .off { background-color: #edf2f7; color: #718096; border-radius: 4px; padding: 3px 6px; font-size: 12px; }
-        .requested-leave { background-color: #e53e3e; color: white; font-weight: 800; border-radius: 4px; padding: 3px 6px; font-size: 12px; border: 1px solid #c53030; }
-        .m-leave { background-color: #fff5f5; color: #c53030; font-weight: 800; border-radius: 4px; padding: 3px 6px; font-size: 12px; border: 1px dotted #fc8181; }
-        .dispatch { background-color: #e2e8f0; color: #4a5568; font-weight: 800; border-radius: 4px; padding: 3px 6px; font-size: 12px; border: 1px dotted #a0aec0; }
-        
         .btn-center { display: flex; gap: 15px; margin-top: 35px; justify-content: center; }
-        button { background-color: #3182ce; color: white; border: none; padding: 16px 35px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: 900; transition: all 0.2s; box-shadow: 0 4px 6px rgba(49, 130, 206, 0.2); }
-        button:hover { background-color: #2b6cb0; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(49, 130, 206, 0.3); }
-        button.btn-secondary { background-color: #edf2f7; color: #4a5568; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        button.btn-main { background-color: #3182ce; color: white; border: none; padding: 14px 30px; font-size: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; transition: all 0.2s; box-shadow: 0 4px 6px rgba(49, 130, 206, 0.2); }
+        button.btn-main:hover { background-color: #2b6cb0; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(49, 130, 206, 0.3); }
+        button.btn-secondary { background-color: #edf2f7; color: #4a5568; border: none; padding: 14px 30px; font-size: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         button.btn-secondary:hover { background-color: #e2e8f0; }
-        button.btn-success { background-color: #48bb78; box-shadow: 0 4px 6px rgba(72, 187, 120, 0.2); }
+        button.btn-success { background-color: #48bb78; color: white; border: none; padding: 14px 30px; font-size: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; box-shadow: 0 4px 6px rgba(72, 187, 120, 0.2); }
         button.btn-success:hover { background-color: #38a169; }
-        button:disabled { background-color: #cbd5e0; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        .feedback-box { background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 30px; border-radius: 12px; margin-top: 35px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .feedback-textarea { width: 98%; height: 90px; padding: 15px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; font-family: inherit; margin-top: 15px; resize: none; transition: border 0.2s; }
-        .feedback-textarea:focus { border-color: #48bb78; outline: none; box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1); }
+        .progress-container { background-color: #fff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+        .progress-header { display: flex; justify-content: space-between; font-weight: 900; margin-bottom: 12px; color: #2d3748; font-size: 16px; }
+        .progress-bar-bg { background-color: #edf2f7; border-radius: 12px; height: 20px; width: 100%; overflow: hidden; margin-bottom: 15px; border: 1px solid #e2e8f0; }
+        .progress-bar-fill { background-color: #48bb78; height: 100%; width: 0%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-status-log { font-size: 12px; color: #a0aec0; font-family: 'Consolas', monospace; background: #1a202c; padding: 15px; border-radius: 8px; max-height: 150px; overflow-y: auto; line-height: 1.5; }
 
-        .floating-scroll { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; opacity: 0.7; transition: opacity 0.3s; }
-        .floating-scroll:hover { opacity: 1; }
-        .floating-scroll button { background-color: #2d3748; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); padding: 0; display:flex; align-items:center; justify-content:center; }
-        .floating-scroll button:hover { background-color: #1a202c; transform: translateY(-2px); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-content { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 400px; user-select: none; }
+        .modal-header { font-size: 18px; font-weight: 900; color: #1a5c8a; margin-bottom: 20px; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; text-align: center; }
+        .modal-calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; margin-bottom: 20px; }
+        .modal-cal-head { font-size: 13px; font-weight: 800; color: #718096; padding: 6px 0; background-color: #f8fafc; border-radius: 4px; }
+        .btn-cal-day { border: 1px solid #e2e8f0; background: #fff; padding: 12px 0; font-size: 14px; font-weight: 800; border-radius: 6px; cursor: pointer; color: #2d3748; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .btn-cal-day:hover { border-color: #cbd5e0; background-color: #f8fafc; }
+        .btn-modal-close { background: #3182ce; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: 800; }
+        .brush-btn { padding: 6px 10px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #f8fafc; color: #4a5568; }
+        .brush-btn.active { border-color: #4a5568; }
+
+        /* 🆕 토스트 알림 메시지창 스타일 */
+        #toast { visibility: hidden; min-width: 250px; color: #fff; text-align: center; border-radius: 8px; padding: 16px 20px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 900; font-size: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
     </style>
 </head>
 <body>
 
+<div id="toast"></div>
+
 <div class="container">
-    <h1>🏥 우리 병원 근무 관리 시스템 (대시보드 UI 마스터판)</h1>
-<div style="background: #edf2f7; padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; gap: 12px; align-items: center; border: 1px solid #cbd5e0;">
-            <span style="font-weight: bold; color: #2d3748; font-size: 14px;">☁️ 클라우드 동기화 보관함:</span>
-            <button type="button" id="firebaseSaveBtn" style="padding: 8px 16px; font-size: 13px; background-color: #38a169; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">💾 현재 세팅 클라우드 저장</button>
-            <button type="button" id="firebaseLoadBtn" style="padding: 8px 16px; font-size: 13px; background-color: #2b6cb0; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">📂 저장된 데이터 불러오기</button>
-            <span id="dbStatusText" style="font-size: 13px; color: #718096; font-weight: bold;">(연결 완료)</span>
+    <div class="top-header-row">
+        <h1>🏥 우리 병원 근무 관리 시스템</h1>
+        <div class="cloud-btn-group">
+            <button type="button" id="firebaseSaveBtn" style="padding: 9px 18px; font-size: 13px; background-color: #38a169; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;">💾 저장</button>
+            <button type="button" id="firebaseLoadBtn" style="padding: 9px 18px; font-size: 13px; background-color: #2b6cb0; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;">📂 불러오기</button>
         </div>
+    </div>
     
     <div class="step-indicator">
         <div class="step-tab active" id="tab1">1단계: 메인 조건 및 룰 셋팅</div>
@@ -235,12 +210,11 @@
                 </div>
             </div>
 
-            <div class="config-grid" style="margin-bottom: 30px;">
+            <div class="config-grid" style="margin-bottom: 25px;">
                 <div class="config-item">
                     <label for="schYear">스케줄 연도 <span class="mark-required">*</span></label>
                     <select id="schYear" onchange="update4WeekDateText()">
-                        <option value="2026" selected>2026년</option>
-                        <option value="2027">2027년</option>
+                        <option value="2026" selected>2026년</option><option value="2027">2027년</option>
                     </select>
                 </div>
                 <div class="config-item" id="periodSelectZone">
@@ -258,24 +232,18 @@
                 </div>
             </div>
             
-            <div id="cycleDateRangeText" style="font-weight: 800; color: #2b6cb0; font-size: 14px; margin-bottom: 25px; background: #ebf8ff; padding: 10px 15px; border-radius: 6px; display: inline-block;"></div>
+            <div id="cycleDateRangeText" style="font-weight: 800; color: #2b6cb0; font-size: 13px; margin-bottom: 25px; background: #ebf8ff; padding: 10px 15px; border-radius: 6px; display: inline-block;"></div>
 
             <div class="config-title blue" style="font-size:16px; margin-top:10px;">👥 근무조당 최소 가동 인원 요구 사양</div>
             <div class="staff-quota-box">
                 <div id="quota-container-Weekday" class="quota-container">
-                    <div class="quota-sub-title">
-                        <input type="checkbox" id="useWeekdayQuota" checked onchange="toggleQuotaInputs('Weekday')">
-                        <label for="useWeekdayQuota">💻 평일 (월~금) 최소 인원 적용</label>
-                    </div>
+                    <div class="quota-sub-title"><input type="checkbox" id="useWeekdayQuota" checked onchange="toggleQuotaInputs('Weekday')"><label for="useWeekdayQuota">💻 평일 (월~금) 최소 인원 적용</label></div>
                     <div class="quota-inline"><span>데이 (D) 최소 출근:</span><input type="number" id="minStaffDayWeekday" class="inline-input-num" value="2" min="0">명</div>
                     <div class="quota-inline"><span>이브닝 (E) 최소 출근:</span><input type="number" id="minStaffEveWeekday" class="inline-input-num" value="2" min="0">명</div>
                     <div class="quota-inline"><span>나이트 (N) 최소 출근:</span><input type="number" id="minStaffNitWeekday" class="inline-input-num" value="1" min="0">명</div>
                 </div>
                 <div id="quota-container-Weekend" class="quota-container">
-                    <div class="quota-sub-title">
-                        <input type="checkbox" id="useWeekendQuota" checked onchange="toggleQuotaInputs('Weekend')">
-                        <label for="useWeekendQuota">🏖️ 주말 및 공휴일 최소 인원 적용</label>
-                    </div>
+                    <div class="quota-sub-title"><input type="checkbox" id="useWeekendQuota" checked onchange="toggleQuotaInputs('Weekend')"><label for="useWeekendQuota">🏖️ 주말 및 공휴일 최소 인원 적용</label></div>
                     <div class="quota-inline"><span>데이 (D) 최소 출근:</span><input type="number" id="minStaffDayWeekend" class="inline-input-num" value="2" min="0">명</div>
                     <div class="quota-inline"><span>이브닝 (E) 최소 출근:</span><input type="number" id="minStaffEveWeekend" class="inline-input-num" value="2" min="0">명</div>
                     <div class="quota-inline"><span>나이트 (N) 최소 출근:</span><input type="number" id="minStaffNitWeekend" class="inline-input-num" value="1" min="0">명</div>
@@ -288,85 +256,33 @@
             <div class="rules-group">
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="ruleSleepingOff" checked>
-                    <div class="rule-text">
-                        <label for="ruleSleepingOff">🛏️ 나이트(N) 초과 근무자 슬리핑 오프(Sleeping OFF) 보상</label>
-                        <span>한 달에 <input type="number" id="targetNightLimit" class="inline-input-num" value="7" min="1" max="15">개 이상의 N근무가 있을 시, 해당 간호사에게 엑스트라 추가 오프를 <input type="number" id="rewardOffCount" class="inline-input-num" value="1" min="1" max="5">개 제공합니다.</span>
-                    </div>
+                    <div class="rule-text"><label for="ruleSleepingOff">🛏️ 나이트(N) 초과 근무자 슬리핑 오프(Sleeping OFF) 보상</label><span>한 달에 <input type="number" id="targetNightLimit" class="inline-input-num" value="7" min="1" max="15">개 이상의 N근무가 있을 시, 엑스트라 추가 오프를 <input type="number" id="rewardOffCount" class="inline-input-num" value="1" min="1" max="5">개 제공합니다.</span></div>
                 </div>
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="ruleMenstruationLeave" checked onchange="toggleGlobalMLeave()">
-                    <div class="rule-text">
-                        <label for="ruleMenstruationLeave">🩸 여성 간호사 보건휴가(생리휴가) 적용 허용</label>
-                        <span>보건휴가 처리방식은 2단계의 각 근무자 상세 설정에서 개별 및 일괄 지정할 수 있습니다.</span>
-                    </div>
+                    <div class="rule-text"><label for="ruleMenstruationLeave">🩸 여성 간호사 보건휴가(생리휴가) 적용 허용</label></div>
                 </div>
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; width: 100%; margin: 5px 0;">
-
                 <div class="highlight-box">
                     <div class="rule-text">
                         <label style="color:#166534; font-size:15px;">⚙️ 인력 한계 상황 시 순수 최소 OFF 보장 조율 옵션 <span class="mark-required">* 필수</span></label>
-                        <span style="color:#2f855a; margin-top:6px;">인력 사정이 타이트할 경우, 간호사 인당 최소 <input type="number" id="fallbackMinOffCount" class="inline-input-num" value="7" min="4" max="15" style="border-color:#48bb78; color:#276749;">일의 미세 마지노선 '순수 오프(OFF)'를 강제 수호합니다. <br>(*연차 및 추가 오프 사용일은 최소 보장 개수에 포함되지 않는 엑스트라 휴무로 취급됩니다.)</span>
+                        <span style="color:#2f855a; margin-top:6px;">간호사 인당 최소 <input type="number" id="fallbackMinOffCount" class="inline-input-num" value="7" min="4" max="15" style="border-color:#48bb78; color:#276749;">일의 미세 마지노선 '순수 오프(OFF)'를 강제 수호합니다.</span>
                     </div>
                 </div>
-
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="ruleMaxOffLimit" checked>
-                    <div class="rule-text">
-                        <label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label>
-                        <span>간호사 한 명당 한 번에 연속으로 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 
-                            지정 연차(휴가)를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select> 
-                        </span>
-                    </div>
+                    <div class="rule-text"><label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label><span>한 번에 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 지정 연차를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select></span></div>
                 </div>
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="ruleNightLimit" checked>
-                    <div class="rule-text">
-                        <label for="ruleNightLimit">🌙 월간 야간근무 상한 보장 규칙</label>
-                        <span>간호사 한 명당 한 달 동안 배정되는 총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span>
-                    </div>
-                </div>
-                <div class="rule-checkbox-item">
-                    <input type="checkbox" id="ruleWeekendOff" checked>
-                    <div class="rule-text">
-                        <label for="ruleWeekendOff">📅 스케줄 주기 내 주말(토/일) 일수 기반 기본 휴무 보장</label>
-                        <span>해당 주기 내에 존재하는 실제 토요일과 일요일의 총합 개수만큼 순수 OFF 일수를 모든 간호사에게 무조건 보장합니다.</span>
-                    </div>
-                </div>
-                <div class="rule-checkbox-item">
-                    <input type="checkbox" id="ruleHolidayAddOff" checked>
-                    <div class="rule-text">
-                        <label for="ruleHolidayAddOff">🇰🇷 평일 국경일/대체휴일 수만큼 보너스 OFF 추가 가산</label>
-                        <span>해당 주기의 주 중(월~금)에 낀 공휴일 수만큼, 모든 간호사에게 공휴일 특별 오프(OFF)를 추가 지급합니다.</span>
-                    </div>
-                </div>
-                
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; width: 100%; margin: 10px 0;">
-                
-                <div class="rule-checkbox-item" style="opacity: 0.85;">
-                    <input type="checkbox" checked disabled style="transform: scale(1.2); margin-top: 4px;">
-                    <div class="rule-text"><label style="color:#2d3748;">🚫 [물리적 생체 보호] 이브닝 직후 데이(E-D) 절대 금지</label></div>
-                </div>
-                <div class="rule-checkbox-item" style="opacity: 0.85;">
-                    <input type="checkbox" checked disabled style="transform: scale(1.2); margin-top: 4px;">
-                    <div class="rule-text"><label style="color:#2d3748;">🚫 [물리적 생체 보호] 나이트 직후 데이/이브닝(N-D, N-E) 절대 금지</label></div>
-                </div>
-                <div class="rule-checkbox-item">
-                    <input type="checkbox" id="ruleNoNOD" checked>
-                    <div class="rule-text"><label for="ruleNoNOD">⚠️ 야간 근로 보호 확장 규칙 (N-Off-D 원천 금지)</label></div>
+                    <div class="rule-text"><label for="ruleNightLimit">🌙 월간 야간근무 상한 보장 규칙</label><span>총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span></div>
                 </div>
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="ruleMaxConsecutive" checked>
-                    <div class="rule-text">
-                        <label for="ruleMaxConsecutive">📅 연속 근로 제한 (최대 연투 제약 조항)</label>
-                        <span>오프(OFF) 없이 연속 <input type="number" id="maxConsecutiveWorkDays" class="inline-input-num" value="5" min="2" max="10">일을 초과하여 연속 근무를 할 수 없게 차단합니다.</span>
-                    </div>
+                    <div class="rule-text"><label for="ruleMaxConsecutive">📅 연속 근로 제한 (최대 연투 제약 조항)</label><span>연속 <input type="number" id="maxConsecutiveWorkDays" class="inline-input-num" value="5" min="2" max="10">일을 초과하여 연속 근무를 할 수 없게 차단합니다.</span></div>
                 </div>
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="ruleMaxNight" checked>
-                    <div class="rule-text">
-                        <label for="ruleMaxNight">🌙 야간 연타 금지 (나이트 연속 상한 제약 조항)</label>
-                        <span>나이트(N) 근무는 단일 순번에서 연속 최대 <input type="number" id="maxConsecutiveNightDays" class="inline-input-num" value="3" min="1" max="5">연속까지만 허용합니다.</span>
-                    </div>
+                    <div class="rule-text"><label for="ruleMaxNight">🌙 야간 연타 금지 (나이트 연속 상한 제약 조항)</label><span>단일 순번에서 연속 최대 <input type="number" id="maxConsecutiveNightDays" class="inline-input-num" value="3" min="1" max="5">연속까지만 허용합니다.</span></div>
                 </div>
             </div>
         </div>
@@ -380,61 +296,29 @@
                         <span style="color:#2f855a; margin-top:6px;">
                             <select id="newbieCriteriaBase" class="inline-select" style="border-color:#9ae6b4;"><option value="HIRE">입사일 기준</option><option value="MARCH">당해년도 3월 기준</option></select> 으로 
                             <select id="newbieCriteriaType" class="inline-select" style="border-color:#9ae6b4;"><option value="FULL">만</option><option value="YEAR">햇수로</option></select> 
-                            <input type="number" id="newbieCriteriaYears" class="inline-input-num" value="1" min="1" max="5" style="border-color:#48bb78; color:#276749;"> 년 이하인 인원을 '신규 간호사'로 자동 적용합니다.
+                            <input type="number" id="newbieCriteriaYears" class="inline-input-num" value="1" min="1" max="5" style="border-color:#48bb78; color:#276749;"> 년 이하인 인원을 자동 적용합니다.
                         </span>
                     </div>
                 </div>
-                <hr style="border: 0; border-top: 1px dashed #bbf7d0; width: 100%; margin: 5px 0;">
-                <div class="rule-checkbox-item">
-                    <input type="checkbox" id="newbieMaxDE" checked>
-                    <div class="rule-text">
-                        <label for="newbieMaxDE">📉 D/E 근무 시 신규 투입 제한</label>
-                        <span>데이(D)와 이브닝(E) 근무에 신규 간호사는 최대 <input type="number" id="newbieMaxDECount" class="inline-input-num" value="1" min="1">명까지만 동시 투입될 수 있습니다.</span>
-                    </div>
-                </div>
-                <div class="rule-checkbox-item">
-                    <input type="checkbox" id="newbieMaxN" checked>
-                    <div class="rule-text">
-                        <label for="newbieMaxN">📉 N 근무 시 신규 투입 제한</label>
-                        <span>나이트(N) 근무에 신규 간호사는 최대 <input type="number" id="newbieMaxNCount" class="inline-input-num" value="0" min="0">명까지만 동시 투입될 수 있습니다. (0명이면 N 투입 전면 금지)</span>
-                    </div>
-                </div>
-                <div class="rule-checkbox-item">
-                    <input type="checkbox" id="newbieNoAllNewbie" checked>
-                    <div class="rule-text">
-                        <label for="newbieNoAllNewbie">🛡️ 신규 100% 듀티 원천 차단 (강력 보호)</label>
-                        <span>해당 듀티(D/E/N)에 선임 간호사를 제외한 나머지 일반 액팅 인원들이 '전부 신규로만' 채워지는 것을 금지합니다. (최소 1명 이상 경력자 필수)</span>
-                    </div>
-                </div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="newbieMaxDE" checked><div class="rule-text"><label for="newbieMaxDE">📉 D/E 근무 시 신규 최대 투입 <input type="number" id="newbieMaxDECount" class="inline-input-num" value="1" min="1">명 제한</label></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="newbieMaxN" checked><div class="rule-text"><label for="newbieMaxN">📉 N 근무 시 신규 최대 투입 <input type="number" id="newbieMaxNCount" class="inline-input-num" value="0" min="0">명 제한</label></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="newbieNoAllNewbie" checked><div class="rule-text"><label for="newbieNoAllNewbie">🛡️ 신규 100% 듀티 원천 차단 (최소 1명 이상 경력자 필수)</label></div></div>
             </div>
         </div>
 
         <div class="config-card pink">
             <div class="config-title pink">🤰 임산부 특별 보호 및 근로시간 단축 보상 규정</div>
             <div class="rules-group">
-                <div class="rule-checkbox-item">
-                    <input type="checkbox" id="pregNoNight" checked>
-                    <div class="rule-text">
-                        <label for="pregNoNight">🚫 임산부의 야간(N) 근무를 전면 제한합니다.</label>
-                    </div>
-                </div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="pregNoNight" checked><div class="rule-text"><label for="pregNoNight">🚫 임산부 야간(N) 근무 전면 제한</label></div></div>
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="pregHolidayOff" checked>
-                    <div class="rule-text">
-                        <label for="pregHolidayOff">📅 임산부 필수 휴일 보장</label>
-                        <span>임산부에게는 최소 
-                            <label style="cursor:pointer; display:inline-flex; align-items:center; margin:0 5px;"><input type="checkbox" id="pregSatOff" checked style="margin-top:0;">토요일</label> 및 
-                            <label style="cursor:pointer; display:inline-flex; align-items:center; margin:0 5px;"><input type="checkbox" id="pregSunHolOff" checked style="margin-top:0;">일요일+법정공휴일</label> 
-                            개수만큼의 OFF를 어떠한 경우에도 반드시 제공합니다.
-                        </span>
+                    <div class="rule-text"><label for="pregHolidayOff">📅 임산부 필수 휴일 보장</label>
+                        <span><label style="cursor:pointer; display:inline-flex; align-items:center; margin:0 5px;"><input type="checkbox" id="pregSatOff" checked style="margin-top:0;">토요일</label> 및 <label style="cursor:pointer; display:inline-flex; align-items:center; margin:0 5px;"><input type="checkbox" id="pregSunHolOff" checked style="margin-top:0;">일요일+법정공휴일</label> OFF 필수 보장</span>
                     </div>
                 </div>
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="pregShortHourComp" checked>
-                    <div class="rule-text">
-                        <label for="pregShortHourComp">⏳ 임산부 근로시간 단축분 누적 엑스트라 오프(Extra OFF) 보상</label>
-                        <span>임산부의 D/E 근무 <input type="number" id="pregShortHourDays" class="inline-input-num" value="4" min="1">개 당 <input type="number" id="pregShortHourReward" class="inline-input-num" value="1" min="1">개의 엑스트라 오프를 추가로 제공합니다.</span>
-                    </div>
+                    <div class="rule-text"><label for="pregShortHourComp">⏳ 단축분 누적 보상: D/E 근무 <input type="number" id="pregShortHourDays" class="inline-input-num" value="4" min="1">개 당 <input type="number" id="pregShortHourReward" class="inline-input-num" value="1" min="1">개 추가 오프 지급</label></div>
                 </div>
             </div>
         </div>
@@ -445,7 +329,7 @@
         </div>
 
         <div class="btn-center">
-            <button onclick="validateAndGoToStep2()">인력 및 근무자 사정 설정하러 가기 (2단계) ➡️</button>
+            <button class="btn-main" onclick="validateAndGoToStep2()">인력 및 근무자 사정 설정하러 가기 (2단계) ➡️</button>
         </div>
     </div>
 
@@ -490,10 +374,6 @@
                         <option value="ID">기본 순서 (입력순)</option>
                         <option value="RANK">👑 직급순 정렬</option>
                         <option value="ABC">🔤 이름 가나다순 정렬</option>
-                        <option value="NIGHT_DUMMY">🌙 총 N개수순 (더미)</option>
-                        <option value="OFF_DUMMY">🏖️ 총 OFF순 (더미)</option>
-                        <option value="ANNUAL_DUMMY">🌱 연차순 (더미)</option>
-                        <option value="ENTER_DUMMY">📅 입사순 (더미)</option>
                     </select>
                 </div>
             </div>
@@ -512,17 +392,6 @@
                         <button type="button" class="btn-day-toggle" style="background-color:#edf2f7; border-color:#a0aec0;" onclick="clearBatchOff()">🔄 초기화</button>
                     </div>
                 </div>
-                <div style="width:100%; display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px dashed #e2e8f0; margin-top:4px;">
-                    <span class="batch-text">✔️ 체크된 인원 보건휴가 처리방식 일괄 지정 ➡️</span>
-                    <div style="display:flex; gap:5px; align-items:center;">
-                        <select id="batchMLeaveSelect" class="inline-select" style="padding:6px 10px; font-size:13px;">
-                            <option value="EXTRA">총 휴무 증가 (보건휴가 1일 추가)</option>
-                            <option value="INCLUDE">총 휴무 동일 (기본 OFF 소진)</option>
-                            <option value="MONEY">수당지급 (휴무 없이 동일 연산)</option>
-                        </select>
-                        <button class="btn-secondary" style="padding:6px 14px; font-size:13px; font-weight:bold; border-radius:6px; cursor:pointer;" onclick="applyBatchMLeave()">일괄 적용</button>
-                    </div>
-                </div>
             </div>
 
             <table class="staff-edit-table" id="staffEditTable">
@@ -531,7 +400,7 @@
                         <th style="width: 4%;">일괄<br><input type="checkbox" id="masterBatchCheck" onclick="toggleAllBatch(this)" style="cursor:pointer; transform:scale(1.2);"></th>
                         <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
                         <th style="width: 25%;">특이사항 (권한/신규/보건/보호/파견)</th>
-                        <th style="width: 12%;">🌴 지정 연차 <span class="mark-optional">(달력 드래그)</span><br><span style="font-size:10px; color:#e53e3e;">*(전날 N근무 최대한 배제)*</span></th>
+                        <th style="width: 12%;">🌴 지정 연차 <span class="mark-optional">(달력 드래그)</span></th>
                         <th style="width: 24%;">📌 날짜 지정 신청 근무 <span class="mark-optional">(🎨 브러쉬 드래그)</span></th>
                         <th style="width: 25%;">❌ 매주 고정 OFF 요일 선택 <span class="mark-optional">(멀티)</span></th>
                     </tr>
@@ -542,7 +411,7 @@
         </div>
         <div class="btn-center">
             <button class="btn-secondary" onclick="goToStep1()">⬅️ 1단계(내규 수정)로 돌아가기</button>
-            <button onclick="goToStep3()">조건 최종 확정 후 근무표 생성 (3단계) ➡️</button>
+            <button class="btn-main" onclick="goToStep3()">조건 최종 확정 후 근무표 생성 (3단계) ➡️</button>
         </div>
     </div>
 
@@ -558,7 +427,7 @@
 
         <div class="btn-center">
             <button id="backToStep2Btn" class="btn-secondary" onclick="backToStep2()">⬅️ 2단계(인원 사정 조율)로 돌아가기</button>
-            <button id="submitBtn" onclick="runSmartScheduling()">⚡ 월간 스케줄 자동 생성</button>
+            <button id="submitBtn" class="btn-main" onclick="runSmartScheduling()">⚡ 월간 스케줄 자동 생성</button>
         </div>
 
         <div class="filter-control-panel" style="margin-top:30px;">
@@ -624,7 +493,6 @@
 <div id="calendarModal" class="modal-overlay">
     <div class="modal-content">
         <div id="modalHeader" class="modal-header">날짜 선택 달력</div>
-        
         <div id="modalPalette" style="display:none; flex-direction: column; gap: 8px; margin-bottom:15px; align-items: center;">
             <div style="display:flex; gap:6px;">
                 <button type="button" class="brush-btn active" data-brush="D" onclick="selectBrush('D')">🟢 D</button>
@@ -641,10 +509,9 @@
                 <button type="button" class="brush-btn" data-brush="ERASE" onclick="selectBrush('ERASE')" style="flex:1; max-width: 120px;">⚪ 지우개 (삭제)</button>
             </div>
         </div>
-
         <div class="modal-calendar-grid" id="modalCalendarGrid"></div>
         <div class="modal-footer">
-            <span class="drag-notice">💡 같은 색으로 한 번 더 누르면 지워집니다.<br>💡 꾹 누르고 드래그하여 한 번에 칠할 수 있습니다.</span>
+            <span class="drag-notice">💡 같은 색으로 한 번 더 누르면 지워집니다.<br>💡 꾹 누르고 드래그하여 칠할 수 있습니다.</span>
             <button type="button" class="btn-modal-close" onclick="closeCalendarModal()">선택 완료 및 닫기</button>
         </div>
     </div>
@@ -685,10 +552,24 @@
     let dragTargetState = null; 
     window.addEventListener('mouseup', () => { isDragging = false; });
 
-    // 🆕 디바운스(Debounce) 타이머 변수
     let searchTimer2 = null;
     let searchTimer3 = null;
     let searchTimer4 = null;
+
+    // 🆕 멋진 토스트 메시지 함수
+    function showToast(msg, isSuccess = true) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.style.backgroundColor = isSuccess ? '#38a169' : '#e53e3e';
+        toast.style.visibility = 'visible';
+        toast.style.opacity = '1';
+        toast.style.bottom = '50px';
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.bottom = '30px';
+            setTimeout(() => toast.style.visibility = 'hidden', 300);
+        }, 3000);
+    }
 
     function switchScheduleTypeUI() {
         const type = document.querySelector('input[name="schType"]:checked').value;
@@ -699,19 +580,12 @@
         if (type === 'MONTH') {
             label.innerHTML = "스케줄 월 <span class='mark-required'>*</span>";
             cycleZone.style.display = "none";
-            select.innerHTML = `
-                <option value="1">1월</option><option value="2">2월</option><option value="3">3월</option>
-                <option value="4">4월</option><option value="5">5월</option><option value="6" selected>6월</option>
-                <option value="7">7월</option><option value="8">8월</option><option value="9">9월</option>
-                <option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>
-            `;
+            select.innerHTML = `<option value="1">1월</option><option value="2">2월</option><option value="3">3월</option><option value="4">4월</option><option value="5">5월</option><option value="6" selected>6월</option><option value="7">7월</option><option value="8">8월</option><option value="9">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option>`;
         } else {
             label.innerHTML = "🔄 대상 4주 주기 턴 <span class='mark-required'>*</span>";
             cycleZone.style.display = "flex";
             select.innerHTML = "";
-            for(let i=1; i<=13; i++) {
-                select.innerHTML += `<option value="${i}">${i}주기 턴</option>`;
-            }
+            for(let i=1; i<=13; i++) select.innerHTML += `<option value="${i}">${i}주기 턴</option>`;
         }
         update4WeekDateText();
     }
@@ -738,25 +612,11 @@
         txtNode.innerText = `🔄 선택 주기 실제 날짜: ${formatDateStr(cycleStart)} ~ ${formatDateStr(cycleEnd)} (총 28일 고정)`;
     }
 
-    function formatDateStr(d) {
-        return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-    }
+    function formatDateStr(d) { return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`; }
 
-    // 💡 2단계 디바운스 검색
-    function debounceSearch2() {
-        if(searchTimer2) clearTimeout(searchTimer2);
-        searchTimer2 = setTimeout(() => { currentPage = 1; applyPagination(); }, 300);
-    }
-    // 💡 3단계 디바운스 검색
-    function debounceSearch3() {
-        if(searchTimer3) clearTimeout(searchTimer3);
-        searchTimer3 = setTimeout(() => { renderResultTable('scheduleTable', 'monthShifts'); }, 300);
-    }
-    // 💡 4단계 디바운스 검색
-    function debounceSearch4() {
-        if(searchTimer4) clearTimeout(searchTimer4);
-        searchTimer4 = setTimeout(() => { renderResultTable('finalAdjustedTable', 'finalShifts'); }, 300);
-    }
+    function debounceSearch2() { if(searchTimer2) clearTimeout(searchTimer2); searchTimer2 = setTimeout(() => { currentPage = 1; applyPagination(); }, 300); }
+    function debounceSearch3() { if(searchTimer3) clearTimeout(searchTimer3); searchTimer3 = setTimeout(() => { renderResultTable('scheduleTable', 'monthShifts'); }, 300); }
+    function debounceSearch4() { if(searchTimer4) clearTimeout(searchTimer4); searchTimer4 = setTimeout(() => { renderResultTable('finalAdjustedTable', 'finalShifts'); }, 300); }
 
     function setFilterChip(chipVal) {
         currentFilterChip = chipVal;
@@ -767,8 +627,7 @@
         if(chipVal === 'PREG') document.getElementById('chip-preg').classList.add('active');
         if(chipVal === 'DISPATCH') document.getElementById('chip-dispatch').classList.add('active');
         if(chipVal === 'NO_MLEAVE') document.getElementById('chip-nomleave').classList.add('active');
-        currentPage = 1;
-        applyPagination();
+        currentPage = 1; applyPagination();
     }
 
     function toggleGlobalMLeave() {
@@ -788,41 +647,17 @@
         const item = globalStaffData.find(x => x.id === sid);
         if(!item) return;
 
-        if (type === 'SENIOR' && checkbox.checked) {
-            item.isSenior = true; item.isNewbie = false; item.precId = 0;
-        } else if (type === 'NEWBIE' && checkbox.checked) {
-            item.isSenior = false; item.isNewbie = true;
-        } else if (type === 'NEWBIE' && !checkbox.checked) {
-            item.isNewbie = false; item.precId = 0;
-        } else if (type === 'SENIOR' && !checkbox.checked) {
-            item.isSenior = false;
-        }
+        if (type === 'SENIOR' && checkbox.checked) { item.isSenior = true; item.isNewbie = false; item.precId = 0; } 
+        else if (type === 'NEWBIE' && checkbox.checked) { item.isSenior = false; item.isNewbie = true; } 
+        else if (type === 'NEWBIE' && !checkbox.checked) { item.isNewbie = false; item.precId = 0; } 
+        else if (type === 'SENIOR' && !checkbox.checked) { item.isSenior = false; }
         applyPagination();
-        updatePreceptorOptions();
-    }
-
-    function updatePreceptorOptions() {
-        const selects = document.querySelectorAll('.select-preceptor');
-        selects.forEach(select => {
-            const currentVal = select.value;
-            const currentStaffId = parseInt(select.getAttribute('data-staff-id'));
-            select.innerHTML = '<option value="0">지정 안함</option>';
-            
-            globalStaffData.forEach(item => {
-                if (item.id !== currentStaffId) {
-                    select.innerHTML += `<option value="${item.id}">${item.name}</option>`;
-                }
-            });
-            select.value = currentVal || "0";
-        });
     }
 
     function updatePreceptorDropdownsRealtime(inputNode, sid) {
         const item = globalStaffData.find(x => x.id === sid);
         if(item) item.name = inputNode.value.trim();
-        
-        const opts = document.querySelectorAll(`.select-preceptor option[value="${sid}"]`);
-        opts.forEach(opt => opt.innerText = inputNode.value.trim());
+        // 메모리 업데이트만 하고 옵션 태그는 클릭 시 열릴 때 동기화되어 보이므로 화면 프리징 없음
     }
 
     function updateMemoryFields(node, type) {
@@ -837,24 +672,23 @@
     }
 
     function handleMemoryDayToggle(btn, sid, idx) {
-        btn.classList.toggle('selected-off');
-        const group = btn.parentElement;
-        const selectedButtons = group.querySelectorAll('.btn-day-toggle.selected-off');
-        const activeCount = selectedButtons.length;
-        const allButtons = group.querySelectorAll('.btn-day-toggle');
-        allButtons.forEach(b => b.classList.remove('active-single', 'active-multi'));
-        if (activeCount === 1) selectedButtons[0].classList.add('active-single');
-        else if (activeCount >= 2) selectedButtons.forEach(b => b.classList.add('active-multi'));
-
         const item = globalStaffData.find(x => x.id === sid);
         if(!item) return;
 
+        btn.classList.toggle('selected-off');
         if (btn.classList.contains('selected-off')) {
             if(!item.offDayIndicesArray.includes(idx)) item.offDayIndicesArray.push(idx);
         } else {
             let p = item.offDayIndicesArray.indexOf(idx);
             if(p > -1) item.offDayIndicesArray.splice(p, 1);
         }
+        
+        const group = btn.parentElement;
+        const activeCount = item.offDayIndicesArray.length;
+        const allButtons = group.querySelectorAll('.btn-day-toggle');
+        allButtons.forEach(b => b.classList.remove('active-single', 'active-multi'));
+        if (activeCount === 1) group.querySelector('.selected-off').classList.add('active-single');
+        else if (activeCount >= 2) group.querySelectorAll('.selected-off').forEach(b => b.classList.add('active-multi'));
     }
 
     function updateSeniorCheckboxes() {
@@ -875,20 +709,18 @@
             for (let i = globalStaffData.length; i < total; i++) {
                 const sid = i + 1;
                 globalStaffData.push({
-                    id: sid,
-                    name: `간호사 ${sid}`,
+                    id: sid, name: `간호사 ${sid}`,
                     isSenior: i < seniorCount, isNewbie: false, isPregnant: false, isDispatch: false,
                     isMLeaveActive: isGlobalMLeaveOn, mLeaveOption: 'EXTRA', precId: 0,
                     leaveDates: [], reqShiftsMap: {}, offDayIndicesArray: [],
-                    offBreakdown: { pure:0, mLeave:0, sleep:0, preg:0, total:0 } // 👈 이 줄이 추가되었습니다!
+                    offBreakdown: { pure:0, mLeave:0, sleep:0, preg:0, total:0 } 
                 });
             }
-        } else if (globalStaffData.length > total) {
-            globalStaffData.splice(total);
-        }
+        } else if (globalStaffData.length > total) { globalStaffData.splice(total); }
         applyPagination();
     }
 
+    // 🚀 렌더링 최적화 코어: 통짜 HTML 문자열 결합 방식 (프리즈 완벽 제거)
     function applyPagination() {
         const pageSize = parseInt(document.getElementById('pageSize').value) || 10;
         const searchKeyword = document.getElementById('step2Search').value.trim().toLowerCase();
@@ -898,20 +730,15 @@
         let filteredData = [...globalStaffData];
         if (searchKeyword) filteredData = filteredData.filter(item => item.name.toLowerCase().includes(searchKeyword));
         
-        // 💡 필터 조건 세분화
         if (currentFilterChip === 'SENIOR') filteredData = filteredData.filter(item => item.isSenior);
         if (currentFilterChip === 'NEWBIE') filteredData = filteredData.filter(item => item.isNewbie);
         if (currentFilterChip === 'PREG') filteredData = filteredData.filter(item => item.isPregnant);
         if (currentFilterChip === 'DISPATCH') filteredData = filteredData.filter(item => item.isDispatch);
         if (currentFilterChip === 'NO_MLEAVE') filteredData = filteredData.filter(item => !item.isMLeaveActive);
 
-        if (sortVal === 'RANK') {
-            filteredData.sort((a, b) => (b.isSenior - a.isSenior) || (a.isNewbie - b.isNewbie) || (a.id - b.id));
-        } else if (sortVal === 'ABC') {
-            filteredData.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
-        } else {
-            filteredData.sort((a, b) => a.id - b.id);
-        }
+        if (sortVal === 'RANK') filteredData.sort((a, b) => (b.isSenior - a.isSenior) || (a.isNewbie - b.isNewbie) || (a.id - b.id));
+        else if (sortVal === 'ABC') filteredData.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+        else filteredData.sort((a, b) => a.id - b.id);
 
         const totalRows = filteredData.length;
         const totalPages = Math.ceil(totalRows / pageSize) || 1;
@@ -919,97 +746,76 @@
 
         const sliceData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
         
-        tbody.innerHTML = "";
-        const fragment = document.createDocumentFragment();
-
+        let htmlBuffer = "";
         sliceData.forEach(item => {
-            const tr = document.createElement('tr');
-            tr.setAttribute('data-staff-id', item.id);
-            tr.innerHTML = `
-                <td><input type="checkbox" class="check-batch" style="cursor:pointer; transform:scale(1.2);"></td>
-                <td><input type="text" class="input-staff-name" value="${item.name}" oninput="updatePreceptorDropdownsRealtime(this, ${item.id})"></td>
-                <td style="text-align: center; font-size:12px;">
-                    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
-                        <label style="cursor:pointer; display:flex; align-items:center; gap:2px;"><input type="checkbox" class="check-senior" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'SENIOR')" ${item.isSenior?'checked':''}>👑 선임</label>
-                        <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#38a169;"><input type="checkbox" class="check-newbie" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'NEWBIE')" ${item.isNewbie?'checked':''}>🌱 신규</label>
-                        <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#b83280;"><input type="checkbox" class="check-pregnant" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREG')" ${item.isPregnant?'checked':''}>🤰 임신</label>
-                        <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#4a5568;"><input type="checkbox" class="check-dispatch" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'DISPATCH')" ${item.isDispatch?'checked':''}>✈️ 파견</label>
-                        <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#e53e3e;"><input type="checkbox" class="check-mleave" data-staff-id="${item.id}" onchange="toggleMLeaveSelect(this)" ${item.isMLeaveActive?'checked':''}>🩸 보건</label>
-                    </div>
-                    <div class="preceptor-container ${item.isNewbie?'active':''}">
-                        <span style="color:#2b6cb0; font-weight:bold; margin-right:4px;">↳ 프리셉터:</span>
-                        <select class="select-preceptor inline-select" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREC')">
-                            <option value="0">지정 안함</option>
-                        </select>
-                    </div>
-                    <div style="margin-top:6px; background:#fff5f5; padding:4px; border-radius:4px; border:1px solid #fed7d7;" class="mleave-container ${item.isMLeaveActive?'':'disabled'}">
-                        <select class="select-mleave select-compact" style="width:100%; margin-top:2px;" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'MLEAVE_OPT')" ${item.isMLeaveActive?'':'disabled'}>
-                            <option value="EXTRA" ${item.mLeaveOption==='EXTRA'?'selected':''}>총 휴무 증가 (보건 1일 추가)</option>
-                            <option value="INCLUDE" ${item.mLeaveOption==='INCLUDE'?'selected':''}>총 휴무 동일 (기본 OFF 소진)</option>
-                            <option value="MONEY" ${item.mLeaveOption==='MONEY'?'selected':''}>수당지급 (휴무 없이 동일 연산)</option>
-                        </select>
-                    </div>
-                </td>
-                <td><div id="leave-box-${item.id}" class="picker-click-box" onclick="openCalendarModal(${item.id}, 'leave')">클릭하여 선택</div></td>
-                <td><div id="req-box-${item.id}" class="picker-click-box" onclick="openCalendarModal(${item.id}, 'req')">클릭하여 선택</div></td>
-                <td>
-                    <div class="day-toggle-group">
-                        <button type="button" class="btn-day-toggle" data-day-idx="1" onclick="handleMemoryDayToggle(this, ${item.id}, 1)">월</button>
-                        <button type="button" class="btn-day-toggle" data-day-idx="2" onclick="handleMemoryDayToggle(this, ${item.id}, 2)">화</button>
-                        <button type="button" class="btn-day-toggle" data-day-idx="3" onclick="handleMemoryDayToggle(this, ${item.id}, 3)">수</button>
-                        <button type="button" class="btn-day-toggle" data-day-idx="4" onclick="handleMemoryDayToggle(this, ${item.id}, 4)">목</button>
-                        <button type="button" class="btn-day-toggle" data-day-idx="5" onclick="handleMemoryDayToggle(this, ${item.id}, 5)">금</button>
-                        <button type="button" class="btn-day-toggle" data-day-idx="6" style="color:#2b6cb0;" onclick="handleMemoryDayToggle(this, ${item.id}, 6)">토</button>
-                        <button type="button" class="btn-day-toggle" data-day-idx="0" style="color:#c53030;" onclick="handleMemoryDayToggle(this, ${item.id}, 0)">일</button>
-                    </div>
-                </td>
+            // 버튼 상태 사전 조립
+            let selCount = item.offDayIndicesArray.length;
+            let activeClass = selCount >= 2 ? 'active-multi' : (selCount === 1 ? 'active-single' : '');
+            const getBtn = (idx, label, color) => {
+                const isSel = item.offDayIndicesArray.includes(idx) ? `selected-off ${activeClass}` : '';
+                const style = color ? `style="color:${color};"` : '';
+                return `<button type="button" class="btn-day-toggle ${isSel}" data-day-idx="${idx}" ${style} onclick="handleMemoryDayToggle(this, ${item.id}, ${idx})">${label}</button>`;
+            };
+            let dayBtns = getBtn(1, '월') + getBtn(2, '화') + getBtn(3, '수') + getBtn(4, '목') + getBtn(5, '금') + getBtn(6, '토', '#2b6cb0') + getBtn(0, '일', '#c53030');
+
+            // 프리셉터 옵션 사전 조립
+            let preceptorOptions = '<option value="0">지정 안함</option>';
+            globalStaffData.forEach(p => {
+                if (p.id !== item.id) preceptorOptions += `<option value="${p.id}" ${item.precId === p.id ? 'selected' : ''}>${p.name}</option>`;
+            });
+
+            // 뱃지 상태 사전 조립
+            let leaveBadges = "클릭하여 선택";
+            if (item.leaveDates && item.leaveDates.length > 0) {
+                let sortedLeaves = [...item.leaveDates].sort((a,b)=>a-b);
+                leaveBadges = sortedLeaves.map(d => `<span class="badge-date leave">${d}일</span>`).join(' ');
+            }
+
+            let reqBadges = "클릭하여 선택";
+            const keys = Object.keys(item.reqShiftsMap || {}).sort((a,b)=>a-b);
+            if (keys.length > 0) {
+                reqBadges = keys.map(d => {
+                    let s = item.reqShiftsMap[d];
+                    let dispS = s === 'M' ? '보건' : s;
+                    let colClass = s === 'M' ? 'm' : s.toLowerCase();
+                    if(s.startsWith('x')) dispS = '🚫' + s.substring(1);
+                    return `<span class="badge-date shift-${colClass}">${d}일(${dispS})</span>`;
+                }).join(' ');
+            }
+
+            htmlBuffer += `
+                <tr data-staff-id="${item.id}">
+                    <td><input type="checkbox" class="check-batch" style="cursor:pointer; transform:scale(1.2);"></td>
+                    <td><input type="text" class="input-staff-name" value="${item.name}" oninput="updatePreceptorDropdownsRealtime(this, ${item.id})"></td>
+                    <td style="text-align: center; font-size:12px;">
+                        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px;"><input type="checkbox" class="check-senior" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'SENIOR')" ${item.isSenior?'checked':''}>👑 선임</label>
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#38a169;"><input type="checkbox" class="check-newbie" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'NEWBIE')" ${item.isNewbie?'checked':''}>🌱 신규</label>
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#b83280;"><input type="checkbox" class="check-pregnant" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREG')" ${item.isPregnant?'checked':''}>🤰 임신</label>
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#4a5568;"><input type="checkbox" class="check-dispatch" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'DISPATCH')" ${item.isDispatch?'checked':''}>✈️ 파견</label>
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#e53e3e;"><input type="checkbox" class="check-mleave" data-staff-id="${item.id}" onchange="toggleMLeaveSelect(this)" ${item.isMLeaveActive?'checked':''}>🩸 보건</label>
+                        </div>
+                        <div class="preceptor-container ${item.isNewbie?'active':''}">
+                            <span style="color:#2b6cb0; font-weight:bold; margin-right:4px;">↳ 프리셉터:</span>
+                            <select class="select-preceptor inline-select" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREC')">${preceptorOptions}</select>
+                        </div>
+                        <div style="margin-top:6px; background:#fff5f5; padding:4px; border-radius:4px; border:1px solid #fed7d7;" class="mleave-container ${item.isMLeaveActive?'':'disabled'}">
+                            <select class="select-mleave select-compact" style="width:100%; margin-top:2px;" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'MLEAVE_OPT')" ${item.isMLeaveActive?'':'disabled'}>
+                                <option value="EXTRA" ${item.mLeaveOption==='EXTRA'?'selected':''}>총 휴무 증가 (보건 1일 추가)</option>
+                                <option value="INCLUDE" ${item.mLeaveOption==='INCLUDE'?'selected':''}>총 휴무 동일 (기본 OFF 소진)</option>
+                                <option value="MONEY" ${item.mLeaveOption==='MONEY'?'selected':''}>수당지급 (휴무 없이 동일 연산)</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td><div id="leave-box-${item.id}" class="picker-click-box" onclick="openCalendarModal(${item.id}, 'leave')">${leaveBadges}</div></td>
+                    <td><div id="req-box-${item.id}" class="picker-click-box" onclick="openCalendarModal(${item.id}, 'req')">${reqBadges}</div></td>
+                    <td><div class="day-toggle-group">${dayBtns}</div></td>
+                </tr>
             `;
-
-            if(item.offDayIndicesArray) {
-                item.offDayIndicesArray.forEach(idx => {
-                    const b = tr.querySelector(`.btn-day-toggle[data-day-idx="${idx}"]`);
-                    if(b) b.classList.add('selected-off');
-                });
-                const sBtn = tr.querySelector('.btn-day-toggle'); 
-                if(sBtn) { handleDayToggleClick(sBtn); handleDayToggleClick(sBtn); }
-            }
-            fragment.appendChild(tr);
         });
         
-        tbody.appendChild(fragment);
-        updatePreceptorOptions();
-        
-        sliceData.forEach(item => {
-            currentActiveStaffId = item.id;
-            currentActiveFieldType = 'leave'; closeCalendarModal();
-            currentActiveFieldType = 'req'; closeCalendarModal();
-            
-            const tr = tbody.querySelector(`tr[data-staff-id="${item.id}"]`);
-            if(tr && tr.querySelector('.select-preceptor')) tr.querySelector('.select-preceptor').value = item.precId;
-        });
-
+        tbody.innerHTML = htmlBuffer; // DOM 조작 1회로 단축하여 프리즈 완벽 제거!
         renderPaginationUI(totalPages);
-    }
-
-    function renderPaginationUI(totalPages) {
-        const container = document.getElementById('paginationContainer');
-        container.innerHTML = "";
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-            btn.innerText = i;
-            btn.onclick = () => { currentPage = i; applyPagination(); };
-            container.appendChild(btn);
-            if (i < totalPages) {
-                const divider = document.createElement('span');
-                divider.className = 'page-divider'; divider.innerText = '|'; container.appendChild(divider);
-            }
-        }
-    }
-
-    function toggleAllBatch(source) {
-        const visibleRows = document.querySelectorAll("#staffEditTable tbody tr:not([style*='display: none'])");
-        visibleRows.forEach(tr => { const cb = tr.querySelector('.check-batch'); if(cb) cb.checked = source.checked; });
     }
 
     function applyBatchOff(dayIdx) {
@@ -1036,15 +842,17 @@
             if (batchCheck && batchCheck.checked) {
                 const sid = parseInt(tr.getAttribute('data-staff-id'));
                 const btns = tr.querySelectorAll('.btn-day-toggle.selected-off');
-                btns.forEach(btn => {
-                    const idx = parseInt(btn.getAttribute('data-day-idx'));
-                    handleMemoryDayToggle(btn, sid, idx);
-                });
+                btns.forEach(btn => { const idx = parseInt(btn.getAttribute('data-day-idx')); handleMemoryDayToggle(btn, sid, idx); });
                 batchCheck.checked = false;
             }
         });
         const masterCheck = document.getElementById('masterBatchCheck');
         if(masterCheck) masterCheck.checked = false;
+    }
+
+    function toggleAllBatch(source) {
+        const visibleRows = document.querySelectorAll("#staffEditTable tbody tr");
+        visibleRows.forEach(tr => { const cb = tr.querySelector('.check-batch'); if(cb) cb.checked = source.checked; });
     }
 
     function applyBatchMLeave() {
@@ -1101,7 +909,7 @@
 
         if (schType === 'MONTH') {
             lastDate = new Date(year, month, 0).getDate();
-            for(let d=1; d<=lastDate; d++) renderDateList.push(d);
+            for(let d=1; d<=lastDate; d++) renderDateList.push({ dayNum: d, label: d });
         } else {
             lastDate = 28;
             const startDateStr = document.getElementById('cycleStartDate').value;
@@ -1145,7 +953,7 @@
         for(let d=1; d<=lastDate; d++) {
             let stateClass = "";
             let subTag = "";
-            let btnLabel = schType === 'MONTH' ? d : renderDateList[d-1].label;
+            let btnLabel = renderDateList[d-1].label;
 
             if (type === 'leave') {
                 if(staffItem.leaveDates.includes(d)) stateClass = "p-leave";
@@ -1214,39 +1022,7 @@
 
     function closeCalendarModal() {
         document.getElementById('calendarModal').style.display = 'none';
-        const targetDiv = document.getElementById(`${currentActiveFieldType}-box-${currentActiveStaffId}`);
-        const staff = globalStaffData.find(x => x.id === currentActiveStaffId);
-        if(!targetDiv || !staff) return;
-        targetDiv.innerHTML = "";
-
-        if (currentActiveFieldType === 'leave') {
-            if(!staff.leaveDates || staff.leaveDates.length === 0) targetDiv.innerHTML = "클릭하여 선택";
-            else {
-                staff.leaveDates.sort((a, b) => a - b);
-                staff.leaveDates.forEach(d => targetDiv.innerHTML += `<span class="badge-date leave">${d}일</span> `);
-            }
-        } else {
-            const keys = Object.keys(staff.reqShiftsMap || {}).sort((a,b)=>a-b);
-            if(keys.length === 0) targetDiv.innerHTML = "클릭하여 선택";
-            else keys.forEach(d => {
-                let s = staff.reqShiftsMap[d];
-                let dispS = s === 'M' ? '보건' : s;
-                let colClass = s === 'M' ? 'm' : s.toLowerCase();
-                if(s.startsWith('x')) dispS = '🚫' + s.substring(1);
-                targetDiv.innerHTML += `<span class="badge-date shift-${colClass}">${d}일(${dispS})</span> `;
-            });
-        }
-    }
-
-    function handleDayToggleClick(btn) {
-        btn.classList.toggle('selected-off');
-        const group = btn.parentElement;
-        const selectedButtons = group.querySelectorAll('.btn-day-toggle.selected-off');
-        const activeCount = selectedButtons.length;
-        const allButtons = group.querySelectorAll('.btn-day-toggle');
-        allButtons.forEach(b => b.classList.remove('active-single', 'active-multi'));
-        if (activeCount === 1) selectedButtons[0].classList.add('active-single');
-        else if (activeCount >= 2) selectedButtons.forEach(b => b.classList.add('active-multi'));
+        applyPagination(); // 캘린더를 닫을 때 현재 페이지를 새로고침하여 뱃지 뷰를 최신화합니다.
     }
 
     function parseMultiDates(dateStr) {
@@ -1313,6 +1089,7 @@
     function backToStep2() { document.getElementById('step3Section').classList.remove('active'); document.getElementById('step2Section').classList.add('active'); document.getElementById('tab3').classList.remove('active'); document.getElementById('tab2').classList.add('active'); }
     function backToStep3() { document.getElementById('step4Section').classList.remove('active'); document.getElementById('step3Section').classList.add('active'); document.getElementById('tab4').classList.remove('active'); document.getElementById('tab3').classList.add('active'); }
 
+    // ⚡ 3단계 핵심 스케줄러 엔진
     async function runSmartScheduling() {
         applyPagination();
         
@@ -1396,6 +1173,7 @@
 
                 dateDetails.push({ 
                     dateText: `${month}/${d}`, date: d, dayIndex: dayIndex, 
+                    dayName: dayNames[dayIndex], // 💡 요일 복구 완료
                     isSat: dayIndex === 6, isSun: dayIndex === 0, isHoliday: holidayName !== null, holidayName: holidayName 
                 });
             }
@@ -1415,6 +1193,7 @@
 
                 dateDetails.push({ 
                     dateText: `${curr.getMonth()+1}/${curr.getDate()}`, date: d + 1, dayIndex: dayIndex, 
+                    dayName: dayNames[dayIndex], // 💡 요일 복구 완료
                     isSat: dayIndex === 6, isSun: dayIndex === 0, isHoliday: holidayName !== null, holidayName: holidayName 
                 });
             }
@@ -1429,7 +1208,7 @@
 
         const scheduleMatrix = globalStaffData.map(staff => {
             let clonedStaff = JSON.parse(JSON.stringify(staff));
-            // 💡 연산 시작 전 오프 통계함 무조건 생성 및 0으로 초기화 (에러 완벽 차단)
+            // 💡 에러 원천 차단을 위한 오프 통계 초기화
             clonedStaff.offBreakdown = { pure:0, mLeave:0, sleep:0, preg:0, total:0 };
             return {
                 staff: clonedStaff,
@@ -1641,6 +1420,7 @@
 
             progressText.innerText = "발행 완료"; progressBarFill.style.width = "100%"; progressPercentage.innerText = "100%";
             feedbackContainer.style.display = "block";
+            showToast("✅ 스케줄 생성이 완료되었습니다!");
 
         } catch (error) {
             submitBtn.disabled = false; backToStep2Btn.disabled = false;
@@ -1650,9 +1430,8 @@
         }
     }
 
-    // 💡 3,4단계 고속 렌더링 엔진 (Debouncing 연동)
+    // 💡 다이어트 된 뷰포트로 렌더링
     function renderResultTable(tableId, arrayName) {
-        const thead = document.querySelector(`#${tableId} head`);
         const tbody = document.querySelector(`#${tableId} tbody`);
         const searchKeyword = document.getElementById(tableId === 'scheduleTable' ? 'step3Search' : 'step4Search').value.trim().toLowerCase();
         const sortVal = document.getElementById(tableId === 'scheduleTable' ? 'step3Sort' : 'step4Sort').value;
@@ -1667,15 +1446,13 @@
         else if (sortVal === 'RANK') displayMatrix.sort((a, b) => (b.staff.isSenior - a.staff.isSenior) || (a.staff.isNewbie - b.staff.isNewbie) || (a.staff.id - b.staff.id));
         else displayMatrix.sort((a,b) => a.staff.id - b.staff.id);
 
-        tbody.innerHTML = "";
-        const fragment = document.createDocumentFragment();
+        let htmlBuffer = "";
 
         displayMatrix.forEach(row => {
             let statusIcons = (row.staff.isSenior?'👑':'') + (row.staff.isNewbie?'🌱':'') + (row.staff.isPregnant?'🤰':'') + (row.staff.isDispatch?'✈️':'') + (row.staff.mLeaveOption==='MONEY'&&row.staff.isMLeaveActive?'💵':'');
-            let iconHtml = statusIcons ? `<div style="font-size:11px; margin-top:3px; letter-spacing:1px;">${statusIcons}</div>` : '';
+            let iconHtml = statusIcons ? `<div style="font-size:10px; margin-top:2px; letter-spacing:1px;">${statusIcons}</div>` : '';
             
-            const tr = document.createElement('tr');
-            let htmlRow = `<td class="staff-name-col"><span><strong>${row.staff.name}</strong></span>${iconHtml}</td>`;
+            htmlBuffer += `<tr><td class="staff-name-col"><span><strong>${row.staff.name}</strong></span>${iconHtml}</td>`;
             
             let dCount = 0; let eCount = 0; let nCount = 0; let annualLeaveCount = 0;
             const targetArray = row[arrayName];
@@ -1695,27 +1472,24 @@
                 }
 
                 if (shift === 'D') dCount++; else if (shift === 'E') eCount++; else if (shift === 'N') nCount++; else if (shift === 'LEAVE') annualLeaveCount++;
-                htmlRow += `<td ${cellClass} ${borderStyle}>${displayShift}</td>`;
+                htmlBuffer += `<td ${cellClass} ${borderStyle}>${displayShift}</td>`;
             });
 
             let bd = row.staff.offBreakdown;
             let displayTotalOff = bd.total + annualLeaveCount; 
             let tooltipMsg = `기본오프: ${bd.pure}개` + (bd.sleep > 0 ? ` + 슬리핑: ${bd.sleep}개` : '') + (bd.preg > 0 ? ` + 단축보상: ${bd.preg}개` : '') + (bd.mLeave > 0 ? ` + 보건: ${bd.mLeave}개` : '') + (annualLeaveCount > 0 ? ` + 연차: ${annualLeaveCount}개` : '');
 
-            htmlRow += `<td class="summary-cell">${dCount}</td><td class="summary-cell">${eCount}</td><td class="summary-cell">${nCount}</td>
+            htmlBuffer += `<td class="summary-cell">${dCount}</td><td class="summary-cell">${eCount}</td><td class="summary-cell">${nCount}</td>
                         <td class="summary-cell" style="background-color:#edf2f7; color:#c53030; font-weight:900;">
                             ${displayTotalOff} <div class="tooltip-container">[?]<span class="tooltip-text">${tooltipMsg} = 총 ${displayTotalOff}개 휴무</span></div>
-                        </td>`;
-            tr.innerHTML = htmlRow;
-            fragment.appendChild(tr);
+                        </td></tr>`;
         });
 
         let totalPregnant = globalStaffData.filter(r => r.isPregnant).length;
         let totalDispatch = globalStaffData.filter(r => r.isDispatch).length;
         let totalNewbie = globalStaffData.filter(r => r.isNewbie).length;
 
-        const footerTr = document.createElement('tr');
-        let footerHtml = `<td class="staff-name-col" style="background-color:#cbd5e0; font-weight:bold; color:#2d3748;">일별 총계</td>`;
+        htmlBuffer += `<tr><td class="staff-name-col" style="background-color:#cbd5e0; font-weight:bold; color:#2d3748;">일별 총계</td>`;
         for (let d = 0; d < globalLastDate; d++) {
             let dCnt = 0, eCnt = 0, nCnt = 0, offCnt = 0;
             globalCalculatedMatrix.forEach(row => {
@@ -1724,16 +1498,14 @@
                 else if (['OFF', 'LEAVE', 'M-LEAVE', 'DISPATCH'].includes(s)) offCnt++;
             });
             const dayInfo = globalDateDetails[d];
-            let cellClass = (dayInfo.dayIndex === 0 || dayInfo.isHoliday) ? "sun-cell" : (dayInfo.dayIndex === 6 ? "sat-cell" : "");
-            footerHtml += `<td class="${cellClass}" style="font-size:11px; line-height:1.3; padding:6px; background-color:#edf2f7; border-top:2px solid #a0aec0; font-weight:bold;">
-                <span style="color:#2b6cb0;">D: ${dCnt}</span><br><span style="color:#d69e2e;">E: ${eCnt}</span><br><span style="color:#805ad5;">N: ${nCnt}</span><br><span style="color:#e53e3e; font-size:10px;">휴: ${offCnt}</span>
+            let cellClass = (dayInfo.dayIndex === 0 || dayInfo.isHoliday) ? "class='sun-cell'" : (dayInfo.dayIndex === 6 ? "class='sat-cell'" : "");
+            htmlBuffer += `<td ${cellClass} style="font-size:10px; line-height:1.3; padding:4px; background-color:#edf2f7; border-top:2px solid #a0aec0; font-weight:bold;">
+                <span style="color:#2b6cb0;">D: ${dCnt}</span><br><span style="color:#d69e2e;">E: ${eCnt}</span><br><span style="color:#805ad5;">N: ${nCnt}</span><br><span style="color:#e53e3e; font-size:9px;">휴: ${offCnt}</span>
             </td>`;
         }
-        footerHtml += `<td colspan="4" style="background-color:#cbd5e0; font-size:11px; font-weight:900; color:#2d3748; text-align:right; padding-right:15px; border-top:2px solid #a0aec0;">💡 총 임산부 ${totalPregnant}명 / 총 신규 ${totalNewbie}명 / 총 파견 ${totalDispatch}명</td>`;
-        footerTr.innerHTML = footerHtml;
-        fragment.appendChild(footerTr);
-
-        tbody.appendChild(fragment);
+        htmlBuffer += `<td colspan="4" style="background-color:#cbd5e0; font-size:11px; font-weight:900; color:#2d3748; text-align:right; padding-right:15px; border-top:2px solid #a0aec0;">💡 병동 인력: 임산부 ${totalPregnant}명 / 신규 ${totalNewbie}명 / 파견 ${totalDispatch}명</td></tr>`;
+        
+        tbody.innerHTML = htmlBuffer;
     }
 
     function checkPhysicalGardeRule(shiftsArray, idx, targetShift) {
@@ -1815,74 +1587,59 @@
         syncStaffRows();
     }
 </script>
+
 <script type="module">
-        // 구글 시스템에서 필요한 핵심 도구들을 정밀하게 불러옵니다.
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    // 1. 구글 클라우드에서 '데이터 저장소(Firestore)' 도구들을 불러옵니다.
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ⚠️ 관리자님의 진짜 파이어베이스 구성 정보 값들로 채워주세요!
-        const firebaseConfig = {
-            apiKey: "AIzaSyBwNFmaUTlowPNCJOUmJX5XQUWd76_2gJ0", 
-            authDomain: "haramii.firebaseapp.com",
-            projectId: "haramii",
-            storageBucket: "haramii.appspot.com",
-            messagingSenderId: "181032107844",
-            appId: "1:181032107844:web:15cb791c92ebf8646ae111"
-       measurementId: "G-JYPSM8RE7Y"
-        };
+    // 2. 관리자님의 진짜 파이어베이스 금고 비밀번호 세트입니다!
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwNFmaUTlowPNCJOUmJX5XQUWd76_2gJ0",
+        authDomain: "haramii.firebaseapp.com",
+        projectId: "haramii",
+        storageBucket: "haramii.firebasestorage.app",
+        messagingSenderId: "181032107844",
+        appId: "1:181032107844:web:15cb791c92ebf8646ae111",
+        measurementId: "G-JYPSM8RE7Y"
+    };
 
-        // 시스템 가동 및 DB 열쇠 개설
+    try {
+        // 3. 시스템 가동 및 DB 연결
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 💾 [클라우드 저장] 버튼을 누르면 작동하는 마법의 명령어
+        // 💾 [클라우드 저장] 버튼 클릭 이벤트
         document.getElementById('firebaseSaveBtn').addEventListener('click', async () => {
-            const statusText = document.getElementById('dbStatusText');
-            statusText.innerText = "⏳ 클라우드에 저장 중...";
-            
+            showToast("⏳ 클라우드에 저장 중입니다...", true);
             try {
-                // 현재 화면에 설정된 연도와 월 데이터를 수집합니다.
                 const schType = document.querySelector('input[name="schType"]:checked').value;
-                const schYear = document.getElementById('schYear').value;
-                const schMonth = document.getElementById('schMonth').value;
-                
-                // 우리 스케줄러의 핵심 데이터(globalStaffData)와 설정값들을 패키지로 묶습니다.
                 const saveData = {
-                    staffData: globalStaffData, // 간호사 이름, 지정연차, 신청근무 등 전체 데이터
+                    staffData: globalStaffData,
                     schType: schType,
-                    schYear: schYear,
-                    schMonth: schMonth,
+                    schYear: document.getElementById('schYear').value,
+                    schMonth: document.getElementById('schMonth').value,
                     updatedAt: new Date().toISOString()
                 };
-
-                // 'ward_settings'라는 클라우드 금고 폴더 안에 'current_duty'라는 문서 이름으로 저장합니다.
-                await setDoc(doc(db, "ward_settings", "current_duty"), saveData);
                 
-                statusText.innerText = "✅ 저장 완료";
-                alert("🎉 모든 간호사 명단과 특이사항, 달력 설정이 클라우드 금고에 안전하게 보관되었습니다!");
+                // 'ward_settings' 폴더 안에 'current_duty'라는 이름으로 덮어씁니다.
+                await setDoc(doc(db, "ward_settings", "current_duty"), saveData);
+                showToast("✅ 성공적으로 저장되었습니다!");
             } catch (error) {
                 console.error(error);
-                statusText.innerText = "❌ 저장 실패";
-                alert("저장 중 오류가 발생했습니다. 파이어베이스 규칙(Rules)이 테스트 모드인지 확인해 주세요: " + error.message);
+                showToast("❌ 저장 실패: 파이어베이스 규칙 설정을 확인해주세요.", false);
             }
         });
 
-        // 📂 [데이터 불러오기] 버튼을 누르면 작동하는 마법의 명령어
+        // 📂 [데이터 불러오기] 버튼 클릭 이벤트
         document.getElementById('firebaseLoadBtn').addEventListener('click', async () => {
-            const statusText = document.getElementById('dbStatusText');
-            statusText.innerText = "⏳ 데이터를 가져오는 중...";
-            
+            showToast("⏳ 데이터를 가져오는 중...", true);
             try {
-                const docRef = doc(db, "ward_settings", "current_duty");
-                const docSnap = await getDoc(docRef);
-
+                const docSnap = await getDoc(doc(db, "ward_settings", "current_duty"));
                 if (docSnap.exists()) {
                     const loadedData = docSnap.data();
-                    
-                    // 1. 메모리에 저장된 간호사 원본 배열 데이터 복구
                     globalStaffData = loadedData.staffData;
                     
-                    // 2. 1단계 화면 UI (연도, 월, 주기 타입) 동기화 복구
                     if(loadedData.schType) {
                         document.querySelector(`input[name="schType"][value="${loadedData.schType}"]`).checked = true;
                         switchScheduleTypeUI();
@@ -1890,22 +1647,21 @@
                     document.getElementById('schYear').value = loadedData.schYear;
                     document.getElementById('schMonth').value = loadedData.schMonth;
                     
-                    // 3. 최적화된 가상화 엔진 화면 실시간 새로고침 가동!
                     applyPagination();
                     update4WeekDateText();
-
-                    statusText.innerText = "✅ 불러오기 완료";
-                    alert("📂 이전에 작업하던 명단과 달력 셋팅이 완벽하게 복구되었습니다!");
+                    showToast("📂 셋팅이 완벽하게 복구되었습니다!");
                 } else {
-                    statusText.innerText = "❓ 저장된 데이터 없음";
-                    alert("클라우드 금고에 저장된 내역이 없습니다. 먼저 [현재 세팅 클라우드 저장]을 눌러주세요!");
+                    showToast("❓ 저장된 데이터가 없습니다.", false);
                 }
             } catch (error) {
                 console.error(error);
-                statusText.innerText = "❌ 불러오기 실패";
-                alert("데이터를 가져오는 중 오류가 발생했습니다: " + error.message);
+                showToast("❌ 불러오기 실패: " + error.message, false);
             }
         });
-    </script>
+    } catch(e) {
+        console.warn("파이어베이스 설정 오류: " + e.message);
+    }
+</script>
+
 </body>
 </html>
