@@ -704,7 +704,9 @@
 
             let preceptorOptions = '<option value="0">지정 안함</option>';
             window.globalStaffData.forEach(p => {
-                if (p.id !== item.id) preceptorOptions += `<option value="${p.id}" ${item.precId === p.id ? 'selected' : ''}>${p.name}</option>`;
+                if (p.id !== item.id && !p.isNewbie) {
+                    preceptorOptions += `<option value="${p.id}" ${item.precId === p.id ? 'selected' : ''}>${p.name}</option>`;
+                }
             });
 
             let leaveBadges = "클릭하여 선택";
@@ -1057,7 +1059,7 @@
         window.scrollTo({top: 0, behavior: 'smooth'});
     };
 
-    // ⚡ 3단계 스케줄러 엔진 (공평성 알고리즘 복구 완료)
+// ⚡ 3단계 스케줄러 엔진 (폭포수 배정 + 5단계 N 스왑 알고리즘 탑재)
     window.runSmartScheduling = async function() {
         window.normalizeStaffData();
         window.applyPagination();
@@ -1211,72 +1213,62 @@
                     }
                 });
 
+                // 💡 폭포수 N 배정 알고리즘
                 ['N','D','E'].forEach(shift => {
-                    for (let k = 0; k < minSenior; k++) {
-                        let unassignedSeniors = scheduleMatrix.filter(r => 
-                            r.staff.isSenior && !r.staff.isDispatch && r.monthShifts[idx] === null &&
-                            !(shift === 'N' && r.staff.isPregnant && isPregNoNight) &&
-                            window.checkPhysicalGardeRule(r.monthShifts, idx, shift) &&
-                            !(r.staff.reqShiftsMap[currentDayNum] === 'x' + shift)
-                        );
-
-                        if (unassignedSeniors.length > 0) {
-                            unassignedSeniors.sort((a, b) => {
-                                if (shift === 'N') {
-                                    let aNextLeave = a.staff.leaveDates.includes(currentDayNum + 1) ? 1 : 0;
-                                    let bNextLeave = b.staff.leaveDates.includes(currentDayNum + 1) ? 1 : 0;
-                                    if (aNextLeave !== bNextLeave) return aNextLeave - bNextLeave;
-                                }
-                                let countA = a.monthShifts.filter(s => s === shift).length;
-                                let countB = b.monthShifts.filter(s => s === shift).length;
-                                return countA - countB;
-                            });
-                            unassignedSeniors[0].monthShifts[idx] = shift;
-                        }
-                    }
-                });
-
-                let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
-                let allocationFailed = false;
-
-                ['N','D','E'].forEach(shift => {
+                    let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
                     const quota = (shift === 'D') ? targetDayQuota : (shift === 'E' ? targetEveQuota : targetNitQuota);
                     let currentCount = allRows.filter(r => r.monthShifts[idx] === shift).length;
                     let need = quota - currentCount;
 
+                    // [1순위] 최소 선임 보장 배정 (선임 중 N 제일 적은 사람)
+                    for (let k = 0; k < minSenior; k++) {
+                        if (need <= 0) break;
+                        let unassignedSeniors = allRows.filter(r => 
+                            r.staff.isSenior && r.monthShifts[idx] === null &&
+                            !(shift === 'N' && r.staff.isPregnant && isPregNoNight) &&
+                            window.checkPhysicalGardeRule(r.monthShifts, idx, shift) &&
+                            !(r.staff.reqShiftsMap[currentDayNum] === 'x' + shift)
+                        );
+                        if (unassignedSeniors.length > 0) {
+                            unassignedSeniors.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                            unassignedSeniors[0].monthShifts[idx] = shift;
+                            need--; currentCount++;
+                        }
+                    }
+
                     if (need > 0) {
                         let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
                         
-                        candidates.sort((a, b) => {
-                            if (shift === 'N') {
-                                let aNextLeave = a.staff.leaveDates.includes(currentDayNum + 1) ? 1 : 0;
-                                let bNextLeave = b.staff.leaveDates.includes(currentDayNum + 1) ? 1 : 0;
-                                if (aNextLeave !== bNextLeave) return aNextLeave - bNextLeave; 
-                            }
-                            let aReq = a.staff.reqShiftsMap[currentDayNum] === shift ? 1 : 0;
-                            let bReq = b.staff.reqShiftsMap[currentDayNum] === shift ? 1 : 0;
-                            if (aReq !== bReq) return bReq - aReq;
-                            
-                            let countA = a.monthShifts.filter(s => s === shift).length;
-                            let countB = b.monthShifts.filter(s => s === shift).length;
-                            return countA - countB;
-                        });
+                        // [2순위] 일반 간호사 그룹 추출 및 정렬
+                        let generalCandidates = candidates.filter(c => !c.staff.isSenior && !c.staff.isNewbie);
+                        generalCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                        for (let c of generalCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
 
-                        for (let i = 0; i < candidates.length; i++) {
-                            if (need <= 0) break;
-                            let c = candidates[i];
-                            if (c.staff.isNewbie) {
+                        // [3순위] 남은 선임 간호사 투입
+                        if (need > 0) {
+                            let seniorCandidates = candidates.filter(c => c.staff.isSenior);
+                            seniorCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                            for (let c of seniorCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
+                        }
+
+                        // [4순위] 신규 간호사 유연 투입 (경력자가 이미 투입되어 있다면)
+                        if (need > 0) {
+                            let newbieCandidates = candidates.filter(c => c.staff.isNewbie);
+                            newbieCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                            for (let c of newbieCandidates) {
+                                if (need <= 0) break;
                                 let currNb = allRows.filter(r => r.monthShifts[idx] === shift && r.staff.isNewbie).length;
                                 let maxAllowed = (shift === 'N') ? (isNewbieMaxN ? newbieMaxNCount : 99) : (isNewbieMaxDE ? newbieMaxDECount : 99);
                                 if (currNb >= maxAllowed) continue;
-                                if (isNewbieNoAllNewbie && need === 1) {
-                                    let nonNb = allRows.filter(r => r.monthShifts[idx] === shift && !r.staff.isNewbie && !r.staff.isSenior).length;
-                                    if (nonNb === 0) continue;
-                                }
+                                
+                                // 최소 1명 이상 경력자가 근무 중이어야 투입 가능
+                                if (isNewbieNoAllNewbie && currentCount === 0) continue; 
+                                
+                                c.monthShifts[idx] = shift; need--; currentCount++;
                             }
-                            c.monthShifts[idx] = shift; need--; currentCount++;
                         }
 
+                        // 강제 할당 방어 로직 (신청 근무 무시 등)
                         if (currentCount < quota) {
                             let stealable = allRows.filter(r => r.monthShifts[idx] === null && r.staff.reqShiftsMap[currentDayNum] && r.staff.reqShiftsMap[currentDayNum] !== shift && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight));
                             stealable.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
@@ -1287,39 +1279,20 @@
                                 forced.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                                 for(let r of forced) { r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             }
-                            if (currentCount < quota) allocationFailed = true;
+                            if (currentCount < quota) throw new Error(`${dayInfo.dateText}일자 병동 최소 출근 배정에 실패했습니다. 제약 조건을 해제해 주세요.`);
                         }
                     }
                 });
 
-                if(allocationFailed) throw new Error(`${dayInfo.dateText}일자 병동 최소 출근 배정에 실패했습니다. 제약 조건을 해제해 주세요.`);
-
-                allRows.filter(r => r.staff.isNewbie && r.monthShifts[idx] === null).forEach(nb => {
-                    let pId = nb.staff.precId;
-                    if (pId > 0) {
-                        let prec = scheduleMatrix.find(x => x.staff.id === pId);
-                        if (prec && prec.monthShifts[idx]) {
-                            let target = prec.monthShifts[idx];
-                            if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) nb.monthShifts[idx] = target;
-                            else if (['OFF','LEAVE'].includes(target)) nb.monthShifts[idx] = 'OFF';
-                        }
-                    }
-                });
-
-                scheduleMatrix.forEach(row => {
-                    if (row.monthShifts[idx] === null && ['D','E','N'].includes(row.staff.reqShiftsMap[currentDayNum])) {
-                        let s = row.staff.reqShiftsMap[currentDayNum];
-                        if(window.checkPhysicalGardeRule(row.monthShifts, idx, s)) row.monthShifts[idx] = s;
-                    }
-                });
-
+                let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
                 let unassignedRows = allRows.filter(r => r.monthShifts[idx] === null);
                 let currentDCount = allRows.filter(r => r.monthShifts[idx] === 'D').length;
                 let currentECount = allRows.filter(r => r.monthShifts[idx] === 'E').length;
 
+                // 💡 OFF 배정 밸런싱 (총 휴무 가장 적은 사람부터 OFF 보장)
                 unassignedRows.sort((a,b) => {
-                    let offA = a.monthShifts.filter(s => s==='OFF').length;
-                    let offB = b.monthShifts.filter(s => s==='OFF').length;
+                    let offA = a.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
+                    let offB = b.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
                     return offA - offB;
                 });
 
@@ -1347,6 +1320,63 @@
                 });
             }
 
+            // 💡 [5순위] AI 최종 평탄화 (N 쏠림 후처리 알고리즘 - SWAP)
+            let nonDispatchRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
+            let swapOccurred = true;
+            let maxLoops = 100; // 무한루프 방지
+            
+            while(swapOccurred && maxLoops > 0) {
+                swapOccurred = false;
+                maxLoops--;
+                
+                // N 개수 정렬
+                nonDispatchRows.forEach(r => r.tempNCount = r.monthShifts.filter(s => s === 'N').length);
+                nonDispatchRows.sort((a, b) => b.tempNCount - a.tempNCount);
+                
+                let maxStaff = nonDispatchRows[0];
+                let minStaff = nonDispatchRows[nonDispatchRows.length - 1];
+
+                // 격차가 2개 이상 나면 교환 시도
+                if (maxStaff.tempNCount - minStaff.tempNCount >= 2) {
+                    for (let d = 0; d < lastDate; d++) {
+                        let shiftA = maxStaff.monthShifts[d];
+                        let shiftB = minStaff.monthShifts[d];
+                        let currentDayNum = globalDateDetails[d].date;
+
+                        // A는 N을 하고, B는 D나 E를 하는 날 교환 모색
+                        if (shiftA === 'N' && (shiftB === 'D' || shiftB === 'E')) {
+                            
+                            // 임산부 N 투입 불가 체크
+                            if (minStaff.staff.isPregnant && isPregNoNight) continue;
+                            
+                            // 서로의 신청 휴무/거절 듀티를 침해하는지 체크
+                            if (minStaff.staff.reqShiftsMap[currentDayNum] === 'xN') continue;
+                            if (maxStaff.staff.reqShiftsMap[currentDayNum] === 'x' + shiftB) continue;
+
+                            // 가상으로 Swap 했을 때 양쪽 다 물리적 생체 리듬(N-D 등) 규칙이 유지되는지 앞뒤 날짜 체크
+                            let tempA = [...maxStaff.monthShifts];
+                            let tempB = [...minStaff.monthShifts];
+                            tempA[d] = shiftB;
+                            tempB[d] = 'N';
+
+                            let isSafeA = window.checkPhysicalGardeRule(tempA, d, shiftB);
+                            if (d < lastDate - 1 && isSafeA) isSafeA = window.checkPhysicalGardeRule(tempA, d + 1, tempA[d+1]);
+
+                            let isSafeB = window.checkPhysicalGardeRule(tempB, d, 'N');
+                            if (d < lastDate - 1 && isSafeB) isSafeB = window.checkPhysicalGardeRule(tempB, d + 1, tempB[d+1]);
+
+                            if (isSafeA && isSafeB) {
+                                maxStaff.monthShifts[d] = shiftB;
+                                minStaff.monthShifts[d] = 'N';
+                                swapOccurred = true;
+                                break; // 스왑 성공 시 처음부터 다시 정렬하여 스캔
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 최종 통계 정산
             scheduleMatrix.forEach(row => {
                 if (row.staff.isDispatch) return;
                 let pureOffCnt = row.monthShifts.filter(s => s === 'OFF').length;
@@ -1565,54 +1595,108 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // 💾 100% 전체 상태 저장 로직
         document.getElementById('firebaseSaveBtn').addEventListener('click', async () => {
-            window.showToast("⏳ 클라우드에 저장 중입니다...", true);
+            window.showToast("⏳ 클라우드에 전체 상태 저장 중...", true);
             try {
-                const schType = document.querySelector('input[name="schType"]:checked').value;
+                // 1단계 모든 설정값 싹쓸이 저장
+                const step1Inputs = {};
+                document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea').forEach(el => {
+                    if (el.type === 'checkbox') step1Inputs[el.id] = el.checked;
+                    else if (el.type !== 'radio') step1Inputs[el.id] = el.value;
+                });
+
                 const saveData = {
                     staffData: window.globalStaffData,
-                    schType: schType,
-                    schYear: document.getElementById('schYear').value,
-                    schMonth: document.getElementById('schMonth').value,
+                    schType: document.querySelector('input[name="schType"]:checked').value,
+                    step1Inputs: step1Inputs,
+                    calculatedMatrix: window.globalCalculatedMatrix,
+                    globalDateDetails: window.globalDateDetails,
+                    globalLastDate: window.globalLastDate,
+                    isScheduleGenerated: window.isScheduleGenerated,
+                    currentStep: document.querySelector('.step-section.active').id, // 현재 화면 단계 기억
                     updatedAt: new Date().toISOString()
                 };
                 
                 await setDoc(doc(db, "ward_settings", "current_duty"), saveData);
-                window.showToast("✅ 성공적으로 저장되었습니다!");
+                window.showToast("✅ 완벽하게 저장되었습니다! (창을 닫아도 유지됩니다)");
             } catch (error) {
                 console.error(error);
-                window.showToast("❌ 저장 실패: 파이어베이스 규칙을 확인해주세요.", false);
-                alert("저장 에러: " + error.message);
+                window.showToast("❌ 저장 실패", false);
             }
         });
 
+        // 📂 100% 전체 상태 복구(타임머신) 로직
         document.getElementById('firebaseLoadBtn').addEventListener('click', async () => {
-            window.showToast("⏳ 데이터를 가져오는 중...", true);
+            window.showToast("⏳ 타임머신 복구 중...", true);
             try {
                 const docSnap = await getDoc(doc(db, "ward_settings", "current_duty"));
                 if (docSnap.exists()) {
                     const loadedData = docSnap.data();
-                    window.globalStaffData = loadedData.staffData;
                     
+                    window.globalStaffData = loadedData.staffData || [];
+                    window.globalCalculatedMatrix = loadedData.calculatedMatrix || [];
+                    window.globalDateDetails = loadedData.globalDateDetails || [];
+                    window.globalLastDate = loadedData.globalLastDate || 30;
+                    window.isScheduleGenerated = loadedData.isScheduleGenerated || false;
+                    
+                    // 1단계 UI 및 설정 100% 복원
                     if(loadedData.schType) {
                         const radioBtn = document.querySelector(`input[name="schType"][value="${loadedData.schType}"]`);
                         if(radioBtn) radioBtn.checked = true;
                         window.switchScheduleTypeUI();
                     }
-                    if(loadedData.schYear) document.getElementById('schYear').value = loadedData.schYear;
-                    if(loadedData.schMonth) document.getElementById('schMonth').value = loadedData.schMonth;
+                    if(loadedData.step1Inputs) {
+                        const s1 = loadedData.step1Inputs;
+                        document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea').forEach(el => {
+                            if (el.type === 'checkbox' && s1[el.id] !== undefined) el.checked = s1[el.id];
+                            else if (el.type !== 'radio' && s1[el.id] !== undefined) el.value = s1[el.id];
+                        });
+                    }
                     
                     window.normalizeStaffData(); 
                     window.applyPagination();
                     window.update4WeekDateText();
-                    window.showToast("📂 셋팅이 완벽하게 복구되었습니다!");
+
+                    // 3,4단계 완성된 스케줄표가 있었다면 표 헤더와 결과까지 100% 복원
+                    if (window.isScheduleGenerated && window.globalDateDetails.length > 0) {
+                        let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
+                        window.globalDateDetails.forEach(item => { 
+                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                            headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
+                        });
+                        headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
+                        window.globalDateDetails.forEach(item => { 
+                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                            headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
+                        });
+                        headerHtml += `</tr>`;
+                        
+                        document.querySelector("#scheduleTable thead").innerHTML = headerHtml;
+                        document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
+                        
+                        window.renderResultTable('scheduleTable', 'monthShifts');
+                        window.renderResultTable('finalAdjustedTable', 'finalShifts');
+                    }
+
+                    // 마지막으로 보던 단계(1~4단계) 화면으로 자동 텔레포트
+                    if(loadedData.currentStep) {
+                        document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
+                        document.querySelectorAll('.step-tab').forEach(el => el.classList.remove('active'));
+                        document.getElementById(loadedData.currentStep).classList.add('active');
+                        
+                        const tabId = loadedData.currentStep.replace('Section', '').replace('step', 'tab');
+                        const tab = document.getElementById(tabId);
+                        if(tab) tab.classList.add('active');
+                    }
+                    
+                    window.showToast("📂 100% 완벽하게 타임머신 복구되었습니다!");
                 } else {
-                    window.showToast("❓ 저장된 데이터가 없습니다.", false);
+                    window.showToast("❓ 저장된 클라우드 데이터가 없습니다.", false);
                 }
             } catch (error) {
                 console.error(error);
-                window.showToast("❌ 불러오기 실패", false);
-                alert("불러오기 에러: " + error.message);
+                window.showToast("❌ 불러오기 에러: " + error.message, false);
             }
         });
     } catch(e) {
