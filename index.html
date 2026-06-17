@@ -879,7 +879,8 @@
                     name: `간호사 ${sid}`,
                     isSenior: i < seniorCount, isNewbie: false, isPregnant: false, isDispatch: false,
                     isMLeaveActive: isGlobalMLeaveOn, mLeaveOption: 'EXTRA', precId: 0,
-                    leaveDates: [], reqShiftsMap: {}, offDayIndicesArray: []
+                    leaveDates: [], reqShiftsMap: {}, offDayIndicesArray: [],
+                    offBreakdown: { pure:0, mLeave:0, sleep:0, preg:0, total:0 } // 👈 이 줄이 추가되었습니다!
                 });
             }
         } else if (globalStaffData.length > total) {
@@ -1427,8 +1428,11 @@
         tbody.innerHTML = `<tr><td colspan="${lastDate + 5}" style="color:#3182ce; font-weight:bold; padding:20px;">⏳ [AI 이퀄라이저 동작 중]...</td></tr>`;
 
         const scheduleMatrix = globalStaffData.map(staff => {
+            let clonedStaff = JSON.parse(JSON.stringify(staff));
+            // 💡 연산 시작 전 오프 통계함 무조건 생성 및 0으로 초기화 (에러 완벽 차단)
+            clonedStaff.offBreakdown = { pure:0, mLeave:0, sleep:0, preg:0, total:0 };
             return {
-                staff: JSON.parse(JSON.stringify(staff)),
+                staff: clonedStaff,
                 monthShifts: Array(lastDate).fill(null),
                 finalShifts: Array(lastDate).fill(null) 
             };
