@@ -1303,30 +1303,48 @@
                 let currentDCount = allRows.filter(r => r.monthShifts[idx] === 'D').length;
                 let currentECount = allRows.filter(r => r.monthShifts[idx] === 'E').length;
 
-                // 💡 OFF 배정 밸런싱 (총 휴무 가장 적은 사람부터 OFF 보장)
+                // 💡 OFF 배정 밸런싱 (일일 휴무 예산제 & 최하위자 우선 배정)
+                let targetOffsPerNurse = Math.max(baseRequiredOff, fallbackMinOffCount);
+                let dailyOffBudget = Math.ceil((allRows.length * targetOffsPerNurse) / lastDate) + 1; 
+                let currentOffsToday = scheduleMatrix.filter(r => ['OFF', 'LEAVE', 'M-LEAVE'].includes(r.monthShifts[idx])).length;
+                let availableOffSlots = Math.max(0, dailyOffBudget - currentOffsToday); 
+
                 unassignedRows.sort((a,b) => {
                     let offA = a.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
                     let offB = b.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
-                    return offA - offB;
+                    return offA - offB; 
                 });
 
                 unassignedRows.forEach(row => {
-                    let curPureOffCount = row.monthShifts.filter(s => s === 'OFF').length;
+                    let totalRestCount = row.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
                     let currentOffStreak = window.getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
                     let canTakeOff = (!activeMaxOffLimit || currentOffStreak < maxOffStreakAllowed);
 
-                    // 💡 마지노선 설정값(fallbackMinOffCount)을 반영하여 오프 기준점을 강제로 수호합니다.
-                    let finalMinOffGoal = Math.max(baseRequiredOff, fallbackMinOffCount);
+                    let consecWork = 0;
+                    if (activeMaxConsecutive) {
+                        for(let i = 1; i <= maxConsecutiveWorkDays; i++) {
+                            if(idx - i >= 0 && !['OFF', 'LEAVE', 'M-LEAVE', null].includes(row.monthShifts[idx - i])) consecWork++;
+                            else break;
+                        }
+                    }
+                    if (activeMaxConsecutive && consecWork >= maxConsecutiveWorkDays) { 
+                        row.monthShifts[idx] = 'OFF'; 
+                        return; 
+                    }
 
-                    if (curPureOffCount < finalMinOffGoal && canTakeOff) { row.monthShifts[idx] = 'OFF'; return; }
-                    if (curPureOffCount < maxAllowedOff && canTakeOff && Math.random() < 0.2) { row.monthShifts[idx] = 'OFF'; return; }
+                    if (availableOffSlots > 0 && canTakeOff && totalRestCount < maxAllowedOff) {
+                        row.monthShifts[idx] = 'OFF';
+                        availableOffSlots--; 
+                        return;
+                    }
 
                     let availableShifts = [];
                     if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'D') && row.staff.reqShiftsMap[currentDayNum] !== 'xD') availableShifts.push('D');
                     if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'E') && row.staff.reqShiftsMap[currentDayNum] !== 'xE') availableShifts.push('E');
 
-                    if (availableShifts.length === 0) row.monthShifts[idx] = 'OFF';
-                    else if (availableShifts.length === 1) {
+                    if (availableShifts.length === 0) {
+                        row.monthShifts[idx] = 'OFF'; 
+                    } else if (availableShifts.length === 1) {
                         row.monthShifts[idx] = availableShifts[0];
                         if (availableShifts[0] === 'D') currentDCount++; else currentECount++;
                     } else {
