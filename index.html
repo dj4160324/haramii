@@ -91,9 +91,9 @@
         .badge-date.shift-e { background-color: #f0a500; color: #fff; }
         .badge-date.shift-n { background-color: #e056fd; color: #fff; }
         .badge-date.shift-m { background-color: #fc8181; color: #fff; border: 1px dotted #fff; }
-        .badge-date.shift-xd, .btn-cal-day.p-xd { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #4db6ac !important; color: white !important; border: 1px solid #e53e3e; }
-        .badge-date.shift-xe, .btn-cal-day.p-xe { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500 !important; color: white !important; border: 1px solid #e53e3e; }
-        .badge-date.shift-xn, .btn-cal-day.p-xn { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd !important; color: white !important; border: 1px solid #e53e3e; }
+        .badge-date.shift-xd { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #4db6ac !important; color: white !important; border: 1px solid #e53e3e; }
+        .badge-date.shift-xe { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500 !important; color: white !important; border: 1px solid #e53e3e; }
+        .badge-date.shift-xn { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd !important; color: white !important; border: 1px solid #e53e3e; }
 
         .day-toggle-group { display: flex; gap: 4px; justify-content: center; background-color: #f8fafc; padding: 4px; border-radius: 8px; border: 1px solid #e2e8f0; width: max-content; margin: 0 auto; align-items: center;}
         .btn-day-toggle { border: 1px solid #cbd5e0; background-color: #fff; padding: 4px 10px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; color: #4a5568; transition: all 0.2s; }
@@ -111,23 +111,25 @@
         
         .table-responsive { overflow-x: auto; margin-top: 10px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         table.result-calendar { width: 100%; border-collapse: collapse; background: white; min-width: 1200px; }
-        table.result-calendar th, table.result-calendar td { border: 1px solid #cbd5e0; padding: 5px 3px; text-align: center; font-size: 12px; }
-        table.result-calendar th { background-color: #2d3748; color: white; font-size: 11px; font-weight: 800; padding: 6px 3px; }
+        /* 💡 근무표 폰트 크기 13px/12px 로 상향 조정 (시인성 증가) */
+        table.result-calendar th, table.result-calendar td { border: 1px solid #cbd5e0; padding: 6px 4px; text-align: center; font-size: 13px; }
+        table.result-calendar th { background-color: #2d3748; color: white; font-size: 12px; font-weight: 800; padding: 7px 4px; }
         table.result-calendar th.sun { background-color: #e53e3e !important; color: white !important; border-color: #c53030 !important; } 
         table.result-calendar th.sat { background-color: #2b6cb0; }
         table.result-calendar td.sun-cell { background-color: #fff5f5; } table.result-calendar td.sat-cell { background-color: #ebf8ff; }
 
-        .staff-name-col { min-width: 90px; background-color: #edf2f7; position: sticky; left: 0; z-index: 2; font-weight: 800; text-align: center; vertical-align: middle; box-shadow: 2px 0 5px rgba(0,0,0,0.05); font-size: 12px; }
+        .staff-name-col { min-width: 90px; background-color: #edf2f7; position: sticky; left: 0; z-index: 2; font-weight: 800; text-align: center; vertical-align: middle; box-shadow: 2px 0 5px rgba(0,0,0,0.05); font-size: 13px; }
         th.summary-header { background-color: #4a5568; font-weight: bold; color: #fff; min-width: 35px; line-height: 1.3;}
         td.summary-cell { background-color: #f8fafc; font-weight: 900; color: #2d3748; position: relative; }
 
-        .day { background-color: #e6fffa; color: #234e52; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
-        .evening { background-color: #feebc8; color: #744210; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
-        .night { background-color: #fed7d7; color: #742a2a; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
-        .off { background-color: #edf2f7; color: #718096; border-radius: 4px; padding: 2px 4px; font-size: 11px; }
-        .requested-leave { background-color: #e53e3e; color: white; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; border: 1px solid #c53030; }
-        .m-leave { background-color: #fff5f5; color: #c53030; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; border: 1px dotted #fc8181; }
-        .dispatch { background-color: #e2e8f0; color: #4a5568; font-weight: 800; border-radius: 4px; padding: 2px 4px; font-size: 11px; border: 1px dotted #a0aec0; }
+        /* 💡 뱃지 크기 상향 조정 */
+        .day { background-color: #e6fffa; color: #234e52; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; }
+        .evening { background-color: #feebc8; color: #744210; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; }
+        .night { background-color: #fed7d7; color: #742a2a; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; }
+        .off { background-color: #edf2f7; color: #718096; border-radius: 4px; padding: 3px 5px; font-size: 12px; }
+        .requested-leave { background-color: #e53e3e; color: white; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; border: 1px solid #c53030; }
+        .m-leave { background-color: #fff5f5; color: #c53030; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; border: 1px dotted #fc8181; }
+        .dispatch { background-color: #e2e8f0; color: #4a5568; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; border: 1px dotted #a0aec0; }
 
         .tooltip-container { display: inline-block; cursor: help; color: #2b6cb0; margin-left: 2px; font-weight: 900; background: #ebf8ff; border-radius: 50%; width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 10px; border: 1px solid #90cdf4; }
         .tooltip-container .tooltip-text { visibility: hidden; width: 250px; background-color: #2d3748; color: #fff; text-align: left; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 10; bottom: 135%; right: 0; opacity: 0; transition: opacity 0.3s; font-size: 12px; font-weight: normal; line-height: 1.5; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
@@ -167,16 +169,20 @@
         .brush-btn { padding: 6px 10px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #f8fafc; color: #4a5568; }
         .brush-btn.active { border-color: #4a5568; }
 
-        .floating-scroll { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; opacity: 0.6; transition: opacity 0.3s; }
-        .floating-scroll:hover { opacity: 1; }
-        .floating-scroll button { background-color: #2d3748; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); padding: 0; display:flex; align-items:center; justify-content:center; }
-
+        /* 💡 달력 모달 실시간 브러쉬 색상 복구 */
         .btn-cal-day.p-leave { background-color: #e53e3e !important; color: white !important; }
         .btn-cal-day.p-d { background-color: #4db6ac !important; color: white !important; }
         .btn-cal-day.p-e { background-color: #f0a500 !important; color: white !important; }
         .btn-cal-day.p-n { background-color: #e056fd !important; color: white !important; }
         .btn-cal-day.p-m { background-color: #fc8181 !important; color: white !important; }
-        
+        .btn-cal-day.p-xd { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #4db6ac !important; color: white !important; border: 1px solid #e53e3e; }
+        .btn-cal-day.p-xe { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500 !important; color: white !important; border: 1px solid #e53e3e; }
+        .btn-cal-day.p-xn { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd !important; color: white !important; border: 1px solid #e53e3e; }
+
+        .floating-scroll { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; opacity: 0.6; transition: opacity 0.3s; }
+        .floating-scroll:hover { opacity: 1; }
+        .floating-scroll button { background-color: #2d3748; color: white; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); padding: 0; display:flex; align-items:center; justify-content:center; }
+
         #toast { visibility: hidden; min-width: 250px; color: #fff; text-align: center; border-radius: 8px; padding: 16px 20px; position: fixed; z-index: 9999; left: 50%; bottom: 30px; transform: translateX(-50%); font-weight: 900; font-size: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s, bottom 0.3s; }
     </style>
 </head>
@@ -201,7 +207,6 @@
     </div>
 
     <div id="step1Section" class="step-section active">
-        
         <div class="config-card blue">
             <div class="config-title blue">📅 스케줄 산정 기준 및 인원 사양</div>
             <div class="type-switch-box">
@@ -251,14 +256,12 @@
 
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxOffLimit" checked><div class="rule-text"><label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label><span>한 번에 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 지정 연차를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select></span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNightLimit" checked><div class="rule-text"><label for="ruleNightLimit">🌙 월간 야간근무 상한 보장 규칙</label><span>총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span></div></div>
-                
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleWeekendOff" checked><div class="rule-text"><label for="ruleWeekendOff">📅 스케줄 주기 내 주말(토/일) 일수 기반 기본 휴무 보장</label><span>해당 주기 내에 존재하는 실제 토요일과 일요일의 총합 개수만큼 순수 OFF 일수를 무조건 보장합니다.</span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleHolidayAddOff" checked><div class="rule-text"><label for="ruleHolidayAddOff">🇰🇷 평일 국경일/대체휴일 수만큼 보너스 OFF 추가 가산</label><span>해당 주기의 주 중(월~금)에 낀 공휴일 수만큼, 공휴일 특별 오프(OFF)를 추가 지급합니다.</span></div></div>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; width: 100%; margin: 10px 0;">
                 <div class="rule-checkbox-item" style="opacity: 0.85;"><input type="checkbox" checked disabled style="transform: scale(1.2); margin-top: 4px;"><div class="rule-text"><label style="color:#2d3748;">🚫 [물리적 생체 보호] 이브닝 직후 데이(E-D) 절대 금지</label></div></div>
                 <div class="rule-checkbox-item" style="opacity: 0.85;"><input type="checkbox" checked disabled style="transform: scale(1.2); margin-top: 4px;"><div class="rule-text"><label style="color:#2d3748;">🚫 [물리적 생체 보호] 나이트 직후 데이/이브닝(N-D, N-E) 절대 금지</label></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNoNOD" checked><div class="rule-text"><label for="ruleNoNOD">⚠️ 야간 근로 보호 확장 규칙 (N-Off-D 원천 금지)</label></div></div>
-
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxConsecutive" checked><div class="rule-text"><label for="ruleMaxConsecutive">📅 연속 근로 제한 (최대 연투 제약 조항)</label><span>연속 <input type="number" id="maxConsecutiveWorkDays" class="inline-input-num" value="5" min="2" max="10">일을 초과하여 연속 근무를 할 수 없게 차단합니다.</span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxNight" checked><div class="rule-text"><label for="ruleMaxNight">🌙 야간 연타 금지 (나이트 연속 상한 제약 조항)</label><span>단일 순번에서 연속 최대 <input type="number" id="maxConsecutiveNightDays" class="inline-input-num" value="3" min="1" max="5">연속까지만 허용합니다.</span></div></div>
             </div>
@@ -311,23 +314,19 @@
             <div class="filter-control-panel">
                 <input type="text" id="step2Search" class="search-input" placeholder="🔍 간호사 이름 검색..." oninput="debounceSearch2()">
                 <div class="chip-group">
-                    <button class="filter-chip active" id="chip-all" onclick="setFilterChip('ALL')">전체 보기</button>
-                    <button class="filter-chip" id="chip-senior" onclick="setFilterChip('SENIOR')">👑 선임만</button>
-                    <button class="filter-chip" id="chip-newbie" onclick="setFilterChip('NEWBIE')">🌱 신규만</button>
-                    <button class="filter-chip" id="chip-preg" onclick="setFilterChip('PREG')">🤰 임신</button>
-                    <button class="filter-chip" id="chip-dispatch" onclick="setFilterChip('DISPATCH')">✈️ 파견</button>
-                    <button class="filter-chip" id="chip-nomleave" onclick="setFilterChip('NO_MLEAVE')">❌ 보건 미선택</button>
+                    <button class="filter-chip active" data-chip="ALL" onclick="setFilterChip('ALL')">전체 보기</button>
+                    <button class="filter-chip" data-chip="SENIOR" onclick="setFilterChip('SENIOR')">👑 선임만</button>
+                    <button class="filter-chip" data-chip="NEWBIE" onclick="setFilterChip('NEWBIE')">🌱 신규만</button>
+                    <button class="filter-chip" data-chip="PREG" onclick="setFilterChip('PREG')">🤰 임신</button>
+                    <button class="filter-chip" data-chip="NIGHT_ONLY" onclick="setFilterChip('NIGHT_ONLY')">🌙 N전담</button>
+                    <button class="filter-chip" data-chip="DISPATCH" onclick="setFilterChip('DISPATCH')">✈️ 파견</button>
+                    <button class="filter-chip" data-chip="NO_MLEAVE" onclick="setFilterChip('NO_MLEAVE')">❌ 보건 미선택</button>
                 </div>
-
                 <div style="flex:1; text-align:right;">
                     <select id="step2Sort" class="sort-select" onchange="applyPagination()">
-                        <option value="ID">기본 순서 (입력순)</option>
-                        <option value="RANK">👑 직급순 정렬</option>
-                        <option value="ABC">🔤 이름 가나다순 정렬</option>
-                        <option value="NIGHT_DUMMY">🌙 총 N개수순 (입력순 정렬)</option>
-                        <option value="OFF_DUMMY">🏖️ 총 OFF순 (입력순 정렬)</option>
-                        <option value="ANNUAL_DUMMY">🌱 연차순 (입력순 정렬)</option>
-                        <option value="ENTER_DUMMY">📅 입사순 (입력순 정렬)</option>
+                        <option value="ID">기본 순서 (입력순)</option><option value="RANK">👑 직급순 정렬</option><option value="ABC">🔤 이름 가나다순</option>
+                        <option value="NIGHT_DUMMY">🌙 총 N개수순 (입력순)</option><option value="OFF_DUMMY">🏖️ 총 OFF순 (입력순)</option>
+                        <option value="ANNUAL_DUMMY">🌱 연차순 (입력순)</option><option value="ENTER_DUMMY">📅 입사순 (입력순)</option>
                     </select>
                 </div>
             </div>
@@ -336,12 +335,9 @@
                 <div style="width:100%; display:flex; align-items:center; justify-content:space-between;">
                     <span class="batch-text">✔️ 체크된 인원 매주 고정 요일 일괄 OFF 지정 ➡️</span>
                     <div class="day-toggle-group" style="margin: 0; background:transparent; border:none; padding:0;">
-                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(1)">월</button>
-                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(2)">화</button>
-                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(3)">수</button>
-                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(4)">목</button>
-                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(5)">금</button>
-                        <button type="button" class="btn-day-toggle" style="color:#2b6cb0;" onclick="applyBatchOff(6)">토</button>
+                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(1)">월</button><button type="button" class="btn-day-toggle" onclick="applyBatchOff(2)">화</button>
+                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(3)">수</button><button type="button" class="btn-day-toggle" onclick="applyBatchOff(4)">목</button>
+                        <button type="button" class="btn-day-toggle" onclick="applyBatchOff(5)">금</button><button type="button" class="btn-day-toggle" style="color:#2b6cb0;" onclick="applyBatchOff(6)">토</button>
                         <button type="button" class="btn-day-toggle" style="color:#c53030;" onclick="applyBatchOff(0)">일</button>
                         <button type="button" class="btn-day-toggle" style="background-color:#edf2f7; border-color:#a0aec0;" onclick="clearBatchOff()">🔄 초기화</button>
                     </div>
@@ -359,11 +355,12 @@
                 <thead>
                     <tr>
                         <th style="width: 4%;">일괄<br><input type="checkbox" id="masterBatchCheck" onclick="toggleAllBatch(this)" style="cursor:pointer; transform:scale(1.2);"></th>
+                        <th style="width: 12%;">직급 (선임/신규)</th>
                         <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
-                        <th style="width: 25%;">특이사항 (선임/신규/보건/보호/파견)</th>
-                        <th style="width: 12%;">🌴 지정 연차 <span class="mark-optional"></span><br><span style="font-size:10px; color:#e53e3e;">*(전날 N근무 최대한 배제)*</span></th>
-                        <th style="width: 24%;">📌 날짜 지정 신청 근무 <span class="mark-optional"></span></th>
-                        <th style="width: 25%;">❌ 매주 고정 OFF 요일 선택 <span class="mark-optional"></span></th>
+                        <th style="width: 18%;">특이사항 (임신/N전담/보건/파견)</th>
+                        <th style="width: 13%;">🌴 지정 연차<br><span style="font-size:10px; color:#718096; font-weight:normal;">(직전 N 배제 반영)</span></th>
+                        <th style="width: 20%;">📌 날짜 지정 신청 근무 <span class="mark-optional">(🎨 브러쉬)</span></th>
+                        <th style="width: 23%;">❌ 매주 고정 OFF 요일 선택</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -385,29 +382,36 @@
 
         <div class="btn-center">
             <button id="backToStep2Btn" class="btn-secondary" onclick="backToStep2()">⬅️ 2단계(인원 사정 조율)로 돌아가기</button>
-            <button id="submitBtn" class="btn-main" onclick="runSmartScheduling()">⚡ 스케줄 생성</button>
+            <button id="submitBtn" class="btn-main" onclick="runSmartScheduling()">⚡ 월간 스케줄 자동 생성</button>
         </div>
 
         <div class="filter-control-panel" style="margin-top:30px;">
-            <input type="text" id="step3Search" class="search-input" placeholder="🔍 결과 내 간호사 검색..." oninput="debounceSearch3()">
+            <input type="text" id="step3Search" class="search-input" placeholder="🔍 결과 조회 검색..." oninput="debounceSearch3()">
+            
+            <div class="chip-group">
+                <button class="filter-chip active" data-chip="ALL" onclick="setFilterChip('ALL')">전체 보기</button>
+                <button class="filter-chip" data-chip="SENIOR" onclick="setFilterChip('SENIOR')">👑 선임만</button>
+                <button class="filter-chip" data-chip="NEWBIE" onclick="setFilterChip('NEWBIE')">🌱 신규만</button>
+                <button class="filter-chip" data-chip="PREG" onclick="setFilterChip('PREG')">🤰 임신</button>
+                <button class="filter-chip" data-chip="NIGHT_ONLY" onclick="setFilterChip('NIGHT_ONLY')">🌙 N전담</button>
+                <button class="filter-chip" data-chip="DISPATCH" onclick="setFilterChip('DISPATCH')">✈️ 파견</button>
+                <button class="filter-chip" data-chip="NO_MLEAVE" onclick="setFilterChip('NO_MLEAVE')">❌ 보건 미선택</button>
+            </div>
+
             <div style="flex:1; text-align:right;">
                 <select id="step3Sort" class="sort-select" onchange="renderResultTable('scheduleTable', 'monthShifts')">
-                    <option value="ID">기본 순서 (입력순)</option>
-                    <option value="RANK">👑 직급순 정렬</option>
-                    <option value="ABC">🔤 이름 가나다순</option>
-                    <option value="NIGHT">🌙 총 나이트(N) 많은순</option>
-                    <option value="OFF">🏖️ 총 OFF(휴무) 많은순</option>
-                    <option value="ANNUAL_DUMMY">🌱 연차순 (입력순 정렬)</option>
-                    <option value="ENTER_DUMMY">📅 입사순 (입력순 정렬)</option>
+                    <option value="ID">기본 순서 (입력순)</option><option value="RANK">👑 직급순 정렬</option><option value="ABC">🔤 이름 가나다순</option>
+                    <option value="NIGHT">🌙 총 나이트(N) 많은순</option><option value="OFF">🏖️ 총 OFF(휴무) 많은순</option>
+                    <option value="ANNUAL_DUMMY">🌱 연차순 (입력순)</option><option value="ENTER_DUMMY">📅 입사순 (입력순)</option>
                 </select>
             </div>
         </div>
 
         <div class="table-responsive"><table id="scheduleTable" class="result-calendar"><thead></thead><tbody></tbody></table></div>
 
-        <div class="feedback-box" id="feedbackContainer" style="display:none;">
-            <div class="config-title green" style="border:none; padding:0; font-size:18px; margin-bottom:10px;">✍️ 통합 스케줄 조율 피드백 지시란</div>
-            <textarea id="aiFeedbackInput" class="feedback-textarea" placeholder="예: 간호사1번의 N 근무 하나 빼줘 / 간호사2번의 15일 D를 OFF로 바꿔줘"></textarea>
+        <div class="config-card orange" id="feedbackContainer" style="display:none; margin-top:30px;">
+            <div class="config-title orange">✍️ 통합 스케줄 조율 피드백 지시란</div>
+            <textarea id="aiFeedbackInput" class="custom-rule-textarea" placeholder="예: 간호사1번의 N 근무 하나 빼줘 / 간호사2번의 15일 D를 OFF로 바꿔줘"></textarea>
             <div class="btn-center"><button class="btn-success" onclick="processFeedbackAndGoToStep4()">🛠️ 피드백 반영 최종 수정본 만들기 ➡️</button></div>
         </div>
     </div>
@@ -417,16 +421,23 @@
         <div class="btn-center" style="margin-bottom: 25px;"><button class="btn-secondary" onclick="backToStep3()">⬅️ 3단계 초안으로 돌아가기</button></div>
 
         <div class="filter-control-panel">
-            <input type="text" id="step4Search" class="search-input" placeholder="🔍 최종 결과 내 검색..." oninput="debounceSearch4()">
+            <input type="text" id="step4Search" class="search-input" placeholder="🔍 최종 조회 검색..." oninput="debounceSearch4()">
+            
+            <div class="chip-group">
+                <button class="filter-chip active" data-chip="ALL" onclick="setFilterChip('ALL')">전체 보기</button>
+                <button class="filter-chip" data-chip="SENIOR" onclick="setFilterChip('SENIOR')">👑 선임만</button>
+                <button class="filter-chip" data-chip="NEWBIE" onclick="setFilterChip('NEWBIE')">🌱 신규만</button>
+                <button class="filter-chip" data-chip="PREG" onclick="setFilterChip('PREG')">🤰 임신</button>
+                <button class="filter-chip" data-chip="NIGHT_ONLY" onclick="setFilterChip('NIGHT_ONLY')">🌙 N전담</button>
+                <button class="filter-chip" data-chip="DISPATCH" onclick="setFilterChip('DISPATCH')">✈️ 파견</button>
+                <button class="filter-chip" data-chip="NO_MLEAVE" onclick="setFilterChip('NO_MLEAVE')">❌ 보건 미선택</button>
+            </div>
+
             <div style="flex:1; text-align:right;">
                 <select id="step4Sort" class="sort-select" onchange="renderResultTable('finalAdjustedTable', 'finalShifts')">
-                    <option value="ID">기본 순서 (입력순)</option>
-                    <option value="RANK">👑 직급순 정렬</option>
-                    <option value="ABC">🔤 이름 가나다순</option>
-                    <option value="NIGHT">🌙 총 나이트(N) 많은순</option>
-                    <option value="OFF">🏖️ 총 OFF(휴무) 많은순</option>
-                    <option value="ANNUAL_DUMMY">🌱 연차순 (입력순 정렬)</option>
-                    <option value="ENTER_DUMMY">📅 입사순 (입력순 정렬)</option>
+                    <option value="ID">기본 순서 (입력순)</option><option value="RANK">👑 직급순 정렬</option><option value="ABC">🔤 이름 가나다순</option>
+                    <option value="NIGHT">🌙 총 나이트(N) 많은순</option><option value="OFF">🏖️ 총 OFF(휴무) 많은순</option>
+                    <option value="ANNUAL_DUMMY">🌱 연차순 (입력순)</option><option value="ENTER_DUMMY">📅 입사순 (입력순)</option>
                 </select>
             </div>
         </div>
@@ -506,6 +517,8 @@
             if (typeof item.precId === 'undefined') item.precId = 0;
             if (typeof item.isMLeaveActive === 'undefined') item.isMLeaveActive = document.getElementById('ruleMenstruationLeave').checked;
             if (!item.mLeaveOption) item.mLeaveOption = 'EXTRA';
+            // 💡 N전담 누락 방지 초기화
+            if (typeof item.isNightOnly === 'undefined') item.isNightOnly = false;
         });
     };
 
@@ -570,16 +583,19 @@
     window.debounceSearch3 = function() { if(window.searchTimer3) clearTimeout(window.searchTimer3); window.searchTimer3 = setTimeout(() => { window.renderResultTable('scheduleTable', 'monthShifts'); }, 300); };
     window.debounceSearch4 = function() { if(window.searchTimer4) clearTimeout(window.searchTimer4); window.searchTimer4 = setTimeout(() => { window.renderResultTable('finalAdjustedTable', 'finalShifts'); }, 300); };
 
+    // 💡 3,4단계 칩 필터 글로벌 연동 적용
     window.setFilterChip = function(chipVal) {
         window.currentFilterChip = chipVal;
-        document.querySelectorAll('.filter-chip').forEach(btn => btn.classList.remove('active'));
-        if(chipVal === 'ALL') document.getElementById('chip-all').classList.add('active');
-        if(chipVal === 'SENIOR') document.getElementById('chip-senior').classList.add('active');
-        if(chipVal === 'NEWBIE') document.getElementById('chip-newbie').classList.add('active');
-        if(chipVal === 'PREG') document.getElementById('chip-preg').classList.add('active');
-        if(chipVal === 'DISPATCH') document.getElementById('chip-dispatch').classList.add('active');
-        if(chipVal === 'NO_MLEAVE') document.getElementById('chip-nomleave').classList.add('active');
-        window.currentPage = 1; window.applyPagination();
+        document.querySelectorAll('.filter-chip').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.getAttribute('data-chip') === chipVal) btn.classList.add('active');
+        });
+        window.currentPage = 1; 
+        window.applyPagination();
+        if(window.isScheduleGenerated) {
+            window.renderResultTable('scheduleTable', 'monthShifts');
+            window.renderResultTable('finalAdjustedTable', 'finalShifts');
+        }
     };
 
     window.toggleGlobalMLeave = function() {
@@ -611,15 +627,25 @@
         if(item) item.name = inputNode.value.trim();
     };
 
+    // 💡 임산부-N전담 상호 물리적 배제 로직
     window.updateMemoryFields = function(node, type) {
         const sid = parseInt(node.getAttribute('data-staff-id'));
         const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return;
 
-        if(type === 'PREG') item.isPregnant = node.checked;
+        if(type === 'PREG') {
+            item.isPregnant = node.checked;
+            if(node.checked) item.isNightOnly = false; // 임산부 체크 시 N전담 해제
+        }
+        if(type === 'NIGHT_ONLY') {
+            item.isNightOnly = node.checked;
+            if(node.checked) item.isPregnant = false; // N전담 체크 시 임산부 해제
+        }
         if(type === 'DISPATCH') item.isDispatch = node.checked;
         if(type === 'MLEAVE_OPT') item.mLeaveOption = node.value;
         if(type === 'PREC') item.precId = parseInt(node.value);
+
+        window.applyPagination();
     };
 
     window.handleMemoryDayToggle = function(btn, sid, idx) {
@@ -661,7 +687,7 @@
                 const sid = i + 1;
                 window.globalStaffData.push({
                     id: sid, name: `간호사 ${sid}`,
-                    isSenior: i < seniorCount, isNewbie: false, isPregnant: false, isDispatch: false,
+                    isSenior: i < seniorCount, isNewbie: false, isPregnant: false, isDispatch: false, isNightOnly: false,
                     isMLeaveActive: isGlobalMLeaveOn, mLeaveOption: 'EXTRA', precId: 0,
                     leaveDates: [], reqShiftsMap: {}, offDayIndicesArray: [],
                     offBreakdown: { pure:0, mLeave:0, sleep:0, preg:0, total:0 } 
@@ -684,6 +710,7 @@
         if (window.currentFilterChip === 'SENIOR') filteredData = filteredData.filter(item => item.isSenior);
         if (window.currentFilterChip === 'NEWBIE') filteredData = filteredData.filter(item => item.isNewbie);
         if (window.currentFilterChip === 'PREG') filteredData = filteredData.filter(item => item.isPregnant);
+        if (window.currentFilterChip === 'NIGHT_ONLY') filteredData = filteredData.filter(item => item.isNightOnly);
         if (window.currentFilterChip === 'DISPATCH') filteredData = filteredData.filter(item => item.isDispatch);
         if (window.currentFilterChip === 'NO_MLEAVE') filteredData = filteredData.filter(item => !item.isMLeaveActive);
 
@@ -710,6 +737,7 @@
 
             let preceptorOptions = '<option value="0">지정 안함</option>';
             window.globalStaffData.forEach(p => {
+                // 💡 신규 간호사는 프리셉터 후보에서 제거
                 if (p.id !== item.id && !p.isNewbie) {
                     preceptorOptions += `<option value="${p.id}" ${item.precId === p.id ? 'selected' : ''}>${p.name}</option>`;
                 }
@@ -733,15 +761,19 @@
                 }).join(' ');
             }
 
+            // 💡 2단계 UI 재배치 (직급 독립 칸, N전담 버튼 추가)
             htmlBuffer += `
                 <tr data-staff-id="${item.id}">
                     <td><input type="checkbox" class="check-batch" style="cursor:pointer; transform:scale(1.2);"></td>
+                    <td style="text-align: center; font-size:12px;">
+                        <label style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:2px;"><input type="checkbox" class="check-senior" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'SENIOR')" ${item.isSenior?'checked':''}>👑 선임</label>
+                        <label style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:2px; color:#38a169; margin-top:4px;"><input type="checkbox" class="check-newbie" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'NEWBIE')" ${item.isNewbie?'checked':''}>🌱 신규</label>
+                    </td>
                     <td><input type="text" class="input-staff-name" value="${item.name}" oninput="updatePreceptorDropdownsRealtime(this, ${item.id})"></td>
                     <td style="text-align: center; font-size:12px;">
                         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
-                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px;"><input type="checkbox" class="check-senior" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'SENIOR')" ${item.isSenior?'checked':''}>👑 선임</label>
-                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#38a169;"><input type="checkbox" class="check-newbie" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'NEWBIE')" ${item.isNewbie?'checked':''}>🌱 신규</label>
                             <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#b83280;"><input type="checkbox" class="check-pregnant" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREG')" ${item.isPregnant?'checked':''}>🤰 임신</label>
+                            <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#805ad5;"><input type="checkbox" class="check-nightonly" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'NIGHT_ONLY')" ${item.isNightOnly?'checked':''}>🌙 N전담</label>
                             <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#4a5568;"><input type="checkbox" class="check-dispatch" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'DISPATCH')" ${item.isDispatch?'checked':''}>✈️ 파견</label>
                             <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#e53e3e;"><input type="checkbox" class="check-mleave" data-staff-id="${item.id}" onchange="toggleMLeaveSelect(this)" ${item.isMLeaveActive?'checked':''}>🩸 보건</label>
                         </div>
@@ -928,7 +960,8 @@
                     else subTag = `<span class="cal-sub-tag">${currentAssignedShift}</span>`;
                 }
             }
-            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="startDrag(this)" onmouseenter="doDrag(this)">${btnLabel} ${subTag}</button>`;
+            // 💡 달력 버튼에 span 구조 주입 (버벅임 방지용)
+            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="window.startDrag(this)" onmouseenter="window.doDrag(this)">${btnLabel}<span class="cal-sub-tag-wrapper" style="display:block; font-size:10px;">${subTag}</span></button>`;
         }
         document.getElementById('calendarModal').style.display = 'flex';
     };
@@ -951,7 +984,7 @@
 
     window.doDrag = function(btn) { if (window.isDragging) window.applyDragAction(btn); };
 
-// 🚀 달력 실시간 드래그 렌더링 초고속 연산화 패치
+    // 💡 달력 드래그 최적화 (DOM 최소 조작)
     window.applyDragAction = function(btn) {
         const day = parseInt(btn.getAttribute('data-day'));
         const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
@@ -968,8 +1001,8 @@
             if (isPreg && window.dragTargetState === 'N') return;
 
             btn.classList.remove('p-d', 'p-e', 'p-n', 'p-m', 'p-xd', 'p-xe', 'p-xn');
-            const subTagNode = btn.querySelector('.cal-sub-tag');
-            if(subTagNode) subTagNode.remove();
+            const wrapper = btn.querySelector('.cal-sub-tag-wrapper');
+            if(wrapper) wrapper.innerHTML = "";
 
             if (window.dragTargetState === 'ERASE') {
                 delete staff.reqShiftsMap[day];
@@ -978,21 +1011,44 @@
                 btn.classList.add(`p-${window.dragTargetState.toLowerCase()}`);
                 let tagStr = window.dragTargetState === 'M' ? '보건' : window.dragTargetState;
                 if (window.dragTargetState.startsWith('x')) tagStr = `🚫${window.dragTargetState.substring(1)}`;
-                
-                // 구조적 span 노드 주입으로 화면 프리징 현상 근본적 차단
-                const span = document.createElement('span');
-                span.className = 'cal-sub-tag';
-                span.style.fontSize = '10px';
-                span.style.display = 'block';
-                span.innerText = tagStr;
-                btn.appendChild(span);
+                if(wrapper) wrapper.innerHTML = `<span class="cal-sub-tag">${tagStr}</span>`;
             }
         }
     };
 
+    // 💡 달력 닫기 버벅임 제거 (해당 줄만 핀포인트 업데이트)
     window.closeCalendarModal = function() {
         document.getElementById('calendarModal').style.display = 'none';
-        window.applyPagination(); 
+        if(window.currentActiveStaffId) {
+            window.updateSpecificRowBadges(window.currentActiveStaffId);
+        }
+    };
+
+    window.updateSpecificRowBadges = function(sid) {
+        const item = window.globalStaffData.find(x => x.id === sid);
+        if(!item) return;
+        
+        let leaveBadges = "클릭하여 선택";
+        if (item.leaveDates && item.leaveDates.length > 0) {
+            let sortedLeaves = [...item.leaveDates].sort((a,b)=>a-b);
+            leaveBadges = sortedLeaves.map(d => `<span class="badge-date leave">${d}일</span>`).join(' ');
+        }
+        const leaveBox = document.getElementById(`leave-box-${sid}`);
+        if(leaveBox) leaveBox.innerHTML = leaveBadges;
+
+        let reqBadges = "클릭하여 선택";
+        const keys = Object.keys(item.reqShiftsMap || {}).sort((a,b)=>a-b);
+        if (keys.length > 0) {
+            reqBadges = keys.map(d => {
+                let s = item.reqShiftsMap[d];
+                let dispS = s === 'M' ? '보건' : s;
+                let colClass = s === 'M' ? 'm' : s.toLowerCase();
+                if(s.startsWith('x')) dispS = '🚫' + s.substring(1);
+                return `<span class="badge-date shift-${colClass}">${d}일(${dispS})</span>`;
+            }).join(' ');
+        }
+        const reqBox = document.getElementById(`req-box-${sid}`);
+        if(reqBox) reqBox.innerHTML = reqBadges;
     };
 
     window.parseMultiDates = function(dateStr) {
@@ -1073,7 +1129,7 @@
         window.scrollTo({top: 0, behavior: 'smooth'});
     };
 
-// ⚡ 3단계 스케줄러 엔진 (폭포수 배정 + 5단계 N 스왑 알고리즘 탑재)
+    // ⚡ 3단계 스케줄러 엔진
     window.runSmartScheduling = async function() {
         window.normalizeStaffData();
         window.applyPagination();
@@ -1227,21 +1283,20 @@
                     }
                 });
 
-                // 💡 폭포수 N 배정 알고리즘
                 ['N','D','E'].forEach(shift => {
                     let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
                     const quota = (shift === 'D') ? targetDayQuota : (shift === 'E' ? targetEveQuota : targetNitQuota);
                     let currentCount = allRows.filter(r => r.monthShifts[idx] === shift).length;
                     let need = quota - currentCount;
 
-                    // [1순위] 최소 선임 보장 배정 (선임 중 N 제일 적은 사람)
                     for (let k = 0; k < minSenior; k++) {
                         if (need <= 0) break;
                         let unassignedSeniors = allRows.filter(r => 
                             r.staff.isSenior && r.monthShifts[idx] === null &&
                             !(shift === 'N' && r.staff.isPregnant && isPregNoNight) &&
                             window.checkPhysicalGardeRule(r.monthShifts, idx, shift) &&
-                            !(r.staff.reqShiftsMap[currentDayNum] === 'x' + shift)
+                            !(r.staff.reqShiftsMap[currentDayNum] === 'x' + shift) &&
+                            !(r.staff.isNightOnly && shift !== 'N') // 💡 N전담 D/E 금지
                         );
                         if (unassignedSeniors.length > 0) {
                             unassignedSeniors.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
@@ -1253,19 +1308,16 @@
                     if (need > 0) {
                         let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
                         
-                        // [2순위] 일반 간호사 그룹 추출 및 정렬
                         let generalCandidates = candidates.filter(c => !c.staff.isSenior && !c.staff.isNewbie);
                         generalCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                         for (let c of generalCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
 
-                        // [3순위] 남은 선임 간호사 투입
                         if (need > 0) {
                             let seniorCandidates = candidates.filter(c => c.staff.isSenior);
                             seniorCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                             for (let c of seniorCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
                         }
 
-                        // [4순위] 신규 간호사 유연 투입 (경력자가 이미 투입되어 있다면)
                         if (need > 0) {
                             let newbieCandidates = candidates.filter(c => c.staff.isNewbie);
                             newbieCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
@@ -1274,22 +1326,18 @@
                                 let currNb = allRows.filter(r => r.monthShifts[idx] === shift && r.staff.isNewbie).length;
                                 let maxAllowed = (shift === 'N') ? (isNewbieMaxN ? newbieMaxNCount : 99) : (isNewbieMaxDE ? newbieMaxDECount : 99);
                                 if (currNb >= maxAllowed) continue;
-                                
-                                // 최소 1명 이상 경력자가 근무 중이어야 투입 가능
                                 if (isNewbieNoAllNewbie && currentCount === 0) continue; 
-                                
                                 c.monthShifts[idx] = shift; need--; currentCount++;
                             }
                         }
 
-                        // 강제 할당 방어 로직 (신청 근무 무시 등)
                         if (currentCount < quota) {
-                            let stealable = allRows.filter(r => r.monthShifts[idx] === null && r.staff.reqShiftsMap[currentDayNum] && r.staff.reqShiftsMap[currentDayNum] !== shift && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight));
+                            let stealable = allRows.filter(r => r.monthShifts[idx] === null && r.staff.reqShiftsMap[currentDayNum] && r.staff.reqShiftsMap[currentDayNum] !== shift && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight) && !(r.staff.isNightOnly && shift !== 'N'));
                             stealable.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                             for(let r of stealable) { delete r.staff.reqShiftsMap[currentDayNum]; r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             
                             if (currentCount < quota) {
-                                let forced = allRows.filter(r => r.monthShifts[idx] === null && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight));
+                                let forced = allRows.filter(r => r.monthShifts[idx] === null && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight) && !(r.staff.isNightOnly && shift !== 'N'));
                                 forced.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                                 for(let r of forced) { r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             }
@@ -1299,11 +1347,31 @@
                 });
 
                 let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
+                
+                // 프리셉터 멘토링
+                allRows.filter(r => r.staff.isNewbie && r.monthShifts[idx] === null).forEach(nb => {
+                    let pId = nb.staff.precId;
+                    if (pId > 0) {
+                        let prec = scheduleMatrix.find(x => x.staff.id === pId);
+                        if (prec && prec.monthShifts[idx]) {
+                            let target = prec.monthShifts[idx];
+                            if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) nb.monthShifts[idx] = target;
+                            else if (['OFF','LEAVE'].includes(target)) nb.monthShifts[idx] = 'OFF';
+                        }
+                    }
+                });
+
+                scheduleMatrix.forEach(row => {
+                    if (row.monthShifts[idx] === null && ['D','E','N'].includes(row.staff.reqShiftsMap[currentDayNum])) {
+                        let s = row.staff.reqShiftsMap[currentDayNum];
+                        if(window.checkPhysicalGardeRule(row.monthShifts, idx, s)) row.monthShifts[idx] = s;
+                    }
+                });
+
                 let unassignedRows = allRows.filter(r => r.monthShifts[idx] === null);
                 let currentDCount = allRows.filter(r => r.monthShifts[idx] === 'D').length;
                 let currentECount = allRows.filter(r => r.monthShifts[idx] === 'E').length;
 
-                // 💡 OFF 배정 밸런싱 (일일 휴무 예산제 & 최하위자 우선 배정)
                 let targetOffsPerNurse = Math.max(baseRequiredOff, fallbackMinOffCount);
                 let dailyOffBudget = Math.ceil((allRows.length * targetOffsPerNurse) / lastDate) + 1; 
                 let currentOffsToday = scheduleMatrix.filter(r => ['OFF', 'LEAVE', 'M-LEAVE'].includes(r.monthShifts[idx])).length;
@@ -1338,6 +1406,12 @@
                         return;
                     }
 
+                    // 💡 N전담자는 예산이 부족해도 D, E 투입 금지. 무조건 OFF
+                    if (row.staff.isNightOnly) {
+                        row.monthShifts[idx] = 'OFF';
+                        return;
+                    }
+
                     let availableShifts = [];
                     if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'D') && row.staff.reqShiftsMap[currentDayNum] !== 'xD') availableShifts.push('D');
                     if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'E') && row.staff.reqShiftsMap[currentDayNum] !== 'xE') availableShifts.push('E');
@@ -1355,40 +1429,32 @@
                 });
             }
 
-            // 💡 [5순위] AI 최종 평탄화 (N 쏠림 후처리 알고리즘 - SWAP)
-            let nonDispatchRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
+            // 5단계 스왑
+            let nonDispatchRows = scheduleMatrix.filter(r => !r.staff.isDispatch && !r.staff.isNightOnly);
             let swapOccurred = true;
-            let maxLoops = 100; // 무한루프 방지
+            let maxLoops = 100; 
             
             while(swapOccurred && maxLoops > 0) {
                 swapOccurred = false;
                 maxLoops--;
                 
-                // N 개수 정렬
                 nonDispatchRows.forEach(r => r.tempNCount = r.monthShifts.filter(s => s === 'N').length);
                 nonDispatchRows.sort((a, b) => b.tempNCount - a.tempNCount);
                 
                 let maxStaff = nonDispatchRows[0];
                 let minStaff = nonDispatchRows[nonDispatchRows.length - 1];
 
-                // 격차가 2개 이상 나면 교환 시도
                 if (maxStaff.tempNCount - minStaff.tempNCount >= 2) {
                     for (let d = 0; d < lastDate; d++) {
                         let shiftA = maxStaff.monthShifts[d];
                         let shiftB = minStaff.monthShifts[d];
                         let currentDayNum = globalDateDetails[d].date;
 
-                        // A는 N을 하고, B는 D나 E를 하는 날 교환 모색
                         if (shiftA === 'N' && (shiftB === 'D' || shiftB === 'E')) {
-                            
-                            // 임산부 N 투입 불가 체크
                             if (minStaff.staff.isPregnant && isPregNoNight) continue;
-                            
-                            // 서로의 신청 휴무/거절 듀티를 침해하는지 체크
                             if (minStaff.staff.reqShiftsMap[currentDayNum] === 'xN') continue;
                             if (maxStaff.staff.reqShiftsMap[currentDayNum] === 'x' + shiftB) continue;
 
-                            // 가상으로 Swap 했을 때 양쪽 다 물리적 생체 리듬(N-D 등) 규칙이 유지되는지 앞뒤 날짜 체크
                             let tempA = [...maxStaff.monthShifts];
                             let tempB = [...minStaff.monthShifts];
                             tempA[d] = shiftB;
@@ -1404,14 +1470,13 @@
                                 maxStaff.monthShifts[d] = shiftB;
                                 minStaff.monthShifts[d] = 'N';
                                 swapOccurred = true;
-                                break; // 스왑 성공 시 처음부터 다시 정렬하여 스캔
+                                break; 
                             }
                         }
                     }
                 }
             }
 
-            // 최종 통계 정산
             scheduleMatrix.forEach(row => {
                 if (row.staff.isDispatch) return;
                 let pureOffCnt = row.monthShifts.filter(s => s === 'OFF').length;
@@ -1465,6 +1530,14 @@
 
         if (searchKeyword) displayMatrix = displayMatrix.filter(r => r.staff.name.toLowerCase().includes(searchKeyword));
         
+        // 💡 3/4단계 글로벌 필터 칩 연동 적용
+        if (window.currentFilterChip === 'SENIOR') displayMatrix = displayMatrix.filter(r => r.staff.isSenior);
+        if (window.currentFilterChip === 'NEWBIE') displayMatrix = displayMatrix.filter(r => r.staff.isNewbie);
+        if (window.currentFilterChip === 'PREG') displayMatrix = displayMatrix.filter(r => r.staff.isPregnant);
+        if (window.currentFilterChip === 'NIGHT_ONLY') displayMatrix = displayMatrix.filter(r => r.staff.isNightOnly);
+        if (window.currentFilterChip === 'DISPATCH') displayMatrix = displayMatrix.filter(r => r.staff.isDispatch);
+        if (window.currentFilterChip === 'NO_MLEAVE') displayMatrix = displayMatrix.filter(r => !r.staff.isMLeaveActive);
+
         if (sortVal === 'ABC') displayMatrix.sort((a,b) => a.staff.name.localeCompare(b.staff.name, 'ko'));
         else if (sortVal === 'NIGHT') displayMatrix.sort((a,b) => b[arrayName].filter(s=>s==='N').length - a[arrayName].filter(s=>s==='N').length);
         else if (sortVal === 'OFF') displayMatrix.sort((a,b) => (b.staff.offBreakdown.total + b[arrayName].filter(s=>s==='LEAVE').length) - (a.staff.offBreakdown.total + a[arrayName].filter(s=>s==='LEAVE').length));
@@ -1474,7 +1547,7 @@
         let htmlBuffer = "";
 
         displayMatrix.forEach(row => {
-            let statusIcons = (row.staff.isSenior?'👑':'') + (row.staff.isNewbie?'🌱':'') + (row.staff.isPregnant?'🤰':'') + (row.staff.isDispatch?'✈️':'') + (row.staff.mLeaveOption==='MONEY'&&row.staff.isMLeaveActive?'💵':'');
+            let statusIcons = (row.staff.isSenior?'👑':'') + (row.staff.isNewbie?'🌱':'') + (row.staff.isPregnant?'🤰':'') + (row.staff.isDispatch?'✈️':'') + (row.staff.isNightOnly?'🌙':'') + (row.staff.mLeaveOption==='MONEY'&&row.staff.isMLeaveActive?'💵':'');
             let iconHtml = statusIcons ? `<div style="font-size:10px; margin-top:2px; letter-spacing:1px;">${statusIcons}</div>` : '';
             
             htmlBuffer += `<tr><td class="staff-name-col"><span><strong>${row.staff.name}</strong></span>${iconHtml}</td>`;
@@ -1513,6 +1586,7 @@
         let totalPregnant = window.globalStaffData.filter(r => r.isPregnant).length;
         let totalDispatch = window.globalStaffData.filter(r => r.isDispatch).length;
         let totalNewbie = window.globalStaffData.filter(r => r.isNewbie).length;
+        let totalNightOnly = window.globalStaffData.filter(r => r.isNightOnly).length;
 
         htmlBuffer += `<tr><td class="staff-name-col" style="background-color:#cbd5e0; font-weight:bold; color:#2d3748;">일별 총계</td>`;
         for (let d = 0; d < window.globalLastDate; d++) {
@@ -1528,7 +1602,7 @@
                 <span style="color:#2b6cb0;">D: ${dCnt}</span><br><span style="color:#d69e2e;">E: ${eCnt}</span><br><span style="color:#805ad5;">N: ${nCnt}</span><br><span style="color:#e53e3e; font-size:9px;">휴: ${offCnt}</span>
             </td>`;
         }
-        htmlBuffer += `<td colspan="4" style="background-color:#cbd5e0; font-size:11px; font-weight:900; color:#2d3748; text-align:right; padding-right:15px; border-top:2px solid #a0aec0;">💡 병동 인력: 임산부 ${totalPregnant}명 / 신규 ${totalNewbie}명 / 파견 ${totalDispatch}명</td></tr>`;
+        htmlBuffer += `<td colspan="4" style="background-color:#cbd5e0; font-size:11px; font-weight:900; color:#2d3748; text-align:right; padding-right:15px; border-top:2px solid #a0aec0;">💡 인력: 임신 ${totalPregnant}명 / N전담 ${totalNightOnly}명 / 신규 ${totalNewbie}명 / 파견 ${totalDispatch}명</td></tr>`;
         
         tbody.innerHTML = htmlBuffer;
     };
@@ -1557,6 +1631,8 @@
             if (!window.checkPhysicalGardeRule(row.monthShifts, idx, shift)) return false;
             if (shift === 'N' && row.staff.isPregnant && isPregNoNight) return false;
             if (row.staff.reqShiftsMap[window.globalDateDetails[idx].date] === 'x' + shift) return false;
+            // 💡 N전담자는 D/E 투입 절대 불가
+            if (row.staff.isNightOnly && shift !== 'N' && shift !== 'OFF') return false; 
 
             let available = ['D', 'E', 'N', 'OFF'];
             if (activeNightLimit && row.monthShifts.filter(s => s === 'N').length >= maxNightAllowed) available = available.filter(s => s !== 'N');
@@ -1630,11 +1706,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 💾 100% 전체 상태 저장 로직
         document.getElementById('firebaseSaveBtn').addEventListener('click', async () => {
             window.showToast("⏳ 클라우드에 전체 상태 저장 중...", true);
             try {
-                // 1단계 모든 설정값 싹쓸이 저장
                 const step1Inputs = {};
                 document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea').forEach(el => {
                     if (el.type === 'checkbox') step1Inputs[el.id] = el.checked;
@@ -1649,7 +1723,7 @@
                     globalDateDetails: window.globalDateDetails,
                     globalLastDate: window.globalLastDate,
                     isScheduleGenerated: window.isScheduleGenerated,
-                    currentStep: document.querySelector('.step-section.active').id, // 현재 화면 단계 기억
+                    currentStep: document.querySelector('.step-section.active').id, 
                     updatedAt: new Date().toISOString()
                 };
                 
@@ -1661,7 +1735,6 @@
             }
         });
 
-        // 📂 100% 전체 상태 복구(타임머신) 로직
         document.getElementById('firebaseLoadBtn').addEventListener('click', async () => {
             window.showToast("⏳ 타임머신 복구 중...", true);
             try {
@@ -1675,7 +1748,6 @@
                     window.globalLastDate = loadedData.globalLastDate || 30;
                     window.isScheduleGenerated = loadedData.isScheduleGenerated || false;
                     
-                    // 1단계 UI 및 설정 100% 복원
                     if(loadedData.schType) {
                         const radioBtn = document.querySelector(`input[name="schType"][value="${loadedData.schType}"]`);
                         if(radioBtn) radioBtn.checked = true;
@@ -1693,7 +1765,6 @@
                     window.applyPagination();
                     window.update4WeekDateText();
 
-                    // 3,4단계 완성된 스케줄표가 있었다면 표 헤더와 결과까지 100% 복원
                     if (window.isScheduleGenerated && window.globalDateDetails.length > 0) {
                         let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
                         window.globalDateDetails.forEach(item => { 
@@ -1714,7 +1785,6 @@
                         window.renderResultTable('finalAdjustedTable', 'finalShifts');
                     }
 
-                    // 마지막으로 보던 단계(1~4단계) 화면으로 자동 텔레포트
                     if(loadedData.currentStep) {
                         document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
                         document.querySelectorAll('.step-tab').forEach(el => el.classList.remove('active'));
