@@ -1775,4 +1775,137 @@
         headerHtml += `</tr>`;
         document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
 
-        window.renderResultTable('
+        window.renderResultTable('finalAdjustedTable', 'finalShifts');
+        step4Log.innerHTML += `✨ [조율 성공] 최종 조율이 무결점으로 인출되었습니다.`;
+    };
+
+    window.onload = function() {
+        window.syncStaffRows();
+    };
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwNFmaUTlowPNCJOUmJX5XQUWd76_2gJ0",
+        authDomain: "haramii.firebaseapp.com",
+        projectId: "haramii",
+        storageBucket: "haramii.firebasestorage.app",
+        messagingSenderId: "181032107844",
+        appId: "1:181032107844:web:15cb791c92ebf8646ae111"
+    };
+
+    try {
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('firebaseSaveBtn').addEventListener('click', async () => {
+            window.showToast("⏳ 클라우드에 전체 상태 저장 중...", true);
+            try {
+                const configInputs = {};
+                document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea, #totalStaff, #seniorStaff, #minSeniorPerShift, #pageSize, #seniorAllocationMode').forEach(el => {
+                    if (!el.id) return;
+                    if (el.type === 'checkbox') configInputs[el.id] = el.checked;
+                    else if (el.type !== 'radio') configInputs[el.id] = el.value;
+                });
+
+                const saveData = {
+                    staffData: window.globalStaffData,
+                    schType: document.querySelector('input[name="schType"]:checked').value,
+                    configInputs: configInputs,
+                    calculatedMatrix: window.globalCalculatedMatrix,
+                    globalDateDetails: window.globalDateDetails,
+                    globalLastDate: window.globalLastDate,
+                    isScheduleGenerated: window.isScheduleGenerated,
+                    currentStep: document.querySelector('.step-section.active').id, 
+                    updatedAt: new Date().toISOString()
+                };
+                
+                const cleanData = JSON.parse(JSON.stringify(saveData));
+                await setDoc(doc(db, "ward_settings", "current_duty"), cleanData);
+                window.showToast("✅ 완벽하게 저장되었습니다! (창을 닫아도 유지됩니다)");
+            } catch (error) {
+                console.error(error);
+                window.showToast("❌ 저장 실패", false);
+                alert("🚨 파이어베이스 저장 에러 원인:\n" + error.message + "\n\n💡 해결 체크리스트:\n1. 파이어베이스 콘솔에서 'Realtime Database'가 아닌 'Firestore Database'의 규칙을 수정했는지 확인하세요.\n2. 규칙 수정 후 우측 상단의 파란색 [게시(Publish)] 버튼을 꼭 눌러야 합니다.");
+            }
+        });
+
+        document.getElementById('firebaseLoadBtn').addEventListener('click', async () => {
+            window.showToast("⏳ 타임머신 복구 중...", true);
+            try {
+                const docSnap = await getDoc(doc(db, "ward_settings", "current_duty"));
+                if (docSnap.exists()) {
+                    const loadedData = docSnap.data();
+                    
+                    window.globalStaffData = loadedData.staffData || [];
+                    window.globalCalculatedMatrix = loadedData.calculatedMatrix || [];
+                    window.globalDateDetails = loadedData.globalDateDetails || [];
+                    window.globalLastDate = loadedData.globalLastDate || 30;
+                    window.isScheduleGenerated = loadedData.isScheduleGenerated || false;
+                    
+                    if(loadedData.schType) {
+                        const radioBtn = document.querySelector(`input[name="schType"][value="${loadedData.schType}"]`);
+                        if(radioBtn) radioBtn.checked = true;
+                        window.switchScheduleTypeUI();
+                    }
+                    
+                    if(loadedData.configInputs || loadedData.step1Inputs) {
+                        const s1 = loadedData.configInputs || loadedData.step1Inputs;
+                        document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea, #totalStaff, #seniorStaff, #minSeniorPerShift, #pageSize, #seniorAllocationMode').forEach(el => {
+                            if (el.type === 'checkbox' && s1[el.id] !== undefined) el.checked = s1[el.id];
+                            else if (el.type !== 'radio' && s1[el.id] !== undefined) el.value = s1[el.id];
+                        });
+                    }
+                    
+                    window.normalizeStaffData(); 
+                    window.applyPagination();
+                    window.update4WeekDateText();
+
+                    if (window.isScheduleGenerated && window.globalDateDetails.length > 0) {
+                        let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
+                        window.globalDateDetails.forEach(item => { 
+                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                            headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
+                        });
+                        headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
+                        window.globalDateDetails.forEach(item => { 
+                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                            headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
+                        });
+                        headerHtml += `</tr>`;
+                        
+                        document.querySelector("#scheduleTable thead").innerHTML = headerHtml;
+                        document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
+                        
+                        window.renderResultTable('scheduleTable', 'monthShifts');
+                        window.renderResultTable('finalAdjustedTable', 'finalShifts');
+                    }
+
+                    if(loadedData.currentStep) {
+                        document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
+                        document.querySelectorAll('.step-tab').forEach(el => el.classList.remove('active'));
+                        document.getElementById(loadedData.currentStep).classList.add('active');
+                        
+                        const tabId = loadedData.currentStep.replace('Section', '').replace('step', 'tab');
+                        const tab = document.getElementById(tabId);
+                        if(tab) tab.classList.add('active');
+                    }
+                    
+                    window.showToast("📂 100% 완벽하게 타임머신 복구되었습니다!");
+                } else {
+                    window.showToast("❓ 저장된 클라우드 데이터가 없습니다.", false);
+                }
+            } catch (error) {
+                console.error(error);
+                window.showToast("❌ 불러오기 에러: " + error.message, false);
+            }
+        });
+    } catch(e) {
+        console.warn("파이어베이스 설정 오류: " + e.message);
+    }
+</script>
+</body>
+</html>
