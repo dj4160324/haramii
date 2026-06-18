@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (트리니티 완성본)</title>
+    <title>우리 병원 근무 관리 시스템 (퍼포먼스 튜닝본)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -77,7 +77,8 @@
         .filter-chip.active { background-color: #3182ce; color: white; border-color: #2b6cb0; box-shadow: 0 2px 4px rgba(49, 130, 206, 0.3); }
         .sort-select { padding: 9px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; color: #2d3748; font-weight: 800; background-color: #fff; cursor: pointer; }
 
-        .staff-edit-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        /* 💡 툴팁 버그 수정: overflow:hidden 제거하여 말풍선이 짤리지 않게 함 */
+        .staff-edit-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .staff-edit-table th, .staff-edit-table td { border: 1px solid #a0aec0; padding: 10px 8px; text-align: center; vertical-align: middle; }
         .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 13px; border-bottom: 2px solid #718096; }
         .input-staff-name { padding: 6px; border: 1px solid #cbd5e0; border-radius: 4px; font-weight: bold; width: 85%; text-align: center; font-size: 13px; }
@@ -129,9 +130,10 @@
         .m-leave { background-color: #fff5f5; color: #c53030; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; border: 1px dotted #fc8181; }
         .dispatch { background-color: #e2e8f0; color: #4a5568; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; border: 1px dotted #a0aec0; }
 
-        .tooltip-container { display: inline-block; cursor: help; color: #2b6cb0; margin-left: 2px; font-weight: 900; background: #ebf8ff; border-radius: 50%; width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 10px; border: 1px solid #90cdf4; }
-        .tooltip-container .tooltip-text { visibility: hidden; width: 250px; background-color: #2d3748; color: #fff; text-align: left; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 10; bottom: 135%; right: 0; opacity: 0; transition: opacity 0.3s; font-size: 12px; font-weight: normal; line-height: 1.5; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
-        .tooltip-container .tooltip-text::after { content: ""; position: absolute; top: 100%; right: 12px; margin-left: -6px; border-width: 6px; border-style: solid; border-color: #2d3748 transparent transparent transparent; }
+        /* 💡 툴팁 버그 수정: position: relative 추가 및 말풍선 위치를 예쁘게 중앙으로 조정 */
+        .tooltip-container { position: relative; display: inline-block; cursor: help; color: #2b6cb0; margin-left: 2px; font-weight: 900; background: #ebf8ff; border-radius: 50%; width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 10px; border: 1px solid #90cdf4; }
+        .tooltip-container .tooltip-text { visibility: hidden; width: 250px; background-color: #2d3748; color: #fff; text-align: left; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 100; bottom: 135%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 12px; font-weight: normal; line-height: 1.5; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
+        .tooltip-container .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 6px; border-style: solid; border-color: #2d3748 transparent transparent transparent; }
         .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
         .mleave-container.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
@@ -618,22 +620,62 @@
         window.applyPagination();
     };
 
+    // 💡 최적화: 체크박스 변경 시 표 전체 리렌더링(applyPagination) 방지 및 직접 DOM 조작
     window.toggleMLeaveSelect = function(checkbox) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id'));
-        if(window.globalStaffData[sid-1]) window.globalStaffData[sid-1].isMLeaveActive = checkbox.checked;
-        window.applyPagination();
+        const item = window.globalStaffData.find(x => x.id === sid);
+        if(item) item.isMLeaveActive = checkbox.checked;
+        
+        const tr = checkbox.closest('tr');
+        if(tr) {
+            const container = tr.querySelector('.mleave-container');
+            const sel = tr.querySelector('.select-mleave');
+            if(checkbox.checked) {
+                container.classList.remove('disabled');
+                sel.disabled = false;
+            } else {
+                container.classList.add('disabled');
+                sel.disabled = true;
+            }
+        }
     };
 
+    // 💡 최적화: 체크박스 변경 시 표 전체 리렌더링(applyPagination) 방지 및 직접 DOM 조작
     window.toggleMutualExclusion = function(checkbox, type) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id'));
         const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return;
+        
+        const tr = checkbox.closest('tr');
 
-        if (type === 'SENIOR' && checkbox.checked) { item.isSenior = true; item.isNewbie = false; item.precId = 0; } 
-        else if (type === 'NEWBIE' && checkbox.checked) { item.isSenior = false; item.isNewbie = true; } 
-        else if (type === 'NEWBIE' && !checkbox.checked) { item.isNewbie = false; item.precId = 0; } 
-        else if (type === 'SENIOR' && !checkbox.checked) { item.isSenior = false; }
-        window.applyPagination();
+        if (type === 'SENIOR' && checkbox.checked) { 
+            item.isSenior = true; item.isNewbie = false; item.precId = 0; 
+            if(tr) {
+                const newbieCheck = tr.querySelector('.check-newbie');
+                if(newbieCheck) newbieCheck.checked = false;
+                const precContainer = tr.querySelector('.preceptor-container');
+                if(precContainer) precContainer.classList.remove('active');
+            }
+        } 
+        else if (type === 'NEWBIE' && checkbox.checked) { 
+            item.isSenior = false; item.isNewbie = true; 
+            if(tr) {
+                const seniorCheck = tr.querySelector('.check-senior');
+                if(seniorCheck) seniorCheck.checked = false;
+                const precContainer = tr.querySelector('.preceptor-container');
+                if(precContainer) precContainer.classList.add('active');
+            }
+        } 
+        else if (type === 'NEWBIE' && !checkbox.checked) { 
+            item.isNewbie = false; item.precId = 0; 
+            if(tr) {
+                const precContainer = tr.querySelector('.preceptor-container');
+                if(precContainer) precContainer.classList.remove('active');
+            }
+        } 
+        else if (type === 'SENIOR' && !checkbox.checked) { 
+            item.isSenior = false; 
+        }
     };
 
     window.updatePreceptorDropdownsRealtime = function(inputNode, sid) {
@@ -641,24 +683,37 @@
         if(item) item.name = inputNode.value.trim();
     };
 
+    // 💡 최적화: 체크박스 변경 시 표 전체 리렌더링(applyPagination) 방지 및 직접 DOM 조작
     window.updateMemoryFields = function(node, type) {
         const sid = parseInt(node.getAttribute('data-staff-id'));
         const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return;
 
+        const tr = node.closest('tr');
+
         if(type === 'PREG') {
             item.isPregnant = node.checked;
-            if(node.checked) item.isNightOnly = false;
+            if(node.checked) {
+                item.isNightOnly = false;
+                if(tr) {
+                    const noCheck = tr.querySelector('.check-nightonly');
+                    if(noCheck) noCheck.checked = false;
+                }
+            }
         }
         if(type === 'NIGHT_ONLY') {
             item.isNightOnly = node.checked;
-            if(node.checked) item.isPregnant = false;
+            if(node.checked) {
+                item.isPregnant = false;
+                if(tr) {
+                    const pregCheck = tr.querySelector('.check-pregnant');
+                    if(pregCheck) pregCheck.checked = false;
+                }
+            }
         }
         if(type === 'DISPATCH') item.isDispatch = node.checked;
         if(type === 'MLEAVE_OPT') item.mLeaveOption = node.value;
         if(type === 'PREC') item.precId = parseInt(node.value);
-
-        window.applyPagination();
     };
 
     window.handleMemoryDayToggle = function(btn, sid, idx) {
