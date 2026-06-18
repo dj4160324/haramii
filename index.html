@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (마스터 통합본)</title>
+    <title>우리 병원 근무 관리 시스템 (트리니티 비율 엔진 통합본)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -78,9 +78,9 @@
         .sort-select { padding: 9px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; color: #2d3748; font-weight: 800; background-color: #fff; cursor: pointer; }
 
         .staff-edit-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        /* 💡 수정됨: 테두리 색상을 #e2e8f0 에서 #a0aec0(더 진한 회색)으로 변경하고 두께를 살짝 줌 */
+        /* 💡 UI 개선: 2단계 표 테두리 진하게 변경 (#a0aec0 적용) */
         .staff-edit-table th, .staff-edit-table td { border: 1px solid #a0aec0; padding: 10px 8px; text-align: center; vertical-align: middle; }
-        .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 13px; border-bottom: 2px solid #cbd5e0; }
+        .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 13px; border-bottom: 2px solid #718096; }
         .input-staff-name { padding: 6px; border: 1px solid #cbd5e0; border-radius: 4px; font-weight: bold; width: 85%; text-align: center; font-size: 13px; }
         
         .picker-click-box { background: #fff; border: 1px dashed #3182ce; padding: 8px; border-radius: 6px; font-size: 12px; color: #2b6cb0; font-weight: bold; cursor: pointer; text-align: center; min-height: 24px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; align-items: center; transition: background 0.2s; }
@@ -380,7 +380,7 @@
                         <th style="width: 8%;">직급</th>
                         <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
                         <th style="width: 30%;">특이사항 (임신/N전담/보건/파견)</th>
-                        <th style="width: 11%;">🌴 지정 연차 <span class="mark-optional">(달력 드래그)</span><br><span style="font-size:10px; color:#e53e3e;">*(전날 N근무 최대한 배제)*</span></th>
+                        <th style="width: 11%;">🌴 지정 연차 <span class="mark-optional"></span><br><span style="font-size:10px; color:#e53e3e;">*(전날 N근무 최대한 배제)*</span></th>
                         <th style="width: 17%;">📌 날짜 지정 신청 근무 <span class="mark-optional"></span></th>
                         <th style="width: 20%;">❌ 매주 고정 OFF 요일</th>
                     </tr>
@@ -719,7 +719,6 @@
     window.applyPagination = function() {
         const pageSize = parseInt(document.getElementById('pageSize').value) || 10;
         const searchKeyword = document.getElementById('step2Search').value.trim().toLowerCase();
-        const sortVal = document.getElementById('step2Sort').value;
         const tbody = document.querySelector("#staffEditTable tbody");
 
         let filteredData = [...window.globalStaffData];
@@ -732,9 +731,7 @@
         if (window.currentFilterChip === 'DISPATCH') filteredData = filteredData.filter(item => item.isDispatch);
         if (window.currentFilterChip === 'NO_MLEAVE') filteredData = filteredData.filter(item => !item.isMLeaveActive);
 
-        if (sortVal === 'RANK') filteredData.sort((a, b) => (b.isSenior - a.isSenior) || (a.isNewbie - b.isNewbie) || (a.id - b.id));
-        else if (sortVal === 'ABC') filteredData.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
-        else filteredData.sort((a, b) => a.id - b.id); 
+        filteredData.sort((a, b) => a.id - b.id); 
 
         const totalRows = filteredData.length;
         const totalPages = Math.ceil(totalRows / pageSize) || 1;
@@ -1166,7 +1163,6 @@
             const year = document.getElementById('schYear').value;
             const month = parseInt(document.getElementById('schMonth').value);
             const minSenior = parseInt(document.getElementById('minSeniorPerShift').value) || 0;
-            // 💡 선임 배정 밸런스 옵션 값 불러오기
             const seniorAllocationMode = document.getElementById('seniorAllocationMode').value || 'PROPORTIONAL';
             
             const hospitalHolidaysInput = document.getElementById('hospitalCustomHolidays').value;
@@ -1275,11 +1271,13 @@
             if (activeHolidayAddOff) baseRequiredOff += holidayCount;
             let maxAllowedOff = baseRequiredOff + 4;
 
-            // 💡 병동 전체 선임 비율(Ratio) 사전 연산
             let allActiveRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
             let totalActiveStaff = allActiveRows.length;
             let totalActiveSeniors = allActiveRows.filter(r => r.staff.isSenior).length;
             let seniorRatio = totalActiveStaff > 0 ? (totalActiveSeniors / totalActiveStaff) : 0;
+
+            let targetOffsPerNurse = Math.max(baseRequiredOff, fallbackMinOffCount);
+            let targetTotalOffs = totalActiveStaff * targetOffsPerNurse;
 
             for (let idx = 0; idx < lastDate; idx++) {
                 const dayInfo = dateDetails[idx];
@@ -1310,15 +1308,12 @@
                     let currentCount = allRows.filter(r => r.monthShifts[idx] === shift).length;
                     let need = quota - currentCount;
 
-                    // 💡 [AI 밸런싱 코어] 옵션에 따른 선임 타겟(Target) 산출
                     let dynamicSeniorTarget = minSenior;
                     if (seniorAllocationMode === 'PROPORTIONAL') {
-                        // AI가 듀티별 요구 인원(quota) 대비 병동 선임 비율(seniorRatio)을 곱해 적정 선임 투입 수를 자동 계산합니다.
                         let aiCalculatedTarget = Math.round(quota * seniorRatio);
                         dynamicSeniorTarget = Math.max(minSenior, aiCalculatedTarget);
                     }
 
-                    // 1순위: 계산된 선임 타겟(dynamicSeniorTarget) 만큼 선임을 최우선 배정
                     for (let k = 0; k < dynamicSeniorTarget; k++) {
                         if (need <= 0) break;
                         let unassignedSeniors = allRows.filter(r => 
@@ -1335,7 +1330,6 @@
                         }
                     }
 
-                    // 2순위: 나머지 자리는 일반 간호사 우선 투입
                     if (need > 0) {
                         let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
                         
@@ -1343,14 +1337,12 @@
                         generalCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                         for (let c of generalCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
 
-                        // 3순위: 일반 간호사로도 부족하면 대기하던 남은 선임 추가 투입
                         if (need > 0) {
                             let seniorCandidates = candidates.filter(c => c.staff.isSenior);
                             seniorCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                             for (let c of seniorCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
                         }
 
-                        // 4순위: 신규 투입
                         if (need > 0) {
                             let newbieCandidates = candidates.filter(c => c.staff.isNewbie);
                             newbieCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
@@ -1404,10 +1396,15 @@
                 let currentDCount = allRows.filter(r => r.monthShifts[idx] === 'D').length;
                 let currentECount = allRows.filter(r => r.monthShifts[idx] === 'E').length;
 
-                let targetOffsPerNurse = Math.max(baseRequiredOff, fallbackMinOffCount);
-                let dailyOffBudget = Math.ceil((allRows.length * targetOffsPerNurse) / lastDate) + 1; 
+                let remainingDays = lastDate - idx;
+                let offsAssignedSoFar = 0;
+                scheduleMatrix.forEach(r => { 
+                    for(let d=0; d<idx; d++) { if(['OFF', 'LEAVE', 'M-LEAVE'].includes(r.monthShifts[d])) offsAssignedSoFar++; }
+                });
+                let remainingOffsNeeded = targetTotalOffs - offsAssignedSoFar;
+                let dynamicDailyBudget = remainingDays > 0 ? Math.ceil(remainingOffsNeeded / remainingDays) : 0;
                 let currentOffsToday = scheduleMatrix.filter(r => ['OFF', 'LEAVE', 'M-LEAVE'].includes(r.monthShifts[idx])).length;
-                let availableOffSlots = Math.max(0, dailyOffBudget - currentOffsToday); 
+                let availableOffSlots = Math.max(0, dynamicDailyBudget - currentOffsToday); 
 
                 unassignedRows.sort((a,b) => {
                     let offA = a.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
@@ -1432,6 +1429,18 @@
                         return; 
                     }
 
+                    // 💡 [트리니티 엔진] 2. 오버티오 강제 방출 범퍼 (130% 비율 기반 다이내믹 상한선)
+                    let maxDAllowed = Math.max(targetDayQuota + 1, Math.ceil(targetDayQuota * 1.3));
+                    let maxEAllowed = Math.max(targetEveQuota + 1, Math.ceil(targetEveQuota * 1.3));
+
+                    let isDBumperFull = currentDCount >= maxDAllowed;
+                    let isEBumperFull = currentECount >= maxEAllowed;
+
+                    if (isDBumperFull && isEBumperFull) {
+                        row.monthShifts[idx] = 'OFF';
+                        return;
+                    }
+
                     if (availableOffSlots > 0 && canTakeOff && totalRestCount < maxAllowedOff) {
                         row.monthShifts[idx] = 'OFF';
                         availableOffSlots--; 
@@ -1444,8 +1453,8 @@
                     }
 
                     let availableShifts = [];
-                    if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'D') && row.staff.reqShiftsMap[currentDayNum] !== 'xD') availableShifts.push('D');
-                    if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'E') && row.staff.reqShiftsMap[currentDayNum] !== 'xE') availableShifts.push('E');
+                    if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'D') && row.staff.reqShiftsMap[currentDayNum] !== 'xD' && !isDBumperFull) availableShifts.push('D');
+                    if (window.checkPhysicalGardeRule(row.monthShifts, idx, 'E') && row.staff.reqShiftsMap[currentDayNum] !== 'xE' && !isEBumperFull) availableShifts.push('E');
 
                     if (availableShifts.length === 0) {
                         row.monthShifts[idx] = 'OFF'; 
@@ -1502,6 +1511,64 @@
                                 swapOccurred = true;
                                 break; 
                             }
+                        }
+                    }
+                }
+            }
+
+            let offSwapOccurred = true;
+            let offMaxLoops = 200;
+
+            while(offSwapOccurred && offMaxLoops > 0) {
+                offSwapOccurred = false;
+                offMaxLoops--;
+
+                let dailyOffCounts = [];
+                for(let d=0; d<lastDate; d++) {
+                    let count = scheduleMatrix.filter(r => !r.staff.isDispatch && ['OFF', 'LEAVE', 'M-LEAVE'].includes(r.monthShifts[d])).length;
+                    dailyOffCounts.push({ day: d, count: count });
+                }
+
+                dailyOffCounts.sort((a,b) => b.count - a.count);
+                let maxDayObj = dailyOffCounts[0];
+                let minDayObj = dailyOffCounts[dailyOffCounts.length - 1];
+
+                if (maxDayObj.count - minDayObj.count >= 2) {
+                    let dMax = maxDayObj.day;
+                    let dMin = minDayObj.day;
+                    let currentDayNumMax = globalDateDetails[dMax].date;
+                    let currentDayNumMin = globalDateDetails[dMin].date;
+
+                    let candidates = scheduleMatrix.filter(r =>
+                        !r.staff.isDispatch &&
+                        r.monthShifts[dMax] === 'OFF' &&
+                        (r.monthShifts[dMin] === 'D' || r.monthShifts[dMin] === 'E') &&
+                        !r.staff.leaveDates.includes(currentDayNumMax) && 
+                        !r.staff.leaveDates.includes(currentDayNumMin) &&
+                        !r.staff.offDayIndicesArray.includes(globalDateDetails[dMax].dayIndex) 
+                    );
+
+                    for (let r of candidates) {
+                        let shiftToMove = r.monthShifts[dMin]; 
+
+                        if(r.staff.reqShiftsMap[currentDayNumMax] === 'x' + shiftToMove) continue;
+                        if(r.staff.reqShiftsMap[currentDayNumMin]) continue; 
+
+                        let tempShifts = [...r.monthShifts];
+                        tempShifts[dMax] = shiftToMove;
+                        tempShifts[dMin] = 'OFF';
+
+                        let safeMax = window.checkPhysicalGardeRule(tempShifts, dMax, shiftToMove);
+                        if (dMax < lastDate - 1 && safeMax) safeMax = window.checkPhysicalGardeRule(tempShifts, dMax + 1, tempShifts[dMax+1]);
+
+                        let safeMin = window.checkPhysicalGardeRule(tempShifts, dMin, 'OFF');
+                        if (dMin < lastDate - 1 && safeMin) safeMin = window.checkPhysicalGardeRule(tempShifts, dMin + 1, tempShifts[dMin+1]);
+
+                        if (safeMax && safeMin) {
+                            r.monthShifts[dMax] = shiftToMove;
+                            r.monthShifts[dMin] = 'OFF';
+                            offSwapOccurred = true;
+                            break; 
                         }
                     }
                 }
@@ -1708,30 +1775,4 @@
         headerHtml += `</tr>`;
         document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
 
-        window.renderResultTable('finalAdjustedTable', 'finalShifts');
-        step4Log.innerHTML += `✨ [조율 성공] 최종 조율이 무결점으로 인출되었습니다.`;
-    };
-
-    window.onload = function() {
-        window.syncStaffRows();
-    };
-</script>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBwNFmaUTlowPNCJOUmJX5XQUWd76_2gJ0",
-        authDomain: "haramii.firebaseapp.com",
-        projectId: "haramii",
-        storageBucket: "haramii.firebasestorage.app",
-        messagingSenderId: "181032107844",
-        appId: "1:181032107844:web:15cb791c92ebf8646ae111"
-    };
-
-    try {
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        document
+        window.renderResultTable('
