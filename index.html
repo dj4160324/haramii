@@ -1708,6 +1708,7 @@
             try {
                 const step1Inputs = {};
                 document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea').forEach(el => {
+                    if (!el.id) return; // 🚨 핵심 수정: 이름표(id)가 없는 가짜 안내용 체크박스 등은 무시하고 건너뜁니다!
                     if (el.type === 'checkbox') step1Inputs[el.id] = el.checked;
                     else if (el.type !== 'radio') step1Inputs[el.id] = el.value;
                 });
