@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>우리 병원 근무 관리 시스템 (마스터 통합본)</title>
     <style>
-        /* 💡 피드백 4번: 화면 맨 아래 여백 100px 추가로 스크롤 시원하게 확장 */
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
@@ -165,7 +164,6 @@
         .btn-cal-day { border: 1px solid #e2e8f0; background: #fff; padding: 12px 0; font-size: 14px; font-weight: 800; border-radius: 6px; cursor: pointer; color: #2d3748; display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .btn-cal-day:hover { border-color: #cbd5e0; background-color: #f8fafc; }
         
-        /* 💡 피드백 3번: 달력 하단 문구 폰트 및 여백 디자인 개선 */
         .modal-footer { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; }
         .drag-notice { font-size: 12px; color: #718096; line-height: 1.6; text-align: center; font-weight: bold; font-family: inherit; background: #f8fafc; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; border: 1px dashed #cbd5e0; }
         .btn-modal-close { background: #3182ce; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: 800; width: 100%; }
@@ -247,16 +245,15 @@
         <div class="config-card purple">
             <div class="config-title purple">⚖️ 기본 교대근무 노무 및 복지 가드레일</div>
             <div class="rules-group">
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleSleepingOff" checked><div class="rule-text"><label for="ruleSleepingOff">🛏️ 나이트(N) 초과 근무자 슬리핑 오프(Sleeping OFF) 보상</label><span>한 달에 <input type="number" id="targetNightLimit" class="inline-input-num" value="7" min="1" max="15">개 이상의 N근무가 있을 시, 엑스트라 추가 오프를 <input type="number" id="rewardOffCount" class="inline-input-num" value="1" min="1" max="5">개 제공합니다.</span></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMenstruationLeave" checked onchange="toggleGlobalMLeave()"><div class="rule-text"><label for="ruleMenstruationLeave">🩸 여성 간호사 보건휴가(생리휴가) 적용 허용</label></div></div>
-                
-                <div class="highlight-box">
+                <div class="highlight-box" style="margin-top:0; margin-bottom:15px;">
                     <div class="rule-text">
                         <label style="color:#166534; font-size:15px;">⚙️ 인력 한계 상황 시 순수 최소 OFF 보장 조율 옵션 <span class="mark-required">* 필수</span></label>
                         <span style="color:#2f855a; margin-top:6px;">간호사 인당 최소 <input type="number" id="fallbackMinOffCount" class="inline-input-num" value="7" min="4" max="15" style="border-color:#48bb78; color:#276749;">일의 미세 마지노선 '순수 오프(OFF)'를 강제 수호합니다.</span>
                     </div>
                 </div>
 
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleSleepingOff" checked><div class="rule-text"><label for="ruleSleepingOff">🛏️ 나이트(N) 초과 근무자 슬리핑 오프(Sleeping OFF) 보상</label><span>한 달에 <input type="number" id="targetNightLimit" class="inline-input-num" value="7" min="1" max="15">개 이상의 N근무가 있을 시, 엑스트라 추가 오프를 <input type="number" id="rewardOffCount" class="inline-input-num" value="1" min="1" max="5">개 제공합니다.</span></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMenstruationLeave" checked onchange="toggleGlobalMLeave()"><div class="rule-text"><label for="ruleMenstruationLeave">🩸 여성 간호사 보건휴가(생리휴가) 적용 허용</label></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxOffLimit" checked><div class="rule-text"><label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label><span>한 번에 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 지정 연차를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select></span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNightLimit" checked><div class="rule-text"><label for="ruleNightLimit">🌙 월간 야간근무 상한 보장 규칙</label><span>총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleWeekendOff" checked><div class="rule-text"><label for="ruleWeekendOff">📅 스케줄 주기 내 주말(토/일) 일수 기반 기본 휴무 보장</label><span>해당 주기 내에 존재하는 실제 토요일과 일요일의 총합 개수만큼 순수 OFF 일수를 무조건 보장합니다.</span></div></div>
@@ -289,7 +286,6 @@
             <div class="config-title pink">🤰 임산부 특별 보호 및 근로시간 단축 보상 규정</div>
             <div class="rules-group">
                 <div class="rule-checkbox-item"><input type="checkbox" id="pregNoNight" checked><div class="rule-text"><label for="pregNoNight">🚫 임산부 야간(N) 근무 전면 제한</label></div></div>
-                
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="pregHolidayOff" checked>
                     <div class="rule-text" style="width: 100%;">
@@ -303,7 +299,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="rule-checkbox-item"><input type="checkbox" id="pregShortHourComp" checked><div class="rule-text"><label for="pregShortHourComp">⏳ 단축분 누적 보상: D/E 근무 <input type="number" id="pregShortHourDays" class="inline-input-num" value="4" min="1">개 당 <input type="number" id="pregShortHourReward" class="inline-input-num" value="1" min="1">개 추가 오프 지급</label></div></div>
             </div>
         </div>
@@ -323,6 +318,13 @@
                 <div class="config-item"><label for="totalStaff">전체 간호사 수<span class="mark-required">* 필수</span></label><input type="number" id="totalStaff" min="3" max="150" value="15" onchange="syncStaffRows()"></div>
                 <div class="config-item"><label for="seniorStaff">총 선임간호사 수</label><input type="number" id="seniorStaff" min="0" max="50" value="5" onchange="updateSeniorCheckboxes()"></div>
                 <div class="config-item"><label for="minSeniorPerShift">근무당 최소 선임 수</label><input type="number" id="minSeniorPerShift" min="0" max="5" value="1"></div>
+                <div class="config-item">
+                    <label for="seniorAllocationMode">선임 배정 밸런스 옵션 <span class="mark-required">*</span></label>
+                    <select id="seniorAllocationMode" style="border-color:#3182ce; font-weight:bold; color:#2b6cb0;">
+                        <option value="PROPORTIONAL" selected>📊 전체 비율 비례 배정 (AI 자동 공평 추가)</option>
+                        <option value="STRICT">🛑 최소 인원만 엄격 제한 (선임 추가 배제)</option>
+                    </select>
+                </div>
                 <div class="config-item"><label for="pageSize">한 화면 표시 인원 수 (페이징)</label><input type="number" id="pageSize" min="5" max="100" value="10" onchange="applyPagination()"></div>
             </div>
 
@@ -375,7 +377,7 @@
                         <th style="width: 8%;">직급</th>
                         <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
                         <th style="width: 30%;">특이사항 (임신/N전담/보건/파견)</th>
-                        <th style="width: 11%;">🌴 지정 연차 <span class="mark-optional"></span><br><span style="font-size:10px; color:#e53e3e;">*(전날 N근무 최대한 배제)*</span></th>
+                        <th style="width: 11%;">🌴 지정 연차 <span class="mark-optional">(달력 드래그)</span><br><span style="font-size:10px; color:#e53e3e;">*(전날 N근무 최대한 배제)*</span></th>
                         <th style="width: 17%;">📌 날짜 지정 신청 근무 <span class="mark-optional"></span></th>
                         <th style="width: 20%;">❌ 매주 고정 OFF 요일</th>
                     </tr>
@@ -399,7 +401,7 @@
 
         <div class="btn-center">
             <button id="backToStep2Btn" class="btn-secondary" onclick="backToStep2()">⬅️ 2단계(인원 사정 조율)로 돌아가기</button>
-            <button id="submitBtn" class="btn-main" onclick="runSmartScheduling()">⚡ 월간 스케줄 자동 생성</button>
+            <button id="submitBtn" class="btn-main" onclick="runSmartScheduling()">⚡ 스케줄 생성</button>
         </div>
 
         <div class="filter-control-panel" style="margin-top:30px;">
@@ -773,7 +775,6 @@
                 }).join(' ');
             }
 
-            // 💡 2단계 UI 피드백 적용 (직급 독립칸, 프리셉터 이동, 특이사항 넓게 한줄 정렬)
             htmlBuffer += `
                 <tr data-staff-id="${item.id}">
                     <td><input type="checkbox" class="check-batch" style="cursor:pointer; transform:scale(1.2);"></td>
@@ -1162,6 +1163,9 @@
             const year = document.getElementById('schYear').value;
             const month = parseInt(document.getElementById('schMonth').value);
             const minSenior = parseInt(document.getElementById('minSeniorPerShift').value) || 0;
+            // 💡 선임 배정 밸런스 옵션 값 불러오기
+            const seniorAllocationMode = document.getElementById('seniorAllocationMode').value || 'PROPORTIONAL';
+            
             const hospitalHolidaysInput = document.getElementById('hospitalCustomHolidays').value;
             const schType = document.querySelector('input[name="schType"]:checked').value;
 
@@ -1268,6 +1272,12 @@
             if (activeHolidayAddOff) baseRequiredOff += holidayCount;
             let maxAllowedOff = baseRequiredOff + 4;
 
+            // 💡 병동 전체 선임 비율(Ratio) 사전 연산
+            let allActiveRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
+            let totalActiveStaff = allActiveRows.length;
+            let totalActiveSeniors = allActiveRows.filter(r => r.staff.isSenior).length;
+            let seniorRatio = totalActiveStaff > 0 ? (totalActiveSeniors / totalActiveStaff) : 0;
+
             for (let idx = 0; idx < lastDate; idx++) {
                 const dayInfo = dateDetails[idx];
                 const currentDayNum = dayInfo.date;
@@ -1297,7 +1307,16 @@
                     let currentCount = allRows.filter(r => r.monthShifts[idx] === shift).length;
                     let need = quota - currentCount;
 
-                    for (let k = 0; k < minSenior; k++) {
+                    // 💡 [AI 밸런싱 코어] 옵션에 따른 선임 타겟(Target) 산출
+                    let dynamicSeniorTarget = minSenior;
+                    if (seniorAllocationMode === 'PROPORTIONAL') {
+                        // AI가 듀티별 요구 인원(quota) 대비 병동 선임 비율(seniorRatio)을 곱해 적정 선임 투입 수를 자동 계산합니다.
+                        let aiCalculatedTarget = Math.round(quota * seniorRatio);
+                        dynamicSeniorTarget = Math.max(minSenior, aiCalculatedTarget);
+                    }
+
+                    // 1순위: 계산된 선임 타겟(dynamicSeniorTarget) 만큼 선임을 최우선 배정
+                    for (let k = 0; k < dynamicSeniorTarget; k++) {
                         if (need <= 0) break;
                         let unassignedSeniors = allRows.filter(r => 
                             r.staff.isSenior && r.monthShifts[idx] === null &&
@@ -1313,6 +1332,7 @@
                         }
                     }
 
+                    // 2순위: 나머지 자리는 일반 간호사 우선 투입
                     if (need > 0) {
                         let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
                         
@@ -1320,12 +1340,14 @@
                         generalCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                         for (let c of generalCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
 
+                        // 3순위: 일반 간호사로도 부족하면 대기하던 남은 선임 추가 투입
                         if (need > 0) {
                             let seniorCandidates = candidates.filter(c => c.staff.isSenior);
                             seniorCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                             for (let c of seniorCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
                         }
 
+                        // 4순위: 신규 투입
                         if (need > 0) {
                             let newbieCandidates = candidates.filter(c => c.staff.isNewbie);
                             newbieCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
@@ -1606,7 +1628,6 @@
                 <span style="color:#2b6cb0;">D: ${dCnt}</span><br><span style="color:#d69e2e;">E: ${eCnt}</span><br><span style="color:#805ad5;">N: ${nCnt}</span><br><span style="color:#e53e3e; font-size:9px;">휴: ${offCnt}</span>
             </td>`;
         }
-        // 💡 피드백 5번: 요약 정보 텍스트 가운데 정렬
         htmlBuffer += `<td colspan="4" style="background-color:#cbd5e0; font-size:12px; font-weight:900; color:#2d3748; text-align:center; border-top:2px solid #a0aec0;">💡 인력: 임신 ${totalPregnant}명 / N전담 ${totalNightOnly}명 / 신규 ${totalNewbie}명 / 파견 ${totalDispatch}명</td></tr>`;
         
         tbody.innerHTML = htmlBuffer;
@@ -1710,113 +1731,4 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        document.getElementById('firebaseSaveBtn').addEventListener('click', async () => {
-            window.showToast("⏳ 클라우드에 전체 상태 저장 중...", true);
-            try {
-                // 💡 피드백 1번 해결: 1단계 설정뿐만 아니라 2단계 상단의 필수 설정값도 싹쓸이해서 담습니다.
-                const configInputs = {};
-                document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea, #totalStaff, #seniorStaff, #minSeniorPerShift, #pageSize').forEach(el => {
-                    if (!el.id) return;
-                    if (el.type === 'checkbox') configInputs[el.id] = el.checked;
-                    else if (el.type !== 'radio') configInputs[el.id] = el.value;
-                });
-
-                const saveData = {
-                    staffData: window.globalStaffData,
-                    schType: document.querySelector('input[name="schType"]:checked').value,
-                    configInputs: configInputs,
-                    calculatedMatrix: window.globalCalculatedMatrix,
-                    globalDateDetails: window.globalDateDetails,
-                    globalLastDate: window.globalLastDate,
-                    isScheduleGenerated: window.isScheduleGenerated,
-                    currentStep: document.querySelector('.step-section.active').id, 
-                    updatedAt: new Date().toISOString()
-                };
-                
-                const cleanData = JSON.parse(JSON.stringify(saveData));
-                await setDoc(doc(db, "ward_settings", "current_duty"), cleanData);
-                window.showToast("✅ 완벽하게 저장되었습니다! (창을 닫아도 유지됩니다)");
-            } catch (error) {
-                console.error(error);
-                window.showToast("❌ 저장 실패", false);
-                alert("🚨 파이어베이스 저장 에러 원인:\n" + error.message + "\n\n💡 해결 체크리스트:\n1. 파이어베이스 콘솔에서 'Realtime Database'가 아닌 'Firestore Database'의 규칙을 수정했는지 확인하세요.\n2. 규칙 수정 후 우측 상단의 파란색 [게시(Publish)] 버튼을 꼭 눌러야 합니다.");
-            }
-        });
-
-        document.getElementById('firebaseLoadBtn').addEventListener('click', async () => {
-            window.showToast("⏳ 타임머신 복구 중...", true);
-            try {
-                const docSnap = await getDoc(doc(db, "ward_settings", "current_duty"));
-                if (docSnap.exists()) {
-                    const loadedData = docSnap.data();
-                    
-                    window.globalStaffData = loadedData.staffData || [];
-                    window.globalCalculatedMatrix = loadedData.calculatedMatrix || [];
-                    window.globalDateDetails = loadedData.globalDateDetails || [];
-                    window.globalLastDate = loadedData.globalLastDate || 30;
-                    window.isScheduleGenerated = loadedData.isScheduleGenerated || false;
-                    
-                    if(loadedData.schType) {
-                        const radioBtn = document.querySelector(`input[name="schType"][value="${loadedData.schType}"]`);
-                        if(radioBtn) radioBtn.checked = true;
-                        window.switchScheduleTypeUI();
-                    }
-                    
-                    // 💡 피드백 1번 해결: 불러올 때도 1, 2단계의 모든 설정값을 100% 복구합니다.
-                    if(loadedData.configInputs || loadedData.step1Inputs) {
-                        const s1 = loadedData.configInputs || loadedData.step1Inputs;
-                        document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea, #totalStaff, #seniorStaff, #minSeniorPerShift, #pageSize').forEach(el => {
-                            if (el.type === 'checkbox' && s1[el.id] !== undefined) el.checked = s1[el.id];
-                            else if (el.type !== 'radio' && s1[el.id] !== undefined) el.value = s1[el.id];
-                        });
-                    }
-                    
-                    window.normalizeStaffData(); 
-                    window.applyPagination();
-                    window.update4WeekDateText();
-
-                    if (window.isScheduleGenerated && window.globalDateDetails.length > 0) {
-                        let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
-                        window.globalDateDetails.forEach(item => { 
-                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
-                            headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
-                        });
-                        headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
-                        window.globalDateDetails.forEach(item => { 
-                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
-                            headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
-                        });
-                        headerHtml += `</tr>`;
-                        
-                        document.querySelector("#scheduleTable thead").innerHTML = headerHtml;
-                        document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
-                        
-                        window.renderResultTable('scheduleTable', 'monthShifts');
-                        window.renderResultTable('finalAdjustedTable', 'finalShifts');
-                    }
-
-                    if(loadedData.currentStep) {
-                        document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active'));
-                        document.querySelectorAll('.step-tab').forEach(el => el.classList.remove('active'));
-                        document.getElementById(loadedData.currentStep).classList.add('active');
-                        
-                        const tabId = loadedData.currentStep.replace('Section', '').replace('step', 'tab');
-                        const tab = document.getElementById(tabId);
-                        if(tab) tab.classList.add('active');
-                    }
-                    
-                    window.showToast("📂 100% 완벽하게 타임머신 복구되었습니다!");
-                } else {
-                    window.showToast("❓ 저장된 클라우드 데이터가 없습니다.", false);
-                }
-            } catch (error) {
-                console.error(error);
-                window.showToast("❌ 불러오기 에러: " + error.message, false);
-            }
-        });
-    } catch(e) {
-        console.warn("파이어베이스 설정 오류: " + e.message);
-    }
-</script>
-</body>
-</html>
+        document
