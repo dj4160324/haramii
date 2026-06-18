@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (트리니티 비율 엔진 통합본)</title>
+    <title>우리 병원 근무 관리 시스템 (트리니티 완성본)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -78,7 +78,6 @@
         .sort-select { padding: 9px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; color: #2d3748; font-weight: 800; background-color: #fff; cursor: pointer; }
 
         .staff-edit-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-        /* 💡 UI 개선: 2단계 표 테두리 진하게 변경 (#a0aec0 적용) */
         .staff-edit-table th, .staff-edit-table td { border: 1px solid #a0aec0; padding: 10px 8px; text-align: center; vertical-align: middle; }
         .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 13px; border-bottom: 2px solid #718096; }
         .input-staff-name { padding: 6px; border: 1px solid #cbd5e0; border-radius: 4px; font-weight: bold; width: 85%; text-align: center; font-size: 13px; }
@@ -347,8 +346,6 @@
                         <option value="ID">기본 순서 (입력순)</option>
                         <option value="RANK">👑 직급순 정렬</option>
                         <option value="ABC">🔤 이름 가나다순</option>
-                        <option value="ANNUAL_DUMMY">🌱 연차순 (입력순)</option>
-                        <option value="ENTER_DUMMY">📅 입사순 (입력순)</option>
                     </select>
                 </div>
             </div>
@@ -379,7 +376,7 @@
                         <th style="width: 4%;">일괄<br><input type="checkbox" id="masterBatchCheck" onclick="toggleAllBatch(this)" style="cursor:pointer; transform:scale(1.2);"></th>
                         <th style="width: 8%;">직급</th>
                         <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
-                        <th style="width: 30%;">특이사항 (임신/N전담/보건/파견)</th>
+                        <th style="width: 30%;">특이사항 (임신/N전담<div class="tooltip-container">[?]<span class="tooltip-text" style="width:280px; font-weight:normal; text-align:left;">💡 <b>N전담 근무자 특례 룰</b><br><br>• 월간 N 상한선 면제 (14~15개 보장)<br>• 장기 연속 휴무 상한선 면제<br>• D/E 근무 완벽 배제<br>• 슬리핑 오프 보상 제외<br><br>*(단, 연속 N 제한 등 생체 보호 룰은 유지)*</span></div>/보건/파견)</th>
                         <th style="width: 11%;">🌴 지정 연차 <span class="mark-optional"></span><br><span style="font-size:10px; color:#e53e3e;">*(전날 N근무 최대한 배제)*</span></th>
                         <th style="width: 17%;">📌 날짜 지정 신청 근무 <span class="mark-optional"></span></th>
                         <th style="width: 20%;">❌ 매주 고정 OFF 요일</th>
@@ -422,7 +419,6 @@
                 <select id="step3Sort" class="sort-select" onchange="renderResultTable('scheduleTable', 'monthShifts')">
                     <option value="ID">기본 순서 (입력순)</option><option value="RANK">👑 직급순 정렬</option><option value="ABC">🔤 이름 가나다순</option>
                     <option value="NIGHT">🌙 총 나이트(N) 많은순</option><option value="OFF">🏖️ 총 OFF(휴무) 많은순</option>
-                    <option value="ANNUAL_DUMMY">🌱 연차순 (입력순)</option><option value="ENTER_DUMMY">📅 입사순 (입력순)</option>
                 </select>
             </div>
         </div>
@@ -455,7 +451,6 @@
                 <select id="step4Sort" class="sort-select" onchange="renderResultTable('finalAdjustedTable', 'finalShifts')">
                     <option value="ID">기본 순서 (입력순)</option><option value="RANK">👑 직급순 정렬</option><option value="ABC">🔤 이름 가나다순</option>
                     <option value="NIGHT">🌙 총 나이트(N) 많은순</option><option value="OFF">🏖️ 총 OFF(휴무) 많은순</option>
-                    <option value="ANNUAL_DUMMY">🌱 연차순 (입력순)</option><option value="ENTER_DUMMY">📅 입사순 (입력순)</option>
                 </select>
             </div>
         </div>
@@ -987,7 +982,15 @@
         if (window.currentActiveFieldType === 'leave') {
             window.dragTargetState = btn.classList.contains('p-leave') ? 'remove' : 'add';
         } else {
-            if (isPreg && window.currentSelectedShiftBrush === 'N') { alert("🚨 임산부는 야간(N) 근무 배정이 불가합니다."); window.isDragging = false; return; }
+            if (isPreg && (window.currentSelectedShiftBrush === 'N' || window.currentSelectedShiftBrush === 'xN')) { 
+                alert("🚨 임산부는 야간(N) 근무 배정 및 제외 설정이 불가합니다."); 
+                window.isDragging = false; return; 
+            }
+            if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.currentSelectedShiftBrush)) { 
+                alert("🚨 N전담 근무자는 D/E 근무 배정 및 제외 설정이 불가합니다."); 
+                window.isDragging = false; return; 
+            }
+            
             if (staff.reqShiftsMap[day] === window.currentSelectedShiftBrush) window.dragTargetState = 'ERASE';
             else window.dragTargetState = window.currentSelectedShiftBrush;
         }
@@ -1009,7 +1012,8 @@
             }
         } else {
             const isPreg = btn.getAttribute('data-preg') === 'true';
-            if (isPreg && window.dragTargetState === 'N') return;
+            if (isPreg && (window.dragTargetState === 'N' || window.dragTargetState === 'xN')) return;
+            if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.dragTargetState)) return;
 
             btn.classList.remove('p-d', 'p-e', 'p-n', 'p-m', 'p-xd', 'p-xe', 'p-xn');
             const wrapper = btn.querySelector('.cal-sub-tag-wrapper');
@@ -1264,6 +1268,33 @@
                 return { staff: clonedStaff, monthShifts: Array(lastDate).fill(null), finalShifts: Array(lastDate).fill(null) };
             });
 
+            window.talentsAvailableForShift = function(rows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight) {
+                return rows.filter(row => {
+                    if (row.monthShifts[idx] !== null) return false;
+                    if (!window.checkPhysicalGardeRule(row.monthShifts, idx, shift)) return false;
+                    if (shift === 'N' && row.staff.isPregnant && isPregNoNight) return false;
+                    if (row.staff.reqShiftsMap[window.globalDateDetails[idx].date] === 'x' + shift) return false;
+                    if (row.staff.isNightOnly && shift !== 'N' && shift !== 'OFF') return false; 
+
+                    let available = ['D', 'E', 'N', 'OFF'];
+                    if (activeNightLimit && !row.staff.isNightOnly && row.monthShifts.filter(s => s === 'N').length >= maxNightAllowed) available = available.filter(s => s !== 'N');
+                    
+                    if (activeMaxNight && idx >= maxConsecutiveNightDays) {
+                        let cn = 0; for(let i=1; i<=maxConsecutiveNightDays; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
+                        if(cn === maxConsecutiveNightDays) available = available.filter(s => s !== 'N');
+                    }
+                    if (activeNoNOD && idx >= 2 && row.monthShifts[idx-2] === 'N' && row.monthShifts[idx-1] === 'OFF') available = available.filter(s => s !== 'D');
+                    if (activeMaxConsecutive && idx >= maxConsecutiveWorkDays) {
+                        let wc = 0; for(let i=1; i<=maxConsecutiveWorkDays; i++) { if(row.monthShifts[idx-i] !== 'OFF' && row.monthShifts[idx-i] !== 'LEAVE' && row.monthShifts[idx-i] !== 'M-LEAVE' && row.monthShifts[idx-i] !== null) wc++; }
+                        if(wc >= maxConsecutiveWorkDays) available = ['OFF'];
+                    }
+                    let currentOffStreak = window.getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
+                    if (activeMaxOffLimit && !row.staff.isNightOnly && currentOffStreak >= maxOffStreakAllowed) available = available.filter(s => s !== 'OFF');
+
+                    return available.includes(shift);
+                });
+            };
+
             let weekendCount = dateDetails.filter(x => x.isSat || x.isSun).length;
             let holidayCount = dateDetails.filter(x => x.isHoliday && !x.isSat && !x.isSun).length;
             let baseRequiredOff = 0;
@@ -1307,6 +1338,15 @@
                     const quota = (shift === 'D') ? targetDayQuota : (shift === 'E' ? targetEveQuota : targetNitQuota);
                     let currentCount = allRows.filter(r => r.monthShifts[idx] === shift).length;
                     let need = quota - currentCount;
+
+                    if (shift === 'N') {
+                        let validNOnly = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight).filter(c => c.staff.isNightOnly);
+                        validNOnly.sort((a, b) => a.monthShifts.filter(s => s === 'N').length - b.monthShifts.filter(s => s === 'N').length);
+                        for (let c of validNOnly) {
+                            c.monthShifts[idx] = shift;
+                            need--; currentCount++;
+                        }
+                    }
 
                     let dynamicSeniorTarget = minSenior;
                     if (seniorAllocationMode === 'PROPORTIONAL') {
@@ -1429,7 +1469,6 @@
                         return; 
                     }
 
-                    // 💡 [트리니티 엔진] 2. 오버티오 강제 방출 범퍼 (130% 비율 기반 다이내믹 상한선)
                     let maxDAllowed = Math.max(targetDayQuota + 1, Math.ceil(targetDayQuota * 1.3));
                     let maxEAllowed = Math.max(targetEveQuota + 1, Math.ceil(targetEveQuota * 1.3));
 
@@ -1441,7 +1480,7 @@
                         return;
                     }
 
-                    if (availableOffSlots > 0 && canTakeOff && totalRestCount < maxAllowedOff) {
+                    if (availableOffSlots > 0 && canTakeOff && (!row.staff.isNightOnly ? totalRestCount < maxAllowedOff : true)) {
                         row.monthShifts[idx] = 'OFF';
                         availableOffSlots--; 
                         return;
@@ -1551,6 +1590,12 @@
                     for (let r of candidates) {
                         let shiftToMove = r.monthShifts[dMin]; 
 
+                        let isRestDayMin = (globalDateDetails[dMin].isSat || globalDateDetails[dMin].isSun || globalDateDetails[dMin].isHoliday);
+                        let targetQuotaMin = (shiftToMove === 'D') ? (isRestDayMin ? reqDayWeekend : reqDayWeekday) : (isRestDayMin ? reqEveWeekend : reqEveWeekday);
+                        let currentShiftCountMin = scheduleMatrix.filter(x => x.monthShifts[dMin] === shiftToMove).length;
+
+                        if (currentShiftCountMin <= targetQuotaMin) continue;
+
                         if(r.staff.reqShiftsMap[currentDayNumMax] === 'x' + shiftToMove) continue;
                         if(r.staff.reqShiftsMap[currentDayNumMin]) continue; 
 
@@ -1577,7 +1622,7 @@
             scheduleMatrix.forEach(row => {
                 if (row.staff.isDispatch) return;
                 let pureOffCnt = row.monthShifts.filter(s => s === 'OFF').length;
-                let sleepAdd = isRuleSleepingOff && row.monthShifts.filter(s => s === 'N').length >= targetNightLimit ? rewardOffCount : 0;
+                let sleepAdd = isRuleSleepingOff && !row.staff.isNightOnly && row.monthShifts.filter(s => s === 'N').length >= targetNightLimit ? rewardOffCount : 0;
                 let pregAdd = row.staff.isPregnant && isPregShortHourComp ? Math.floor(row.monthShifts.filter(s => s === 'D' || s === 'E').length / pregShortHourDays) * pregShortHourReward : 0;
 
                 row.staff.offBreakdown.sleep = sleepAdd;
@@ -1719,32 +1764,6 @@
             else break;
         }
         return streak;
-    };
-
-    window.talentsAvailableForShift = function(rows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight) {
-        return rows.filter(row => {
-            if (row.monthShifts[idx] !== null) return false;
-            if (!window.checkPhysicalGardeRule(row.monthShifts, idx, shift)) return false;
-            if (shift === 'N' && row.staff.isPregnant && isPregNoNight) return false;
-            if (row.staff.reqShiftsMap[window.globalDateDetails[idx].date] === 'x' + shift) return false;
-            if (row.staff.isNightOnly && shift !== 'N' && shift !== 'OFF') return false; 
-
-            let available = ['D', 'E', 'N', 'OFF'];
-            if (activeNightLimit && row.monthShifts.filter(s => s === 'N').length >= maxNightAllowed) available = available.filter(s => s !== 'N');
-            if (activeMaxNight && idx >= maxConsecutiveNightDays) {
-                let cn = 0; for(let i=1; i<=maxConsecutiveNightDays; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
-                if(cn === maxConsecutiveNightDays) available = available.filter(s => s !== 'N');
-            }
-            if (activeNoNOD && idx >= 2 && row.monthShifts[idx-2] === 'N' && row.monthShifts[idx-1] === 'OFF') available = available.filter(s => s !== 'D');
-            if (activeMaxConsecutive && idx >= maxConsecutiveWorkDays) {
-                let wc = 0; for(let i=1; i<=maxConsecutiveWorkDays; i++) { if(row.monthShifts[idx-i] !== 'OFF' && row.monthShifts[idx-i] !== 'LEAVE' && row.monthShifts[idx-i] !== 'M-LEAVE' && row.monthShifts[idx-i] !== null) wc++; }
-                if(wc >= maxConsecutiveWorkDays) available = ['OFF'];
-            }
-            let currentOffStreak = window.getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
-            if (activeMaxOffLimit && currentOffStreak >= maxOffStreakAllowed) available = available.filter(s => s !== 'OFF');
-
-            return available.includes(shift);
-        });
     };
 
     window.processFeedbackAndGoToStep4 = async function() {
