@@ -355,13 +355,10 @@
                 <thead>
                     <tr>
                         <th style="width: 4%;">일괄<br><input type="checkbox" id="masterBatchCheck" onclick="toggleAllBatch(this)" style="cursor:pointer; transform:scale(1.2);"></th>
-                        <th style="width: 12%;">직급 (선임/신규)</th>
-                        <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
-                        <th style="width: 18%;">특이사항 (임신/N전담/보건/파견)</th>
-                        <th style="width: 13%;">🌴 지정 연차<br><span style="font-size:10px; color:#718096; font-weight:normal;">(직전 N 배제 반영)</span></th>
-                        <th style="width: 20%;">📌 날짜 지정 신청 근무 <span class="mark-optional">(🎨 브러쉬)</span></th>
-                        <th style="width: 23%;">❌ 매주 고정 OFF 요일 선택</th>
-                    </tr>
+                        <th style="width: 8%;">직급</th> <th style="width: 10%;">근무자 성명 <span class="mark-required">*</span></th>
+                        <th style="width: 30%;">특이사항 (임신/N전담/보건/파견)</th> <th style="width: 11%;">🌴 지정 연차<br><span style="font-size:10px; color:#718096; font-weight:normal;">*(전날 N근무 최대한 배제)*</span></th>
+                        <th style="width: 17%;">📌 날짜 지정 신청 근무 <span class="mark-optional"></span></th>
+                        <th style="width: 20%;">❌ 매주 고정 OFF 요일</th> </tr>
                 </thead>
                 <tbody></tbody>
             </table>
@@ -382,7 +379,7 @@
 
         <div class="btn-center">
             <button id="backToStep2Btn" class="btn-secondary" onclick="backToStep2()">⬅️ 2단계(인원 사정 조율)로 돌아가기</button>
-            <button id="submitBtn" class="btn-main" onclick="runSmartScheduling()">⚡ 월간 스케줄 자동 생성</button>
+            <button id="submitBtn" class="btn-main" onclick="runSmartScheduling()">⚡ 스케줄 생성</button>
         </div>
 
         <div class="filter-control-panel" style="margin-top:30px;">
@@ -771,7 +768,7 @@
                     </td>
                     <td><input type="text" class="input-staff-name" value="${item.name}" oninput="updatePreceptorDropdownsRealtime(this, ${item.id})"></td>
                     <td style="text-align: center; font-size:12px;">
-                        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:8px;">
+                        <div style="display:flex; justify-content:center; gap:8px; white-space:nowrap;">
                             <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#b83280;"><input type="checkbox" class="check-pregnant" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREG')" ${item.isPregnant?'checked':''}>🤰 임신</label>
                             <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#805ad5;"><input type="checkbox" class="check-nightonly" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'NIGHT_ONLY')" ${item.isNightOnly?'checked':''}>🌙 N전담</label>
                             <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#4a5568;"><input type="checkbox" class="check-dispatch" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'DISPATCH')" ${item.isDispatch?'checked':''}>✈️ 파견</label>
@@ -1727,11 +1724,17 @@
                     updatedAt: new Date().toISOString()
                 };
                 
-                await setDoc(doc(db, "ward_settings", "current_duty"), saveData);
+                // 🚨 파이어베이스 결벽증 해결: undefined 값 및 찌꺼기 데이터를 100% 진공 청소하여 순수 JSON으로 변환합니다.
+                const cleanData = JSON.parse(JSON.stringify(saveData));
+                
+                // 정제된 깨끗한 데이터(cleanData)를 금고에 밀어넣습니다.
+                await setDoc(doc(db, "ward_settings", "current_duty"), cleanData);
                 window.showToast("✅ 완벽하게 저장되었습니다! (창을 닫아도 유지됩니다)");
             } catch (error) {
                 console.error(error);
                 window.showToast("❌ 저장 실패", false);
+                // 💡 왜 실패했는지 팝업으로 정확한 이유를 띄워줍니다.
+                alert("🚨 파이어베이스 저장 에러 원인:\n" + error.message + "\n\n💡 해결 체크리스트:\n1. 파이어베이스 콘솔에서 'Realtime Database'가 아닌 'Firestore Database'의 규칙을 수정했는지 확인하세요.\n2. 규칙 수정 후 우측 상단의 파란색 [게시(Publish)] 버튼을 꼭 눌러야 합니다.");
             }
         });
 
