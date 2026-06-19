@@ -875,6 +875,7 @@
                 const style = color ? `style="color:${color};"` : '';
                 return `<button type="button" class="btn-day-toggle ${isSel}" data-day-idx="${idx}" ${style} onclick="handleMemoryDayToggle(this, ${item.id}, ${idx})">${label}</button>`;
             };
+            
             let dayBtns = getBtn(1, '월') + getBtn(2, '화') + getBtn(3, '수') + getBtn(4, '목') + getBtn(5, '금') + getBtn(6, '토', '#2b6cb0') + getBtn(0, '일', '#c53030');
 
             let preceptorOptions = '<option value="0">지정 안함</option>';
@@ -940,6 +941,17 @@
         
         tbody.innerHTML = htmlBuffer;
         window.renderPaginationUI(totalPages);
+    };
+    window.renderPaginationUI = function(totalPages) {
+        const container = document.getElementById('paginationContainer');
+        container.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement('button');
+            btn.className = `page-btn ${i === window.currentPage ? 'active' : ''}`;
+            btn.innerText = i;
+            btn.onclick = () => { window.currentPage = i; window.applyPagination(); };
+            container.appendChild(btn);
+        }
     };
 
     window.applyBatchOff = function(dayIdx) {
