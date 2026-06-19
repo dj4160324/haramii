@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (최종 5단계 평탄화 엔진)</title>
+    <title>우리 병원 근무 관리 시스템 (All-in-One 마스터본)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -63,6 +63,7 @@
         .rule-checkbox-item label { font-size: 15px; font-weight: 800; color: #2d3748; cursor: pointer; margin-bottom: 4px; display: block; }
         .rule-checkbox-item span { display: block; font-size: 13px; color: #718096; line-height: 1.5; }
         .inline-input-num { width: 55px; padding: 4px 8px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 4px; text-align: center; font-weight: bold; }
+        .inline-input-num:disabled { background-color: #e2e8f0; color: #a0aec0; }
         .inline-select { padding: 4px 8px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; font-weight: bold; color: #4a5568; }
 
         .highlight-box { background-color: #f0fdf4; border: 1px solid #9ae6b4; padding: 15px; border-radius: 8px; margin: 10px 0; }
@@ -77,7 +78,6 @@
         .filter-chip.active { background-color: #3182ce; color: white; border-color: #2b6cb0; box-shadow: 0 2px 4px rgba(49, 130, 206, 0.3); }
         .sort-select { padding: 9px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; color: #2d3748; font-weight: 800; background-color: #fff; cursor: pointer; }
 
-        /* 표 테두리 진하게 유지 (#a0aec0) */
         .staff-edit-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .staff-edit-table th, .staff-edit-table td { border: 1px solid #a0aec0; padding: 10px 8px; text-align: center; vertical-align: middle; }
         .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 13px; border-bottom: 2px solid #718096; }
@@ -110,15 +110,18 @@
         .page-btn:hover { background: #edf2f7; }
         .page-btn.active { background: #3182ce; color: #fff; border-color: #2b6cb0; }
         
-        .table-responsive { overflow-x: auto; margin-top: 10px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        table.result-calendar { width: 100%; border-collapse: collapse; background: white; min-width: 1200px; }
-        table.result-calendar th, table.result-calendar td { border: 1px solid #cbd5e0; padding: 6px 4px; text-align: center; font-size: 13px; }
-        table.result-calendar th { background-color: #2d3748; color: white; font-size: 12px; font-weight: 800; padding: 7px 4px; }
-        table.result-calendar th.sun { background-color: #e53e3e !important; color: white !important; border-color: #c53030 !important; } 
-        table.result-calendar th.sat { background-color: #2b6cb0; }
+        /* 💡 UI 튜닝 4: 테이블 세로 스크롤 맥스치 확보 및 완벽한 상단/좌측 틀 고정 (Sticky Header) */
+        .table-responsive { overflow: auto; max-height: 65vh; margin-top: 10px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; border: 1px solid #cbd5e0; }
+        table.result-calendar { width: 100%; border-collapse: separate; border-spacing: 0; background: white; min-width: 1200px; }
+        table.result-calendar thead { position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        table.result-calendar th, table.result-calendar td { border-bottom: 1px solid #cbd5e0; border-right: 1px solid #cbd5e0; padding: 6px 4px; text-align: center; font-size: 13px; }
+        table.result-calendar th { background-color: #2d3748; color: white; font-size: 12px; font-weight: 800; padding: 7px 4px; background-clip: padding-box; border-top: 1px solid #cbd5e0; }
+        table.result-calendar th.sun { background-color: #e53e3e !important; color: white !important; } 
+        table.result-calendar th.sat { background-color: #2b6cb0 !important; color: white !important; }
         table.result-calendar td.sun-cell { background-color: #fff5f5; } table.result-calendar td.sat-cell { background-color: #ebf8ff; }
 
-        .staff-name-col { min-width: 90px; background-color: #edf2f7; position: sticky; left: 0; z-index: 2; font-weight: 800; text-align: center; vertical-align: middle; box-shadow: 2px 0 5px rgba(0,0,0,0.05); font-size: 13px; }
+        .staff-name-col { min-width: 110px; background-color: #edf2f7; position: sticky; left: 0; font-weight: 800; text-align: center; vertical-align: middle; box-shadow: 2px 0 5px rgba(0,0,0,0.05); font-size: 13px; z-index: 2; background-clip: padding-box; border-left: 1px solid #cbd5e0; }
+        table.result-calendar thead .staff-name-col { z-index: 12; border-top: none; }
         th.summary-header { background-color: #4a5568; font-weight: bold; color: #fff; min-width: 35px; line-height: 1.3;}
         td.summary-cell { background-color: #f8fafc; font-weight: 900; color: #2d3748; position: relative; }
 
@@ -230,9 +233,9 @@
             <div class="staff-quota-box">
                 <div id="quota-container-Weekday" class="quota-container">
                     <div class="quota-sub-title"><input type="checkbox" id="useWeekdayQuota" checked onchange="toggleQuotaInputs('Weekday')"><label for="useWeekdayQuota">💻 평일 (월~금) 최소 인원 적용</label></div>
-                    <div class="quota-inline"><span>데이 (D) 최소 출근:</span><input type="number" id="minStaffDayWeekday" class="inline-input-num" value="2" min="0">명</div>
-                    <div class="quota-inline"><span>이브닝 (E) 최소 출근:</span><input type="number" id="minStaffEveWeekday" class="inline-input-num" value="2" min="0">명</div>
-                    <div class="quota-inline"><span>나이트 (N) 최소 출근:</span><input type="number" id="minStaffNitWeekday" class="inline-input-num" value="1" min="0">명</div>
+                    <div class="quota-inline"><span>데이 (D) 최소 출근:</span><input type="number" id="minStaffDayWeekday" class="inline-input-num" value="2" min="0" oninput="syncWeekendQuota()">명</div>
+                    <div class="quota-inline"><span>이브닝 (E) 최소 출근:</span><input type="number" id="minStaffEveWeekday" class="inline-input-num" value="2" min="0" oninput="syncWeekendQuota()">명</div>
+                    <div class="quota-inline"><span>나이트 (N) 최소 출근:</span><input type="number" id="minStaffNitWeekday" class="inline-input-num" value="1" min="0" oninput="syncWeekendQuota()">명</div>
                 </div>
                 <div id="quota-container-Weekend" class="quota-container">
                     <div class="quota-sub-title"><input type="checkbox" id="useWeekendQuota" checked onchange="toggleQuotaInputs('Weekend')"><label for="useWeekendQuota">🏖️ 주말 및 공휴일 최소 인원 적용</label></div>
@@ -415,6 +418,7 @@
                 <button class="filter-chip" data-chip="NIGHT_ONLY" onclick="setFilterChip('NIGHT_ONLY')">🌙 N전담</button>
                 <button class="filter-chip" data-chip="DISPATCH" onclick="setFilterChip('DISPATCH')">✈️ 파견</button>
                 <button class="filter-chip" data-chip="NO_MLEAVE" onclick="setFilterChip('NO_MLEAVE')">❌ 보건 미선택</button>
+                <button class="filter-chip" data-chip="MLEAVE_MONEY" onclick="setFilterChip('MLEAVE_MONEY')">💵 보건-수당지급</button>
             </div>
             <div style="flex:1; text-align:right;">
                 <select id="step3Sort" class="sort-select" onchange="renderResultTable('scheduleTable', 'monthShifts')">
@@ -447,6 +451,7 @@
                 <button class="filter-chip" data-chip="NIGHT_ONLY" onclick="setFilterChip('NIGHT_ONLY')">🌙 N전담</button>
                 <button class="filter-chip" data-chip="DISPATCH" onclick="setFilterChip('DISPATCH')">✈️ 파견</button>
                 <button class="filter-chip" data-chip="NO_MLEAVE" onclick="setFilterChip('NO_MLEAVE')">❌ 보건 미선택</button>
+                <button class="filter-chip" data-chip="MLEAVE_MONEY" onclick="setFilterChip('MLEAVE_MONEY')">💵 보건-수당지급</button>
             </div>
             <div style="flex:1; text-align:right;">
                 <select id="step4Sort" class="sort-select" onchange="renderResultTable('finalAdjustedTable', 'finalShifts')">
@@ -492,7 +497,37 @@
 </div>
 
 <script>
+    // ==========================================
+    // 🧰 1. 글로벌 도구함 (Helper Functions)
+    // ==========================================
     window.delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    window.shuffleArray = function(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    };
+
+    window.parseMultiDates = function(dateStr) {
+        if (!dateStr || dateStr.trim() === "") return [];
+        const resultDates = new Set();
+        const parts = dateStr.split(",");
+        parts.forEach(part => {
+            part = part.trim();
+            if (part.includes("-")) {
+                const range = part.split("-");
+                const start = parseInt(range[0]);
+                const end = parseInt(range[1]);
+                if (!isNaN(start) && !isNaN(end) && start <= end) { for (let i = start; i <= end; i++) { if (i >= 1 && i <= 31) resultDates.add(i); } }
+            } else {
+                const num = parseInt(part);
+                if (!isNaN(num) && num >= 1 && num <= 31) resultDates.add(num);
+            }
+        });
+        return Array.from(resultDates);
+    };
 
     window.koreanHolidays = {
         "2026": { "1-1": "신정", "2-16": "설날 연휴", "2-17": "설날", "2-18": "설날 연휴", "2-19": "대체공휴일", "3-1": "삼일절", "3-2": "대체공휴일", "5-5": "어린이날", "5-24": "부처님오신날", "5-25": "대체공휴일", "6-6": "현충일", "8-15": "광복절", "8-17": "대체공휴일", "9-24": "추석 연휴", "9-25": "추석", "9-26": "추석 연휴", "10-3": "개천절", "10-5": "대체공휴일", "10-9": "한글날", "12-25": "성탄절" },
@@ -525,6 +560,9 @@
 
     window.addEventListener('mouseup', () => { window.isDragging = false; });
 
+    // ==========================================
+    // ⚙️ 2. UI 및 로직 함수들
+    // ==========================================
     window.normalizeStaffData = function() {
         window.globalStaffData.forEach(item => {
             if (!item.leaveDates) item.leaveDates = [];
@@ -622,6 +660,13 @@
     window.toggleMLeaveSelect = function(checkbox) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id'));
         const item = window.globalStaffData.find(x => x.id === sid);
+        
+        if (!checkbox.checked && item && item.isPregnant) {
+            alert("🚨 임산부는 태아검진휴가 등 보건휴가 배정이 필수이므로 해제할 수 없습니다.");
+            checkbox.checked = true;
+            return;
+        }
+        
         if(item) item.isMLeaveActive = checkbox.checked;
         
         const tr = checkbox.closest('tr');
@@ -630,7 +675,7 @@
             const sel = tr.querySelector('.select-mleave');
             if(checkbox.checked) {
                 container.classList.remove('disabled');
-                sel.disabled = false;
+                if(!item.isPregnant) sel.disabled = false;
             } else {
                 container.classList.add('disabled');
                 sel.disabled = true;
@@ -691,9 +736,29 @@
             item.isPregnant = node.checked;
             if(node.checked) {
                 item.isNightOnly = false;
+                item.isMLeaveActive = true;
+                item.mLeaveOption = 'EXTRA';
+                
                 if(tr) {
                     const noCheck = tr.querySelector('.check-nightonly');
                     if(noCheck) noCheck.checked = false;
+                    
+                    const mCheck = tr.querySelector('.check-mleave');
+                    if(mCheck) mCheck.checked = true;
+                    
+                    const mContainer = tr.querySelector('.mleave-container');
+                    if(mContainer) mContainer.classList.remove('disabled');
+                    
+                    const mSelect = tr.querySelector('.select-mleave');
+                    if(mSelect) {
+                        mSelect.value = 'EXTRA';
+                        mSelect.disabled = true; 
+                    }
+                }
+            } else {
+                if(tr) {
+                    const mSelect = tr.querySelector('.select-mleave');
+                    if(mSelect && item.isMLeaveActive) mSelect.disabled = false;
                 }
             }
         }
@@ -704,6 +769,9 @@
                 if(tr) {
                     const pregCheck = tr.querySelector('.check-pregnant');
                     if(pregCheck) pregCheck.checked = false;
+                    
+                    const mSelect = tr.querySelector('.select-mleave');
+                    if(mSelect && item.isMLeaveActive) mSelect.disabled = false;
                 }
             }
         }
@@ -776,6 +844,7 @@
         if (window.currentFilterChip === 'NIGHT_ONLY') filteredData = filteredData.filter(item => item.isNightOnly);
         if (window.currentFilterChip === 'DISPATCH') filteredData = filteredData.filter(item => item.isDispatch);
         if (window.currentFilterChip === 'NO_MLEAVE') filteredData = filteredData.filter(item => !item.isMLeaveActive);
+        if (window.currentFilterChip === 'MLEAVE_MONEY') filteredData = filteredData.filter(item => item.isMLeaveActive && item.mLeaveOption === 'MONEY');
 
         filteredData.sort((a, b) => a.id - b.id); 
 
@@ -821,6 +890,8 @@
                 }).join(' ');
             }
 
+            const lockMLeave = item.isPregnant ? 'disabled' : (!item.isMLeaveActive ? 'disabled' : '');
+
             htmlBuffer += `
                 <tr data-staff-id="${item.id}">
                     <td><input type="checkbox" class="check-batch" style="cursor:pointer; transform:scale(1.2);"></td>
@@ -841,7 +912,7 @@
                             <label style="cursor:pointer; display:flex; align-items:center; gap:2px; color:#e53e3e;"><input type="checkbox" class="check-mleave" data-staff-id="${item.id}" onchange="toggleMLeaveSelect(this)" ${item.isMLeaveActive?'checked':''}>🩸 보건</label>
                         </div>
                         <div style="margin-top:6px; background:#fff5f5; padding:4px; border-radius:4px; border:1px solid #fed7d7;" class="mleave-container ${item.isMLeaveActive?'':'disabled'}">
-                            <select class="select-mleave select-compact" style="width:100%; margin-top:2px;" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'MLEAVE_OPT')" ${item.isMLeaveActive?'':'disabled'}>
+                            <select class="select-mleave select-compact" style="width:100%; margin-top:2px;" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'MLEAVE_OPT')" ${lockMLeave}>
                                 <option value="EXTRA" ${item.mLeaveOption==='EXTRA'?'selected':''}>총 휴무 증가 (보건 1일 추가)</option>
                                 <option value="INCLUDE" ${item.mLeaveOption==='INCLUDE'?'selected':''}>총 휴무 동일 (기본 OFF 소진)</option>
                                 <option value="MONEY" ${item.mLeaveOption==='MONEY'?'selected':''}>수당지급 (휴무 없이 동일 연산)</option>
@@ -934,12 +1005,28 @@
         if(count > 0) alert(`${count}명의 보건휴가 옵션이 일괄 적용되었습니다.`);
     };
 
+    window.syncWeekendQuota = function() {
+        if (!document.getElementById('useWeekendQuota').checked) {
+            document.getElementById('minStaffDayWeekend').value = document.getElementById('minStaffDayWeekday').value;
+            document.getElementById('minStaffEveWeekend').value = document.getElementById('minStaffEveWeekday').value;
+            document.getElementById('minStaffNitWeekend').value = document.getElementById('minStaffNitWeekday').value;
+        }
+    };
+
     window.toggleQuotaInputs = function(type) {
         const isChecked = document.getElementById(`use${type}Quota`).checked;
         const container = document.getElementById(`quota-container-${type}`);
         const inputs = container.querySelectorAll('input[type="number"]');
-        if (isChecked) { container.classList.remove('disabled'); inputs.forEach(inp => inp.disabled = false); } 
-        else { container.classList.add('disabled'); inputs.forEach(inp => inp.disabled = true); }
+        if (isChecked) { 
+            container.classList.remove('disabled'); 
+            inputs.forEach(inp => inp.disabled = false); 
+        } else { 
+            container.classList.add('disabled'); 
+            inputs.forEach(inp => inp.disabled = true); 
+            if (type === 'Weekend') {
+                window.syncWeekendQuota();
+            }
+        }
     };
 
     window.selectBrush = function(brush) {
@@ -1019,20 +1106,28 @@
                     else subTag = `<span class="cal-sub-tag">${currentAssignedShift}</span>`;
                 }
             }
-            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="window.startDrag(this)" onmouseenter="window.doDrag(this)">${btnLabel}<span class="cal-sub-tag-wrapper" style="display:block; font-size:10px;">${subTag}</span></button>`;
+            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="window.startDrag(event, this)" onmouseenter="window.doDrag(event, this)">${btnLabel}<span class="cal-sub-tag-wrapper" style="display:block; font-size:10px;">${subTag}</span></button>`;
         }
         document.getElementById('calendarModal').style.display = 'flex';
     };
 
-    window.startDrag = function(btn) {
+    window.startDrag = function(event, btn) {
         window.isDragging = true;
         const day = parseInt(btn.getAttribute('data-day'));
         const isPreg = btn.getAttribute('data-preg') === 'true';
         const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
 
         if (window.currentActiveFieldType === 'leave') {
+            if (staff.reqShiftsMap[day]) {
+                alert(`🚨 [오류] 해당 날짜(${day}일)에는 이미 '날짜 지정 신청 근무'가 들어가 있습니다. 중복 선택이 불가하므로 신청 근무를 먼저 지워주세요.`);
+                window.isDragging = false; return;
+            }
             window.dragTargetState = btn.classList.contains('p-leave') ? 'remove' : 'add';
         } else {
+            if (staff.leaveDates.includes(day)) {
+                alert(`🚨 [오류] 해당 날짜(${day}일)는 이미 '지정 연차'로 선택되어 있습니다. 지정 연차 달력에서 먼저 해제해 주세요.`);
+                window.isDragging = false; return;
+            }
             if (isPreg && (window.currentSelectedShiftBrush === 'N' || window.currentSelectedShiftBrush === 'xN')) { 
                 alert("🚨 임산부는 야간(N) 근무 배정 및 제외 설정이 불가합니다."); 
                 window.isDragging = false; return; 
@@ -1048,13 +1143,16 @@
         window.applyDragAction(btn);
     };
 
-    window.doDrag = function(btn) { if (window.isDragging) window.applyDragAction(btn); };
+    window.doDrag = function(event, btn) { 
+        if (window.isDragging) window.applyDragAction(btn); 
+    };
 
     window.applyDragAction = function(btn) {
         const day = parseInt(btn.getAttribute('data-day'));
         const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
 
         if (window.currentActiveFieldType === 'leave') {
+            if (staff.reqShiftsMap[day]) return; 
             if (window.dragTargetState === 'add') {
                 if(!staff.leaveDates.includes(day)) { staff.leaveDates.push(day); btn.classList.add('p-leave'); }
             } else {
@@ -1062,6 +1160,7 @@
                 if(idx > -1) { staff.leaveDates.splice(idx, 1); btn.classList.remove('p-leave'); }
             }
         } else {
+            if (staff.leaveDates.includes(day)) return; 
             const isPreg = btn.getAttribute('data-preg') === 'true';
             if (isPreg && (window.dragTargetState === 'N' || window.dragTargetState === 'xN')) return;
             if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.dragTargetState)) return;
@@ -1114,25 +1213,6 @@
         }
         const reqBox = document.getElementById(`req-box-${sid}`);
         if(reqBox) reqBox.innerHTML = reqBadges;
-    };
-
-    window.parseMultiDates = function(dateStr) {
-        if (!dateStr || dateStr.trim() === "") return [];
-        const resultDates = new Set();
-        const parts = dateStr.split(",");
-        parts.forEach(part => {
-            part = part.trim();
-            if (part.includes("-")) {
-                const range = part.split("-");
-                const start = parseInt(range[0]);
-                const end = parseInt(range[1]);
-                if (!isNaN(start) && !isNaN(end) && start <= end) { for (let i = start; i <= end; i++) { if (i >= 1 && i <= 31) resultDates.add(i); } }
-            } else {
-                const num = parseInt(part);
-                if (!isNaN(num) && num >= 1 && num <= 31) resultDates.add(num);
-            }
-        });
-        return Array.from(resultDates);
     };
 
     window.goToStep1 = function() {
@@ -1194,15 +1274,9 @@
         window.scrollTo({top: 0, behavior: 'smooth'});
     };
 
-    // 💡 무작위 셔플(Fisher-Yates) 헬퍼 함수
-    window.shuffleArray = function(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    };
-
+    // ==========================================
+    // 🧠 3. 핵심 스케줄링 엔진 (Trinity AI)
+    // ==========================================
     window.runSmartScheduling = async function() {
         window.normalizeStaffData();
         window.applyPagination();
@@ -1234,12 +1308,14 @@
 
             const useWeekday = document.getElementById('useWeekdayQuota').checked;
             const useWeekend = document.getElementById('useWeekendQuota').checked;
+            
             const reqDayWeekday = useWeekday ? (parseInt(document.getElementById('minStaffDayWeekday').value) || 0) : 0;
             const reqEveWeekday = useWeekday ? (parseInt(document.getElementById('minStaffEveWeekday').value) || 0) : 0;
             const reqNitWeekday = useWeekday ? (parseInt(document.getElementById('minStaffNitWeekday').value) || 0) : 0;
-            const reqDayWeekend = useWeekend ? (parseInt(document.getElementById('minStaffDayWeekend').value) || 0) : 0;
-            const reqEveWeekend = useWeekend ? (parseInt(document.getElementById('minStaffEveWeekend').value) || 0) : 0;
-            const reqNitWeekend = useWeekend ? (parseInt(document.getElementById('minStaffNitWeekend').value) || 0) : 0;
+            
+            const reqDayWeekend = useWeekend ? (parseInt(document.getElementById('minStaffDayWeekend').value) || 0) : reqDayWeekday;
+            const reqEveWeekend = useWeekend ? (parseInt(document.getElementById('minStaffEveWeekend').value) || 0) : reqEveWeekday;
+            const reqNitWeekend = useWeekend ? (parseInt(document.getElementById('minStaffNitWeekend').value) || 0) : reqNitWeekday;
 
             const activeNoNOD = document.getElementById('ruleNoNOD').checked;
             const activeMaxConsecutive = document.getElementById('ruleMaxConsecutive').checked;
@@ -1327,6 +1403,8 @@
                 clonedStaff.offBreakdown = { pure:0, mLeave:0, sleep:0, preg:0, total:0 };
                 return { staff: clonedStaff, monthShifts: Array(lastDate).fill(null), finalShifts: Array(lastDate).fill(null) };
             });
+            
+            let nOnlyMaxCap = Math.floor(lastDate / 2);
 
             window.talentsAvailableForShift = function(rows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight) {
                 return rows.filter(row => {
@@ -1337,12 +1415,22 @@
                     if (row.staff.isNightOnly && shift !== 'N' && shift !== 'OFF') return false; 
 
                     let available = ['D', 'E', 'N', 'OFF'];
-                    if (activeNightLimit && !row.staff.isNightOnly && row.monthShifts.filter(s => s === 'N').length >= maxNightAllowed) available = available.filter(s => s !== 'N');
                     
-                    if (activeMaxNight && idx >= maxConsecutiveNightDays) {
-                        let cn = 0; for(let i=1; i<=maxConsecutiveNightDays; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
-                        if(cn === maxConsecutiveNightDays) available = available.filter(s => s !== 'N');
+                    if (row.staff.isNightOnly) {
+                        if (row.monthShifts.filter(s => s === 'N').length >= nOnlyMaxCap) available = available.filter(s => s !== 'N');
+                        
+                        let actualMaxNight = activeMaxNight ? Math.min(3, maxConsecutiveNightDays) : 3;
+                        let cn = 0; for(let i=1; i<=actualMaxNight; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
+                        if(cn >= actualMaxNight) available = available.filter(s => s !== 'N');
+                        
+                    } else {
+                        if (activeNightLimit && row.monthShifts.filter(s => s === 'N').length >= maxNightAllowed) available = available.filter(s => s !== 'N');
+                        if (activeMaxNight && idx >= maxConsecutiveNightDays) {
+                            let cn = 0; for(let i=1; i<=maxConsecutiveNightDays; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
+                            if(cn >= maxConsecutiveNightDays) available = available.filter(s => s !== 'N');
+                        }
                     }
+
                     if (activeNoNOD && idx >= 2 && row.monthShifts[idx-2] === 'N' && row.monthShifts[idx-1] === 'OFF') available = available.filter(s => s !== 'D');
                     if (activeMaxConsecutive && idx >= maxConsecutiveWorkDays) {
                         let wc = 0; for(let i=1; i<=maxConsecutiveWorkDays; i++) { if(row.monthShifts[idx-i] !== 'OFF' && row.monthShifts[idx-i] !== 'LEAVE' && row.monthShifts[idx-i] !== 'M-LEAVE' && row.monthShifts[idx-i] !== null) wc++; }
@@ -1379,8 +1467,8 @@
                 const targetNitQuota = isRestDay ? reqNitWeekend : reqNitWeekday;
 
                 scheduleMatrix.forEach(row => {
-                    if (row.staff.isDispatch) { row.monthShifts[idx] = 'DISPATCH'; return; }
                     if (row.staff.leaveDates.includes(currentDayNum)) { row.monthShifts[idx] = 'LEAVE'; return; }
+                    if (row.staff.isDispatch) { row.monthShifts[idx] = 'DISPATCH'; return; }
                     if (row.staff.offDayIndicesArray.includes(dayInfo.dayIndex)) { row.monthShifts[idx] = 'OFF'; return; }
                     if (row.staff.isPregnant && isPregHolidayOff) {
                         if ((isPregSatOff && dayInfo.isSat) || (isPregSunHolOff && (dayInfo.isSun || dayInfo.isHoliday))) {
@@ -1400,7 +1488,7 @@
                     let need = quota - currentCount;
 
                     if (shift === 'N') {
-                        let validNOnly = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight).filter(c => c.staff.isNightOnly);
+                        let validNOnly = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight, nOnlyMaxCap).filter(c => c.staff.isNightOnly);
                         window.shuffleArray(validNOnly).sort((a, b) => a.monthShifts.filter(s => s === 'N').length - b.monthShifts.filter(s => s === 'N').length);
                         for (let c of validNOnly) {
                             c.monthShifts[idx] = shift;
@@ -1431,7 +1519,7 @@
                     }
 
                     if (need > 0) {
-                        let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
+                        let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight, nOnlyMaxCap);
                         
                         let generalCandidates = candidates.filter(c => !c.staff.isSenior && !c.staff.isNewbie);
                         window.shuffleArray(generalCandidates).sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
@@ -1458,15 +1546,15 @@
 
                         if (currentCount < quota) {
                             let stealable = allRows.filter(r => r.monthShifts[idx] === null && r.staff.reqShiftsMap[currentDayNum] && r.staff.reqShiftsMap[currentDayNum] !== shift && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight) && !(r.staff.isNightOnly && shift !== 'N'));
-                            window.shuffleArray(stealable).sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
-                            for(let r of stealable) { delete r.staff.reqShiftsMap[currentDayNum]; r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
+                            let rowShuff = window.shuffleArray(stealable).sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
+                            for(let r of rowShuff) { delete r.staff.reqShiftsMap[currentDayNum]; r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             
                             if (currentCount < quota) {
                                 let forced = allRows.filter(r => r.monthShifts[idx] === null && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight) && !(r.staff.isNightOnly && shift !== 'N'));
                                 window.shuffleArray(forced).sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                                 for(let r of forced) { r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             }
-                            if (currentCount < quota) throw new Error(`${dayInfo.dateText}일자 병동 최소 출근 배정에 실패했습니다. 제약 조건을 해제해 주세요.`);
+                            if (currentCount < quota) throw new Error(`${dayInfo.dateText}일자 병동 최소 출근 배정에 실패했습니다. 1단계 최소 인원 설정을 확인해 주세요.`);
                         }
                     }
                 });
@@ -1529,6 +1617,11 @@
                         return; 
                     }
 
+                    if (!row.staff.isNightOnly && (totalRestCount + (lastDate - idx)) <= fallbackMinOffCount) {
+                        row.monthShifts[idx] = 'OFF';
+                        return;
+                    }
+
                     if (availableOffSlots > 0 && canTakeOff && (!row.staff.isNightOnly ? totalRestCount < maxAllowedOff : true)) {
                         row.monthShifts[idx] = 'OFF';
                         availableOffSlots--; 
@@ -1557,7 +1650,50 @@
                 });
             }
 
-            // 💡 [트리니티 2차 튜닝] 날짜별 N 근무 총계 평탄화 (가로 스왑)
+            let deSwapOccurred = true;
+            let deMaxLoops = 200;
+            while(deSwapOccurred && deMaxLoops > 0) {
+                deSwapOccurred = false;
+                deMaxLoops--;
+                
+                for(let d=0; d<lastDate; d++) {
+                    let dCount = scheduleMatrix.filter(r => r.monthShifts[d] === 'D').length;
+                    let eCount = scheduleMatrix.filter(r => r.monthShifts[d] === 'E').length;
+                    
+                    if (Math.abs(dCount - eCount) >= 2) {
+                        let targetShift = dCount > eCount ? 'D' : 'E';
+                        let altShift = targetShift === 'D' ? 'E' : 'D';
+                        let currentDayNum = dateDetails[d].date;
+                        
+                        let candidates = scheduleMatrix.filter(r => 
+                            !r.staff.isDispatch && 
+                            !r.staff.isNightOnly && 
+                            r.monthShifts[d] === targetShift &&
+                            !r.staff.reqShiftsMap[currentDayNum] 
+                        );
+                        
+                        if (candidates.length === 0) continue;
+                        
+                        window.shuffleArray(candidates);
+                        candidates.sort((a,b) => b.monthShifts.filter(s => s === targetShift).length - a.monthShifts.filter(s => s === targetShift).length);
+                        
+                        for (let r of candidates) {
+                            let tempShifts = [...r.monthShifts];
+                            tempShifts[d] = altShift;
+                            
+                            let safeCurrent = window.checkPhysicalGardeRule(tempShifts, d, altShift);
+                            if (d < lastDate - 1 && safeCurrent) safeCurrent = window.checkPhysicalGardeRule(tempShifts, d + 1, tempShifts[d+1]);
+                            
+                            if (safeCurrent) {
+                                r.monthShifts[d] = altShift;
+                                deSwapOccurred = true;
+                                break; 
+                            }
+                        }
+                    }
+                }
+            }
+
             let nSwapOccurred = true;
             let nMaxLoops = 200;
 
@@ -1580,7 +1716,6 @@
                 let maxDayObj = dailyNCounts[0];
                 let minDayObj = dailyNCounts[dailyNCounts.length - 1];
 
-                // 격차가 2 이상이거나 최소 쿼터가 부족한데 뺏어올 곳이 있는 경우 작동
                 if ((maxDayObj.count - minDayObj.count >= 2 || minDayObj.count < minDayObj.quota) && maxDayObj.count > maxDayObj.quota) {
                     let dMax = maxDayObj.day;
                     let dMin = minDayObj.day;
@@ -1623,11 +1758,12 @@
                         if (dMin < lastDate - 1 && safeMin) safeMin = window.checkPhysicalGardeRule(tempShifts, dMin + 1, tempShifts[dMin+1]);
 
                         let isValidNStreak = true;
-                        if (activeMaxNight) {
+                        let maxNightRules = r.staff.isNightOnly ? 3 : (activeMaxNight ? maxConsecutiveNightDays : 99);
+                        if (activeMaxNight || r.staff.isNightOnly) {
                             let nStreak = 0;
                             for (let i=dMin; i>=0; i--) { if(tempShifts[i]==='N') nStreak++; else break; }
                             for (let i=dMin+1; i<lastDate; i++) { if(tempShifts[i]==='N') nStreak++; else break; }
-                            if (nStreak > maxConsecutiveNightDays) isValidNStreak = false;
+                            if (nStreak > maxNightRules) isValidNStreak = false;
                         }
                         
                         let isValidNoNOD = true;
@@ -1647,7 +1783,6 @@
                 }
             }
 
-            // 💡 [트리니티 3차 튜닝] 간호사별 N 근무 평탄화 (세로 스왑)
             let swapOccurred = true;
             let maxLoops = 100; 
             
@@ -1695,7 +1830,6 @@
                 }
             }
 
-            // 💡 [트리니티 4차 튜닝] 날짜별 OFF 총계 평탄화 (가로 스왑)
             let offSwapOccurred = true;
             let offMaxLoops = 200;
 
@@ -1737,6 +1871,9 @@
                         let targetQuotaMin = (shiftToMove === 'D') ? (isRestDayMin ? reqDayWeekend : reqDayWeekday) : (isRestDayMin ? reqEveWeekend : reqEveWeekday);
                         let currentShiftCountMin = scheduleMatrix.filter(x => x.monthShifts[dMin] === shiftToMove).length;
 
+                        let currentTotalOffs = r.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
+                        if (!r.staff.isNightOnly && currentTotalOffs - 1 < fallbackMinOffCount) continue;
+
                         if (currentShiftCountMin <= targetQuotaMin) continue;
 
                         if(r.staff.reqShiftsMap[currentDayNumMax] === 'x' + shiftToMove) continue;
@@ -1759,6 +1896,48 @@
                             break; 
                         }
                     }
+                }
+            }
+
+            scheduleMatrix.forEach(r => {
+                if (r.staff.isDispatch || r.staff.isNightOnly) return;
+                let currentOffs = r.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
+                
+                if (currentOffs < fallbackMinOffCount) {
+                    let needed = fallbackMinOffCount - currentOffs;
+                    for (let k = 0; k < needed; k++) {
+                        let bestDay = -1;
+                        let bestExcess = -999;
+                        for (let d = 0; d < lastDate; d++) {
+                            let shift = r.monthShifts[d];
+                            if (shift === 'D' || shift === 'E') { 
+                                let dayInfo = dateDetails[d];
+                                let isRest = (dayInfo.isSat || dayInfo.isSun || dayInfo.isHoliday);
+                                let quota = shift === 'D' ? (isRest ? reqDayWeekend : reqDayWeekday) : (isRest ? reqEveWeekend : reqEveWeekday);
+                                let count = scheduleMatrix.filter(x => x.monthShifts[d] === shift).length;
+                                let excess = count - quota;
+                                
+                                if (excess > bestExcess && !r.staff.reqShiftsMap[dayInfo.date]) {
+                                    bestExcess = excess;
+                                    bestDay = d;
+                                }
+                            }
+                        }
+                        if (bestDay !== -1) {
+                            r.monthShifts[bestDay] = 'OFF';
+                        }
+                    }
+                }
+            });
+
+            for(let d=0; d<lastDate; d++) {
+                let dayInfo = dateDetails[d];
+                let isRestDay = (dayInfo.isSat || dayInfo.isSun || dayInfo.isHoliday);
+                let targetNitQuota = isRestDay ? reqNitWeekend : reqNitWeekday;
+                let currentNCount = scheduleMatrix.filter(x => x.monthShifts[d] === 'N').length;
+                
+                if (currentNCount < targetNitQuota && targetNitQuota > 0) {
+                    throw new Error(`${dayInfo.dateText}일자 야간(N) 최소 출근 배정에 실패했습니다. 휴무/연차 조건을 완화해 주세요.`);
                 }
             }
 
@@ -1821,6 +2000,7 @@
         if (window.currentFilterChip === 'NIGHT_ONLY') displayMatrix = displayMatrix.filter(r => r.staff.isNightOnly);
         if (window.currentFilterChip === 'DISPATCH') displayMatrix = displayMatrix.filter(r => r.staff.isDispatch);
         if (window.currentFilterChip === 'NO_MLEAVE') displayMatrix = displayMatrix.filter(r => !r.staff.isMLeaveActive);
+        if (window.currentFilterChip === 'MLEAVE_MONEY') displayMatrix = displayMatrix.filter(r => r.staff.isMLeaveActive && r.staff.mLeaveOption === 'MONEY');
 
         if (sortVal === 'ABC') displayMatrix.sort((a,b) => a.staff.name.localeCompare(b.staff.name, 'ko'));
         else if (sortVal === 'NIGHT') displayMatrix.sort((a,b) => b[arrayName].filter(s=>s==='N').length - a[arrayName].filter(s=>s==='N').length);
@@ -1834,7 +2014,15 @@
             let statusIcons = (row.staff.isSenior?'👑':'') + (row.staff.isNewbie?'🌱':'') + (row.staff.isPregnant?'🤰':'') + (row.staff.isDispatch?'✈️':'') + (row.staff.isNightOnly?'🌙':'') + (row.staff.mLeaveOption==='MONEY'&&row.staff.isMLeaveActive?'💵':'');
             let iconHtml = statusIcons ? `<div style="font-size:10px; margin-top:2px; letter-spacing:1px;">${statusIcons}</div>` : '';
             
-            htmlBuffer += `<tr><td class="staff-name-col"><span><strong>${row.staff.name}</strong></span>${iconHtml}</td>`;
+            let precHtml = '';
+            if (row.staff.isNewbie && row.staff.precId > 0) {
+                let precObj = window.globalStaffData.find(x => x.id === row.staff.precId);
+                if (precObj) {
+                    precHtml = `<div style="font-size:10px; color:#3182ce; font-weight:800; margin-top:4px;">&lt;프리셉터: ${precObj.name}&gt;</div>`;
+                }
+            }
+            
+            htmlBuffer += `<tr><td class="staff-name-col"><span><strong>${row.staff.name}</strong></span>${iconHtml}${precHtml}</td>`;
             
             let dCount = 0; let eCount = 0; let nCount = 0; let annualLeaveCount = 0;
             const targetArray = row[arrayName];
