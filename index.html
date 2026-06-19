@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (최종 평탄화 및 셔플 적용)</title>
+    <title>우리 병원 근무 관리 시스템 (최종 5단계 평탄화 엔진)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -77,6 +77,7 @@
         .filter-chip.active { background-color: #3182ce; color: white; border-color: #2b6cb0; box-shadow: 0 2px 4px rgba(49, 130, 206, 0.3); }
         .sort-select { padding: 9px 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; color: #2d3748; font-weight: 800; background-color: #fff; cursor: pointer; }
 
+        /* 표 테두리 진하게 유지 (#a0aec0) */
         .staff-edit-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         .staff-edit-table th, .staff-edit-table td { border: 1px solid #a0aec0; padding: 10px 8px; text-align: center; vertical-align: middle; }
         .staff-edit-table th { background-color: #edf2f7; color: #2d3748; font-size: 13px; border-bottom: 2px solid #718096; }
@@ -1193,6 +1194,15 @@
         window.scrollTo({top: 0, behavior: 'smooth'});
     };
 
+    // 💡 무작위 셔플(Fisher-Yates) 헬퍼 함수
+    window.shuffleArray = function(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    };
+
     window.runSmartScheduling = async function() {
         window.normalizeStaffData();
         window.applyPagination();
@@ -1391,7 +1401,7 @@
 
                     if (shift === 'N') {
                         let validNOnly = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight).filter(c => c.staff.isNightOnly);
-                        validNOnly.sort((a, b) => a.monthShifts.filter(s => s === 'N').length - b.monthShifts.filter(s => s === 'N').length);
+                        window.shuffleArray(validNOnly).sort((a, b) => a.monthShifts.filter(s => s === 'N').length - b.monthShifts.filter(s => s === 'N').length);
                         for (let c of validNOnly) {
                             c.monthShifts[idx] = shift;
                             need--; currentCount++;
@@ -1414,7 +1424,7 @@
                             !(r.staff.isNightOnly && shift !== 'N')
                         );
                         if (unassignedSeniors.length > 0) {
-                            unassignedSeniors.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                            window.shuffleArray(unassignedSeniors).sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                             unassignedSeniors[0].monthShifts[idx] = shift;
                             need--; currentCount++;
                         }
@@ -1424,18 +1434,18 @@
                         let candidates = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight);
                         
                         let generalCandidates = candidates.filter(c => !c.staff.isSenior && !c.staff.isNewbie);
-                        generalCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                        window.shuffleArray(generalCandidates).sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                         for (let c of generalCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
 
                         if (need > 0) {
                             let seniorCandidates = candidates.filter(c => c.staff.isSenior);
-                            seniorCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                            window.shuffleArray(seniorCandidates).sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                             for (let c of seniorCandidates) { if (need <= 0) break; c.monthShifts[idx] = shift; need--; currentCount++; }
                         }
 
                         if (need > 0) {
                             let newbieCandidates = candidates.filter(c => c.staff.isNewbie);
-                            newbieCandidates.sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
+                            window.shuffleArray(newbieCandidates).sort((a, b) => a.monthShifts.filter(s => s === shift).length - b.monthShifts.filter(s => s === shift).length);
                             for (let c of newbieCandidates) {
                                 if (need <= 0) break;
                                 let currNb = allRows.filter(r => r.monthShifts[idx] === shift && r.staff.isNewbie).length;
@@ -1448,12 +1458,12 @@
 
                         if (currentCount < quota) {
                             let stealable = allRows.filter(r => r.monthShifts[idx] === null && r.staff.reqShiftsMap[currentDayNum] && r.staff.reqShiftsMap[currentDayNum] !== shift && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight) && !(r.staff.isNightOnly && shift !== 'N'));
-                            stealable.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
+                            window.shuffleArray(stealable).sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                             for(let r of stealable) { delete r.staff.reqShiftsMap[currentDayNum]; r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             
                             if (currentCount < quota) {
                                 let forced = allRows.filter(r => r.monthShifts[idx] === null && window.checkPhysicalGardeRule(r.monthShifts, idx, shift) && (shift !== 'N' || !r.staff.isPregnant || !isPregNoNight) && !(r.staff.isNightOnly && shift !== 'N'));
-                                forced.sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
+                                window.shuffleArray(forced).sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                                 for(let r of forced) { r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             }
                             if (currentCount < quota) throw new Error(`${dayInfo.dateText}일자 병동 최소 출근 배정에 실패했습니다. 제약 조건을 해제해 주세요.`);
@@ -1496,13 +1506,7 @@
                 let currentOffsToday = scheduleMatrix.filter(r => ['OFF', 'LEAVE', 'M-LEAVE'].includes(r.monthShifts[idx])).length;
                 let availableOffSlots = Math.max(0, dynamicDailyBudget - currentOffsToday); 
 
-                // 💡 3번 피드백: 무작위 셔플(Fisher-Yates) 추가로 근접 직원끼리 근무가 묶이는 현상(Clustering) 완벽 타파!
-                for (let i = unassignedRows.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [unassignedRows[i], unassignedRows[j]] = [unassignedRows[j], unassignedRows[i]];
-                }
-
-                unassignedRows.sort((a,b) => {
+                window.shuffleArray(unassignedRows).sort((a,b) => {
                     let offA = a.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
                     let offB = b.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
                     return offA - offB; 
@@ -1525,7 +1529,6 @@
                         return; 
                     }
 
-                    // 💡 2번 피드백: 강제 OFF 배출 방파제 삭제 (이제 여유 인력이 D와 E에 골고루 분배됩니다)
                     if (availableOffSlots > 0 && canTakeOff && (!row.staff.isNightOnly ? totalRestCount < maxAllowedOff : true)) {
                         row.monthShifts[idx] = 'OFF';
                         availableOffSlots--; 
@@ -1554,7 +1557,97 @@
                 });
             }
 
-            let nonDispatchRows = scheduleMatrix.filter(r => !r.staff.isDispatch && !r.staff.isNightOnly);
+            // 💡 [트리니티 2차 튜닝] 날짜별 N 근무 총계 평탄화 (가로 스왑)
+            let nSwapOccurred = true;
+            let nMaxLoops = 200;
+
+            while(nSwapOccurred && nMaxLoops > 0) {
+                nSwapOccurred = false;
+                nMaxLoops--;
+
+                let dailyNCounts = [];
+                for(let d=0; d<lastDate; d++) {
+                    let count = scheduleMatrix.filter(r => r.monthShifts[d] === 'N').length;
+                    let dayInfo = dateDetails[d];
+                    let isRestDay = (dayInfo.isSat || dayInfo.isSun || dayInfo.isHoliday);
+                    let quota = isRestDay ? reqNitWeekend : reqNitWeekday;
+                    dailyNCounts.push({ day: d, count: count, quota: quota });
+                }
+
+                window.shuffleArray(dailyNCounts); 
+                dailyNCounts.sort((a,b) => b.count - a.count);
+                
+                let maxDayObj = dailyNCounts[0];
+                let minDayObj = dailyNCounts[dailyNCounts.length - 1];
+
+                // 격차가 2 이상이거나 최소 쿼터가 부족한데 뺏어올 곳이 있는 경우 작동
+                if ((maxDayObj.count - minDayObj.count >= 2 || minDayObj.count < minDayObj.quota) && maxDayObj.count > maxDayObj.quota) {
+                    let dMax = maxDayObj.day;
+                    let dMin = minDayObj.day;
+                    let currentDayNumMax = globalDateDetails[dMax].date;
+                    let currentDayNumMin = globalDateDetails[dMin].date;
+
+                    let candidates = scheduleMatrix.filter(r =>
+                        !r.staff.isDispatch &&
+                        r.monthShifts[dMax] === 'N' &&
+                        ['D', 'E', 'OFF'].includes(r.monthShifts[dMin]) &&
+                        !r.staff.leaveDates.includes(currentDayNumMax) && 
+                        !r.staff.leaveDates.includes(currentDayNumMin) &&
+                        !(r.staff.isPregnant && isPregNoNight)
+                    );
+                    
+                    window.shuffleArray(candidates);
+
+                    for (let r of candidates) {
+                        let shiftToMove = r.monthShifts[dMin]; 
+                        
+                        if (r.staff.isNightOnly && shiftToMove !== 'OFF') continue;
+                        if (r.staff.reqShiftsMap[currentDayNumMax] === 'x' + shiftToMove || r.staff.reqShiftsMap[currentDayNumMax] === 'N') continue;
+                        if (r.staff.reqShiftsMap[currentDayNumMin] === 'xN' || r.staff.reqShiftsMap[currentDayNumMin] === shiftToMove) continue;
+
+                        if (shiftToMove !== 'OFF') {
+                            let isRestDayMin = (globalDateDetails[dMin].isSat || globalDateDetails[dMin].isSun || globalDateDetails[dMin].isHoliday);
+                            let targetQuotaMin = (shiftToMove === 'D') ? (isRestDayMin ? reqDayWeekend : reqDayWeekday) : (isRestDayMin ? reqEveWeekend : reqEveWeekday);
+                            let currentShiftCountMin = scheduleMatrix.filter(x => x.monthShifts[dMin] === shiftToMove).length;
+                            if (currentShiftCountMin <= targetQuotaMin) continue; 
+                        }
+
+                        let tempShifts = [...r.monthShifts];
+                        tempShifts[dMax] = shiftToMove;
+                        tempShifts[dMin] = 'N';
+
+                        let safeMax = window.checkPhysicalGardeRule(tempShifts, dMax, shiftToMove);
+                        if (dMax < lastDate - 1 && safeMax) safeMax = window.checkPhysicalGardeRule(tempShifts, dMax + 1, tempShifts[dMax+1]);
+
+                        let safeMin = window.checkPhysicalGardeRule(tempShifts, dMin, 'N');
+                        if (dMin < lastDate - 1 && safeMin) safeMin = window.checkPhysicalGardeRule(tempShifts, dMin + 1, tempShifts[dMin+1]);
+
+                        let isValidNStreak = true;
+                        if (activeMaxNight) {
+                            let nStreak = 0;
+                            for (let i=dMin; i>=0; i--) { if(tempShifts[i]==='N') nStreak++; else break; }
+                            for (let i=dMin+1; i<lastDate; i++) { if(tempShifts[i]==='N') nStreak++; else break; }
+                            if (nStreak > maxConsecutiveNightDays) isValidNStreak = false;
+                        }
+                        
+                        let isValidNoNOD = true;
+                        if (activeNoNOD) {
+                            for(let i=1; i<lastDate; i++) {
+                                if(i>=2 && tempShifts[i-2]==='N' && tempShifts[i-1]==='OFF' && tempShifts[i]==='D') { isValidNoNOD = false; break; }
+                            }
+                        }
+
+                        if (safeMax && safeMin && isValidNStreak && isValidNoNOD) {
+                            r.monthShifts[dMax] = shiftToMove;
+                            r.monthShifts[dMin] = 'N';
+                            nSwapOccurred = true;
+                            break; 
+                        }
+                    }
+                }
+            }
+
+            // 💡 [트리니티 3차 튜닝] 간호사별 N 근무 평탄화 (세로 스왑)
             let swapOccurred = true;
             let maxLoops = 100; 
             
@@ -1562,8 +1655,9 @@
                 swapOccurred = false;
                 maxLoops--;
                 
+                let nonDispatchRows = scheduleMatrix.filter(r => !r.staff.isDispatch && !r.staff.isNightOnly);
                 nonDispatchRows.forEach(r => r.tempNCount = r.monthShifts.filter(s => s === 'N').length);
-                nonDispatchRows.sort((a, b) => b.tempNCount - a.tempNCount);
+                window.shuffleArray(nonDispatchRows).sort((a, b) => b.tempNCount - a.tempNCount);
                 
                 let maxStaff = nonDispatchRows[0];
                 let minStaff = nonDispatchRows[nonDispatchRows.length - 1];
@@ -1601,6 +1695,7 @@
                 }
             }
 
+            // 💡 [트리니티 4차 튜닝] 날짜별 OFF 총계 평탄화 (가로 스왑)
             let offSwapOccurred = true;
             let offMaxLoops = 200;
 
@@ -1614,7 +1709,7 @@
                     dailyOffCounts.push({ day: d, count: count });
                 }
 
-                dailyOffCounts.sort((a,b) => b.count - a.count);
+                window.shuffleArray(dailyOffCounts).sort((a,b) => b.count - a.count);
                 let maxDayObj = dailyOffCounts[0];
                 let minDayObj = dailyOffCounts[dailyOffCounts.length - 1];
 
@@ -1632,6 +1727,8 @@
                         !r.staff.leaveDates.includes(currentDayNumMin) &&
                         !r.staff.offDayIndicesArray.includes(globalDateDetails[dMax].dayIndex) 
                     );
+                    
+                    window.shuffleArray(candidates);
 
                     for (let r of candidates) {
                         let shiftToMove = r.monthShifts[dMin]; 
