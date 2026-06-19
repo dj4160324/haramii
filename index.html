@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (궁극의 마스터 에디션)</title>
+    <title>우리 병원 근무 관리 시스템 (궁극의 마스터 에디션 - 버그 픽스 완료)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -50,11 +50,13 @@
         .inline-date-picker input { border: none; background: transparent; font-weight: bold; color: #2b6cb0; font-size: 14px; outline: none; cursor: pointer; }
 
         .staff-quota-box { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        .quota-container { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; }
+        .quota-container { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 8px; transition: all 0.3s; }
         .quota-sub-title { font-size: 15px; font-weight: 800; color: #2d3748; margin-bottom: 15px; border-bottom: 2px dashed #cbd5e0; padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .quota-sub-title input[type="checkbox"] { transform: scale(1.3); cursor: pointer; }
         .quota-inline { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #4a5568; }
-        .quota-container.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
+        
+        /* 💡 UI 버그 픽스: 체크박스를 다시 누를 수 있도록 pointer-events: none 제거, 시각적 잠금(grayscale)만 유지 */
+        .quota-container.disabled { opacity: 0.4; filter: grayscale(100%); }
 
         .rules-group { display: flex; flex-direction: column; gap: 14px; }
         .rule-checkbox-item { display: flex; align-items: flex-start; padding: 8px 10px; border-radius: 6px; transition: background 0.2s; }
@@ -63,7 +65,7 @@
         .rule-checkbox-item label { font-size: 15px; font-weight: 800; color: #2d3748; cursor: pointer; margin-bottom: 4px; display: block; }
         .rule-checkbox-item span { display: block; font-size: 13px; color: #718096; line-height: 1.5; }
         .inline-input-num { width: 55px; padding: 4px 8px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 4px; text-align: center; font-weight: bold; }
-        .inline-input-num:disabled { background-color: #e2e8f0; color: #a0aec0; }
+        .inline-input-num:disabled { background-color: #e2e8f0; color: #a0aec0; cursor: not-allowed; }
         .inline-select { padding: 4px 8px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; font-weight: bold; color: #4a5568; }
 
         .highlight-box { background-color: #f0fdf4; border: 1px solid #9ae6b4; padding: 15px; border-radius: 8px; margin: 10px 0; }
@@ -110,6 +112,7 @@
         .page-btn:hover { background: #edf2f7; }
         .page-btn.active { background: #3182ce; color: #fff; border-color: #2b6cb0; }
         
+        /* 💡 UI 튜닝 4: 테이블 세로 스크롤 맥스치 확보 및 완벽한 상단/좌측 틀 고정 (Sticky Header) */
         .table-responsive { overflow: auto; max-height: 65vh; margin-top: 10px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; border: 1px solid #cbd5e0; }
         table.result-calendar { width: 100%; border-collapse: separate; border-spacing: 0; background: white; min-width: 1200px; }
         table.result-calendar thead { position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -173,6 +176,15 @@
         
         .brush-btn { padding: 6px 10px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #f8fafc; color: #4a5568; }
         .brush-btn.active { border-color: #4a5568; }
+
+        .btn-cal-day.p-leave { background-color: #e53e3e !important; color: white !important; }
+        .btn-cal-day.p-d { background-color: #4db6ac !important; color: white !important; }
+        .btn-cal-day.p-e { background-color: #f0a500 !important; color: white !important; }
+        .btn-cal-day.p-n { background-color: #e056fd !important; color: white !important; }
+        .btn-cal-day.p-m { background-color: #fc8181 !important; color: white !important; }
+        .btn-cal-day.p-xd { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #4db6ac !important; color: white !important; border: 1px solid #e53e3e; }
+        .btn-cal-day.p-xe { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500 !important; color: white !important; border: 1px solid #e53e3e; }
+        .btn-cal-day.p-xn { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd !important; color: white !important; border: 1px solid #e53e3e; }
 
         .floating-scroll { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; opacity: 0.6; transition: opacity 0.3s; }
         .floating-scroll:hover { opacity: 1; }
@@ -461,6 +473,38 @@
     </div>
 </div>
 
+<div id="calendarModal" class="modal-overlay">
+    <div class="modal-content">
+        <div id="modalHeader" class="modal-header">날짜 선택 달력</div>
+        <div id="modalPalette" style="display:none; flex-direction: column; gap: 8px; margin-bottom:15px; align-items: center;">
+            <div style="display:flex; gap:6px;">
+                <button type="button" class="brush-btn active" data-brush="D" onclick="selectBrush('D')">🟢 D</button>
+                <button type="button" class="brush-btn" data-brush="E" onclick="selectBrush('E')">🟡 E</button>
+                <button type="button" class="brush-btn" data-brush="N" onclick="selectBrush('N')">🟣 N</button>
+            </div>
+            <div style="display:flex; gap:6px;">
+                <button type="button" class="brush-btn" data-brush="xD" onclick="selectBrush('xD')">🚫 D제외</button>
+                <button type="button" class="brush-btn" data-brush="xE" onclick="selectBrush('xE')">🚫 E제외</button>
+                <button type="button" class="brush-btn" data-brush="xN" onclick="selectBrush('xN')">🚫 N제외</button>
+            </div>
+            <div style="display:flex; gap:6px; width: 100%; justify-content: center;">
+                <button type="button" class="brush-btn" data-brush="M" onclick="selectBrush('M')">🩸 보건</button>
+                <button type="button" class="brush-btn" data-brush="ERASE" onclick="selectBrush('ERASE')" style="flex:1; max-width: 120px;">⚪ 지우개 (삭제)</button>
+            </div>
+        </div>
+        <div class="modal-calendar-grid" id="modalCalendarGrid"></div>
+        <div class="modal-footer">
+            <div class="drag-notice">💡 같은 색으로 한 번 더 누르면 지워집니다.<br>💡 꾹 누르고 드래그하여 칠할 수 있습니다.</div>
+            <button type="button" class="btn-modal-close" onclick="closeCalendarModal()">선택 완료 및 닫기</button>
+        </div>
+    </div>
+</div>
+
+<div class="floating-scroll">
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">▲</button>
+    <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})">▼</button>
+</div>
+
 <script>
     // ==========================================
     // 🧰 1. 글로벌 도구함 (Helper Functions)
@@ -747,6 +791,26 @@
         if(type === 'PREC') item.precId = parseInt(node.value);
     };
 
+    window.handleMemoryDayToggle = function(btn, sid, idx) {
+        const item = window.globalStaffData.find(x => x.id === sid);
+        if(!item) return;
+
+        btn.classList.toggle('selected-off');
+        if (btn.classList.contains('selected-off')) {
+            if(!item.offDayIndicesArray.includes(idx)) item.offDayIndicesArray.push(idx);
+        } else {
+            let p = item.offDayIndicesArray.indexOf(idx);
+            if(p > -1) item.offDayIndicesArray.splice(p, 1);
+        }
+        
+        const group = btn.parentElement;
+        const activeCount = item.offDayIndicesArray.length;
+        const allButtons = group.querySelectorAll('.btn-day-toggle');
+        allButtons.forEach(b => b.classList.remove('active-single', 'active-multi'));
+        if (activeCount === 1) group.querySelector('.selected-off').classList.add('active-single');
+        else if (activeCount >= 2) group.querySelectorAll('.selected-off').forEach(b => b.classList.add('active-multi'));
+    };
+
     window.updateSeniorCheckboxes = function() {
         const seniorCountInput = parseInt(document.getElementById('seniorStaff').value) || 0;
         window.globalStaffData.forEach((item, index) => {
@@ -759,6 +823,7 @@
     window.syncStaffRows = function() {
         const total = parseInt(document.getElementById('totalStaff').value) || 15;
         const seniorCount = parseInt(document.getElementById('seniorStaff').value) || 0;
+        // 💡 1단계 -> 2단계 버그 픽스: isGlobalMLeaveOn 으로 오타 수정 완료
         const isGlobalMLeaveOn = document.getElementById('ruleMenstruationLeave').checked;
 
         if (window.globalStaffData.length < total) {
@@ -767,7 +832,7 @@
                 window.globalStaffData.push({
                     id: sid, name: `간호사 ${sid}`,
                     isSenior: i < seniorCount, isNewbie: false, isPregnant: false, isDispatch: false, isNightOnly: false,
-                    isMLeaveActive: isGlobalOn, mLeaveOption: 'EXTRA', precId: 0,
+                    isMLeaveActive: isGlobalMLeaveOn, mLeaveOption: 'EXTRA', precId: 0,
                     leaveDates: [], reqShiftsMap: {}, offDayIndicesArray: [],
                     offBreakdown: { pure:0, mLeave:0, sleep:0, preg:0, total:0 } 
                 });
@@ -940,6 +1005,182 @@
         if(count > 0) alert(`${count}명의 보건휴가 옵션이 일괄 적용되었습니다.`);
     };
 
+    window.syncWeekendQuota = function() {
+        if (!document.getElementById('useWeekendQuota').checked) {
+            document.getElementById('minStaffDayWeekend').value = document.getElementById('minStaffDayWeekday').value;
+            document.getElementById('minStaffEveWeekend').value = document.getElementById('minStaffEveWeekday').value;
+            document.getElementById('minStaffNitWeekend').value = document.getElementById('minStaffNitWeekday').value;
+        }
+    };
+
+    window.toggleQuotaInputs = function(type) {
+        const isChecked = document.getElementById(`use${type}Quota`).checked;
+        const container = document.getElementById(`quota-container-${type}`);
+        const inputs = container.querySelectorAll('input[type="number"]');
+        if (isChecked) { 
+            container.classList.remove('disabled'); 
+            inputs.forEach(inp => inp.disabled = false); 
+        } else { 
+            container.classList.add('disabled'); 
+            inputs.forEach(inp => inp.disabled = true); 
+            if (type === 'Weekend') {
+                window.syncWeekendQuota();
+            }
+        }
+    };
+
+    window.selectBrush = function(brush) {
+        window.currentSelectedShiftBrush = brush;
+        document.querySelectorAll('#modalPalette .brush-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-brush') === brush) btn.classList.add('active');
+        });
+    };
+
+    window.openCalendarModal = function(staffId, type) {
+        window.currentActiveStaffId = staffId;
+        window.currentActiveFieldType = type;
+
+        const schType = document.querySelector('input[name="schType"]:checked').value;
+        const year = document.getElementById('schYear').value;
+        const month = document.getElementById('schMonth').value;
+        let lastDate = 30;
+        let renderDateList = [];
+
+        if (schType === 'MONTH') {
+            lastDate = new Date(year, month, 0).getDate();
+            for(let d=1; d<=lastDate; d++) renderDateList.push({ dayNum: d, label: d });
+        } else {
+            lastDate = 28;
+            const startDateStr = document.getElementById('cycleStartDate').value;
+            let baseDate = new Date(startDateStr || "2026-01-01");
+            let cycleStart = new Date(baseDate.getTime() + ((month - 1) * 28 * 24 * 60 * 60 * 1000));
+            for(let d=0; d<28; d++) {
+                let curr = new Date(cycleStart.getTime() + (d * 24 * 60 * 60 * 1000));
+                renderDateList.push({ dayNum: d+1, label: `${curr.getMonth()+1}/${curr.getDate()}` });
+            }
+        }
+
+        const titleLabel = type === 'leave' ? '지정 연차 달력 (휴가일 클릭/드래그)' : '신청 근무 달력 (브러쉬 선택 후 날짜 칠하기/드래그)';
+        const schLabel = schType === 'MONTH' ? `${year}년 ${month}월` : `${month}주기 고정 턴`;
+        document.getElementById('modalHeader').innerText = `${schLabel} - ${titleLabel}`;
+
+        const paletteNode = document.getElementById('modalPalette');
+        if (type === 'req') { paletteNode.style.display = 'flex'; window.selectBrush('D'); } 
+        else { paletteNode.style.display = 'none'; }
+
+        const grid = document.getElementById('modalCalendarGrid');
+        grid.innerHTML = "";
+
+        const weeks = ['일','월','화','수','목','금','토'];
+        weeks.forEach(w => grid.innerHTML += `<div class="modal-cal-head">${w}</div>`);
+
+        let startDayIndex = 0;
+        if(schType === 'MONTH') {
+            startDayIndex = new Date(year, month - 1, 1).getDay();
+        } else {
+            const startDateStr = document.getElementById('cycleStartDate').value;
+            let baseDate = new Date(startDateStr || "2026-01-01");
+            let cycleStart = new Date(baseDate.getTime() + ((month - 1) * 28 * 24 * 60 * 60 * 1000));
+            startDayIndex = cycleStart.getDay();
+        }
+
+        for(let s=0; s<startDayIndex; s++) grid.innerHTML += `<div></div>`;
+
+        const staffItem = window.globalStaffData.find(x => x.id === staffId);
+        const isPregnant = staffItem ? staffItem.isPregnant : false;
+
+        for(let d=1; d<=lastDate; d++) {
+            let stateClass = "";
+            let subTag = "";
+            let btnLabel = renderDateList[d-1].label;
+
+            if (type === 'leave') {
+                if((staffItem.leaveDates || []).includes(d)) stateClass = "p-leave";
+            } else {
+                const currentAssignedShift = (staffItem.reqShiftsMap || {})[d];
+                if(currentAssignedShift) {
+                    stateClass = `p-${currentAssignedShift.toLowerCase()}`;
+                    if(currentAssignedShift === 'M') subTag = `<span class="cal-sub-tag">보건</span>`;
+                    else if (currentAssignedShift.startsWith('x')) subTag = `<span class="cal-sub-tag">🚫${currentAssignedShift.substring(1)}</span>`;
+                    else subTag = `<span class="cal-sub-tag">${currentAssignedShift}</span>`;
+                }
+            }
+            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="window.startDrag(event, this)" onmouseenter="window.doDrag(event, this)">${btnLabel}<span class="cal-sub-tag-wrapper" style="display:block; font-size:10px;">${subTag}</span></button>`;
+        }
+        document.getElementById('calendarModal').style.display = 'flex';
+    };
+
+    window.startDrag = function(event, btn) {
+        window.isDragging = true;
+        const day = parseInt(btn.getAttribute('data-day'));
+        const isPreg = btn.getAttribute('data-preg') === 'true';
+        const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
+
+        if (window.currentActiveFieldType === 'leave') {
+            if (staff.reqShiftsMap[day]) {
+                alert(`🚨 [오류] 해당 날짜(${day}일)에는 이미 '날짜 지정 신청 근무'가 들어가 있습니다. 중복 선택이 불가하므로 신청 근무를 먼저 지워주세요.`);
+                window.isDragging = false; return;
+            }
+            window.dragTargetState = btn.classList.contains('p-leave') ? 'remove' : 'add';
+        } else {
+            if (staff.leaveDates.includes(day)) {
+                alert(`🚨 [오류] 해당 날짜(${day}일)는 이미 '지정 연차'로 선택되어 있습니다. 지정 연차 달력에서 먼저 해제해 주세요.`);
+                window.isDragging = false; return;
+            }
+            if (isPreg && (window.currentSelectedShiftBrush === 'N' || window.currentSelectedShiftBrush === 'xN')) { 
+                alert("🚨 임산부는 야간(N) 근무 배정 및 제외 설정이 불가합니다."); 
+                window.isDragging = false; return; 
+            }
+            if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.currentSelectedShiftBrush)) { 
+                alert("🚨 N전담 근무자는 D/E 근무 배정 및 제외 설정이 불가합니다."); 
+                window.isDragging = false; return; 
+            }
+            
+            if (staff.reqShiftsMap[day] === window.currentSelectedShiftBrush) window.dragTargetState = 'ERASE';
+            else window.dragTargetState = window.currentSelectedShiftBrush;
+        }
+        window.applyDragAction(btn);
+    };
+
+    window.doDrag = function(event, btn) { 
+        if (window.isDragging) window.applyDragAction(btn); 
+    };
+
+    window.applyDragAction = function(btn) {
+        const day = parseInt(btn.getAttribute('data-day'));
+        const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
+
+        if (window.currentActiveFieldType === 'leave') {
+            if (staff.reqShiftsMap[day]) return; 
+            if (window.dragTargetState === 'add') {
+                if(!staff.leaveDates.includes(day)) { staff.leaveDates.push(day); btn.classList.add('p-leave'); }
+            } else {
+                let idx = staff.leaveDates.indexOf(day);
+                if(idx > -1) { staff.leaveDates.splice(idx, 1); btn.classList.remove('p-leave'); }
+            }
+        } else {
+            if (staff.leaveDates.includes(day)) return; 
+            const isPreg = btn.getAttribute('data-preg') === 'true';
+            if (isPreg && (window.dragTargetState === 'N' || window.dragTargetState === 'xN')) return;
+            if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.dragTargetState)) return;
+
+            btn.classList.remove('p-d', 'p-e', 'p-n', 'p-m', 'p-xd', 'p-xe', 'p-xn');
+            const wrapper = btn.querySelector('.cal-sub-tag-wrapper');
+            if(wrapper) wrapper.innerHTML = "";
+
+            if (window.dragTargetState === 'ERASE') {
+                delete staff.reqShiftsMap[day];
+            } else {
+                staff.reqShiftsMap[day] = window.dragTargetState;
+                btn.classList.add(`p-${window.dragTargetState.toLowerCase()}`);
+                let tagStr = window.dragTargetState === 'M' ? '보건' : window.dragTargetState;
+                if (window.dragTargetState.startsWith('x')) tagStr = `🚫${window.dragTargetState.substring(1)}`;
+                if(wrapper) wrapper.innerHTML = `<span class="cal-sub-tag">${tagStr}</span>`;
+            }
+        }
+    };
+
     window.closeCalendarModal = function() {
         document.getElementById('calendarModal').style.display = 'none';
         if(window.currentActiveStaffId) {
@@ -974,13 +1215,65 @@
         if(reqBox) reqBox.innerHTML = reqBadges;
     };
 
-    // 💡 연차와 날짜 지정 근무 신청의 실시간 충돌 원천 차단 방어선 구축
-    window.runSmartScheduling = async function() {
-        // ... (하단 본체 연동화) ...
+    window.goToStep1 = function() {
+        document.getElementById('step2Section').classList.remove('active');
+        document.getElementById('step1Section').classList.add('active');
+        document.getElementById('tab2').classList.remove('active');
+        document.getElementById('tab1').classList.add('active');
     };
-</script>
 
-<script>
+    window.validateAndGoToStep2 = function() {
+        try {
+            document.getElementById('step1Section').classList.remove('active');
+            document.getElementById('step2Section').classList.add('active');
+            document.getElementById('tab1').classList.remove('active');
+            document.getElementById('tab2').classList.add('active');
+            window.syncStaffRows(); 
+            window.update4WeekDateText();
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        } catch(e) {
+            alert("2단계 진입 에러:\n" + e.message);
+        }
+    };
+
+    window.goToStep3 = function() {
+        const totalStaff = parseInt(document.getElementById('totalStaff').value) || 0;
+        let activeStaffCount = window.globalStaffData.filter(x => !x.isDispatch).length;
+
+        const useWeekday = document.getElementById('useWeekdayQuota').checked;
+        const reqDayWeekday = useWeekday ? (parseInt(document.getElementById('minStaffDayWeekday').value) || 0) : 0;
+        const reqEveWeekday = useWeekday ? (parseInt(document.getElementById('minStaffEveWeekday').value) || 0) : 0;
+        const reqNitWeekday = useWeekday ? (parseInt(document.getElementById('minStaffNitWeekday').value) || 0) : 0;
+        const totalRequiredWeekday = reqDayWeekday + reqEveWeekday + reqNitWeekday;
+
+        if (useWeekday && totalRequiredWeekday > activeStaffCount) {
+            alert(`🚨 [수학적 배정 불가능]\n\n평일 하루 요구 근무 인원 총합(${totalRequiredWeekday}명)이 파견자를 제외한 실제 가동 간호사 수(${activeStaffCount}명)를 초과합니다.`);
+            return;
+        }
+
+        document.getElementById('step2Section').classList.remove('active');
+        document.getElementById('step3Section').classList.add('active');
+        document.getElementById('tab2').classList.remove('active');
+        document.getElementById('tab3').classList.add('active');
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    window.backToStep2 = function() { 
+        document.getElementById('step3Section').classList.remove('active'); 
+        document.getElementById('step2Section').classList.add('active'); 
+        document.getElementById('tab3').classList.remove('active'); 
+        document.getElementById('tab2').classList.add('active'); 
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+    
+    window.backToStep3 = function() { 
+        document.getElementById('step4Section').classList.remove('active'); 
+        document.getElementById('step3Section').classList.add('active'); 
+        document.getElementById('tab4').classList.remove('active'); 
+        document.getElementById('tab3').classList.add('active'); 
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
     // ==========================================
     // 🧠 3. 핵심 스케줄링 엔진 (Trinity AI)
     // ==========================================
@@ -1165,13 +1458,12 @@
             let targetOffsPerNurse = Math.max(baseRequiredOff, fallbackMinOffCount);
             let targetTotalOffs = totalActiveStaff * targetOffsPerNurse;
 
-            // 💡 [1번 지시사항] 일별 평균 가동률 연산식 도입하여 평일/주말 불균형 해조 장치 세팅
             let totalDutysNeeded = 0;
             for(let d=0; d<lastDate; d++) {
                 let isRest = (dateDetails[d].isSat || dateDetails[d].isSun || dateDetails[d].isHoliday);
                 totalDutysNeeded += (isRest ? (reqDayWeekend+reqEveWeekend+reqNitWeekend) : (reqDayWeekday+reqEveWeekday+reqNitWeekday));
             }
-            let idealDailyStaffLimit = Math.ceil(totalDutysNeeded / lastDate) + 3; // 유연성 버퍼 가산
+            let idealDailyStaffLimit = Math.ceil(totalDutysNeeded / lastDate) + 3; 
 
             for (let idx = 0; idx < lastDate; idx++) {
                 const dayInfo = dateDetails[idx];
@@ -1186,7 +1478,6 @@
                     if (row.staff.isDispatch) { row.monthShifts[idx] = 'DISPATCH'; return; }
                     if (row.staff.offDayIndicesArray.includes(dayInfo.dayIndex)) { row.monthShifts[idx] = 'OFF'; return; }
                     
-                    // 💡 임산부 필수 주말 휴일보장 제약 조건의 체크 여부 완전 독립성 반영
                     if (row.staff.isPregnant && isPregHolidayOff) {
                         if ((isPregSatOff && dayInfo.isSat) || (isPregSunHolOff && (dayInfo.isSun || dayInfo.isHoliday))) {
                             row.monthShifts[idx] = 'OFF'; return;
@@ -1278,7 +1569,6 @@
 
                 let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
                 
-                // 💡 [3-1번 지시사항] 프리셉터가 쉬는 날(OFF/연차)일 때 신규 독자 출근 가능하도록 로직 유연화 수술
                 allRows.filter(r => r.staff.isNewbie && r.monthShifts[idx] === null).forEach(nb => {
                     let pId = nb.staff.precId;
                     if (pId > 0) {
@@ -1288,7 +1578,6 @@
                             if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) {
                                 nb.monthShifts[idx] = target;
                             }
-                            // 프리셉터가 쉬는 날('OFF','LEAVE')일 때 무조건 따라 쉬지 않고 널값(null)으로 비워두어 독자적 출근을 개방함
                         }
                     }
                 });
@@ -1337,13 +1626,11 @@
                         return; 
                     }
 
-                    // 💡 마지노선 7일은 보상오프 산정 전 '기본 연차 보건'으로 완벽 선배정 처리
                     if (!row.staff.isNightOnly && (totalRestCount + (lastDate - idx)) <= fallbackMinOffCount) {
                         row.monthShifts[idx] = 'OFF';
                         return;
                     }
 
-                    // 💡 평균 가동률 보존 법칙: 오늘 적정 인원 풀이 차면 주말 투입력을 위해 평일 보존 오프 유도
                     let totalActiveWorkersToday = currentDCount + currentECount + allRows.filter(r => r.monthShifts[idx] === 'N').length;
                     if (totalActiveWorkersToday >= idealDailyStaffLimit && !dayInfo.isSat && !dayInfo.isSun && !dayInfo.isHoliday) {
                         if (canTakeOff && (!row.staff.isNightOnly ? totalRestCount < maxAllowedOff : true)) {
@@ -1380,7 +1667,6 @@
                 });
             }
 
-            // D/E 균등 후처리 스왑 연산 AI
             let deSwapOccurred = true;
             let deMaxLoops = 200;
             while(deSwapOccurred && deMaxLoops > 0) {
@@ -1406,7 +1692,6 @@
                 }
             }
 
-            // N 균등 평탄화 AI
             let nSwapOccurred = true;
             let nMaxLoops = 200;
             while(nSwapOccurred && nMaxLoops > 0) {
@@ -1451,7 +1736,6 @@
                 }
             }
 
-            // OFF 평탄화 AI
             let offSwapOccurred = true;
             let offMaxLoops = 200;
             while(offSwapOccurred && offMaxLoops > 0) {
@@ -1484,7 +1768,6 @@
                 }
             }
 
-            // 최후의 구제 보루 (로빈 후드 락)
             scheduleMatrix.forEach(r => {
                 if (r.staff.isDispatch || r.staff.isNightOnly) return;
                 let currentOffs = r.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
@@ -1504,15 +1787,13 @@
                 }
             });
 
-            // 💡 [2번 지시사항] 임산부 보상 오프 등 댓가성 오프를 달력 완료 후 후배정 가산 처리식으로 분리 수술
+            // 💡 보상 오프 등 댓가성 오프를 달력 완료 후 후배정 가산 처리
             scheduleMatrix.forEach(row => {
                 if (row.staff.isDispatch) return;
                 
-                // 마지노선 확보 후 획득한 오프 추가 연산
                 let sleepAdd = isRuleSleepingOff && !row.staff.isNightOnly && row.monthShifts.filter(s => s === 'N').length >= targetNightLimit ? rewardOffCount : 0;
                 let pregAdd = row.staff.isPregnant && isPregShortHourComp ? Math.floor(row.monthShifts.filter(s => s === 'D' || s === 'E').length / pregShortHourDays) * pregShortHourReward : 0;
                 
-                // 빈 출근일 슬롯을 수배하여 보상 오프로 강제 체인지 치환
                 let totalBonusInject = sleepAdd + pregAdd;
                 for (let k=0; k<totalBonusInject; k++) {
                     let unreqWorkerDay = -1;
@@ -1526,7 +1807,6 @@
                     }
                 }
 
-                // 브레이크다운 계산 원복 정산 처리
                 let pureOffCnt = row.monthShifts.filter(s => s === 'OFF').length;
                 row.staff.offBreakdown.sleep = sleepAdd;
                 row.staff.offBreakdown.preg = pregAdd;
@@ -1534,7 +1814,6 @@
                 row.staff.offBreakdown.total = pureOffCnt + row.staff.offBreakdown.mLeave;
             });
 
-            // 야간 N 근무자 최후의 최저 보루 파괴 에러 체크 방어벽
             for(let d=0; d<lastDate; d++) {
                 let isRest = (dateDetails[d].isSat || dateDetails[d].isSun || dateDetails[d].isHoliday);
                 let tQuota = isRest ? reqNitWeekend : reqNitWeekday;
@@ -1572,6 +1851,13 @@
         } finally {
             submitBtn.disabled = false; backToStep2Btn.disabled = false;
         }
+    };
+    
+    // 💡 페이지 로드 시 UI 강제 동기화 (새로고침 방벽 해제 방지)
+    window.onload = function() {
+        if(document.getElementById('useWeekdayQuota')) window.toggleQuotaInputs('Weekday');
+        if(document.getElementById('useWeekendQuota')) window.toggleQuotaInputs('Weekend');
+        window.syncStaffRows();
     };
 </script>
 
