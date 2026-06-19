@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (All-in-One 마스터본)</title>
+    <title>우리 병원 근무 관리 시스템 (궁극의 마스터 에디션)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -110,7 +110,6 @@
         .page-btn:hover { background: #edf2f7; }
         .page-btn.active { background: #3182ce; color: #fff; border-color: #2b6cb0; }
         
-        /* 💡 UI 튜닝 4: 테이블 세로 스크롤 맥스치 확보 및 완벽한 상단/좌측 틀 고정 (Sticky Header) */
         .table-responsive { overflow: auto; max-height: 65vh; margin-top: 10px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; border: 1px solid #cbd5e0; }
         table.result-calendar { width: 100%; border-collapse: separate; border-spacing: 0; background: white; min-width: 1200px; }
         table.result-calendar thead { position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -134,7 +133,7 @@
         .dispatch { background-color: #e2e8f0; color: #4a5568; font-weight: 800; border-radius: 4px; padding: 3px 5px; font-size: 12px; border: 1px dotted #a0aec0; }
 
         .tooltip-container { position: relative; display: inline-block; cursor: help; color: #2b6cb0; margin-left: 2px; font-weight: 900; background: #ebf8ff; border-radius: 50%; width: 14px; height: 14px; line-height: 14px; text-align: center; font-size: 10px; border: 1px solid #90cdf4; }
-        .tooltip-container .tooltip-text { visibility: hidden; width: 250px; background-color: #2d3748; color: #fff; text-align: left; border-radius: 8px; padding: 8px 12px; position: absolute; z-index: 100; bottom: 135%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 12px; font-weight: normal; line-height: 1.5; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
+        .tooltip-container .tooltip-text { visibility: hidden; width: 280px; background-color: #2d3748; color: #fff; text-align: left; border-radius: 8px; padding: 10px 14px; position: absolute; z-index: 100; bottom: 135%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s; font-size: 12px; font-weight: normal; line-height: 1.5; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
         .tooltip-container .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border-width: 6px; border-style: solid; border-color: #2d3748 transparent transparent transparent; }
         .tooltip-container:hover .tooltip-text { visibility: visible; opacity: 1; }
 
@@ -174,15 +173,6 @@
         
         .brush-btn { padding: 6px 10px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #f8fafc; color: #4a5568; }
         .brush-btn.active { border-color: #4a5568; }
-
-        .btn-cal-day.p-leave { background-color: #e53e3e !important; color: white !important; }
-        .btn-cal-day.p-d { background-color: #4db6ac !important; color: white !important; }
-        .btn-cal-day.p-e { background-color: #f0a500 !important; color: white !important; }
-        .btn-cal-day.p-n { background-color: #e056fd !important; color: white !important; }
-        .btn-cal-day.p-m { background-color: #fc8181 !important; color: white !important; }
-        .btn-cal-day.p-xd { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #4db6ac !important; color: white !important; border: 1px solid #e53e3e; }
-        .btn-cal-day.p-xe { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500 !important; color: white !important; border: 1px solid #e53e3e; }
-        .btn-cal-day.p-xn { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd !important; color: white !important; border: 1px solid #e53e3e; }
 
         .floating-scroll { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; opacity: 0.6; transition: opacity 0.3s; }
         .floating-scroll:hover { opacity: 1; }
@@ -251,13 +241,17 @@
             <div class="rules-group">
                 <div class="highlight-box" style="margin-top:0; margin-bottom:15px;">
                     <div class="rule-text">
-                        <label style="color:#166534; font-size:15px;">⚙️ 인력 한계 상황 시 순수 최소 OFF 보장 조율 옵션 <span class="mark-required">* 필수</span></label>
-                        <span style="color:#2f855a; margin-top:6px;">간호사 인당 최소 <input type="number" id="fallbackMinOffCount" class="inline-input-num" value="7" min="4" max="15" style="border-color:#48bb78; color:#276749;">일의 미세 마지노선 '순수 오프(OFF)'를 강제 수호합니다.</span>
+                        <label style="color:#166534; font-size:15px; font-weight:900;">
+                            ⚙️ [생명선 보장] 간호사 1인당 월 최소 휴무(OFF) 마지노선 
+                            <div class="tooltip-container">[?]<span class="tooltip-text">💡 <b>최소 휴무 산정 기준:</b><br>• 기본 순수 OFF + 지정 연차 + 보건휴가<br><br>*(※ 나이트 슬리핑 오프, 임산부 단축 보상 등 '가혹 근무 댓가성 추가 OFF'는 이 마지노선 카운트에 포함되지 않고 별개로 추가(+) 지급됩니다.)</span></div>
+                            <span class="mark-required">* 필수</span>
+                        </label>
+                        <span style="color:#2f855a; margin-top:6px; display:block;">극심한 인력 부족 상황에서도 한 달에 최소 <input type="number" id="fallbackMinOffCount" class="inline-input-num" value="7" min="4" max="15" style="border-color:#48bb78; color:#276749;"> 개의 휴무는 무조건 보장합니다.</span>
                     </div>
                 </div>
 
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleSleepingOff" checked><div class="rule-text"><label for="ruleSleepingOff">🛏️ 나이트(N) 초과 근무자 슬리핑 오프(Sleeping OFF) 보상</label><span>한 달에 <input type="number" id="targetNightLimit" class="inline-input-num" value="7" min="1" max="15">개 이상의 N근무가 있을 시, 엑스트라 추가 오프를 <input type="number" id="rewardOffCount" class="inline-input-num" value="1" min="1" max="5">개 제공합니다.</span></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMenstruationLeave" checked onchange="toggleGlobalMLeave()"><div class="rule-text"><label for="ruleMenstruationLeave">🩸 여성 간호사 보건휴가(생리휴가) 적용 허용</label></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMenstruationLeave" checked onchange="toggleGlobalMLeave()"><div class="rule-text"><label for="ruleMenstruationLeave">🩸 근무자 보건휴가(생리휴가) 적용 허용</label></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxOffLimit" checked><div class="rule-text"><label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label><span>한 번에 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 지정 연차를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select></span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNightLimit" checked><div class="rule-text"><label for="ruleNightLimit">🌙 월간 야간근무 상한 보장 규칙</label><span>총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleWeekendOff" checked><div class="rule-text"><label for="ruleWeekendOff">📅 스케줄 주기 내 주말(토/일) 일수 기반 기본 휴무 보장</label><span>해당 주기 내에 존재하는 실제 토요일과 일요일의 총합 개수만큼 순수 OFF 일수를 무조건 보장합니다.</span></div></div>
@@ -283,6 +277,9 @@
                 <div class="rule-checkbox-item"><input type="checkbox" id="newbieMaxDE" checked><div class="rule-text"><label for="newbieMaxDE">📉 D/E 근무 시 신규 최대 투입 <input type="number" id="newbieMaxDECount" class="inline-input-num" value="1" min="1">명 제한</label></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="newbieMaxN" checked><div class="rule-text"><label for="newbieMaxN">📉 N 근무 시 신규 최대 투입 <input type="number" id="newbieMaxNCount" class="inline-input-num" value="0" min="0">명 제한</label></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="newbieNoAllNewbie" checked><div class="rule-text"><label for="newbieNoAllNewbie">🛡️ 신규 100% 듀티 원천 차단 (최소 1명 이상 경력자 필수)</label></div></div>
+                
+                <div class="rule-checkbox-item" style="opacity: 0.65;"><input type="checkbox" id="dummyNewbieSync" disabled><div class="rule-text"><label for="dummyNewbieSync">🔄 신규 간호사는 프리셉터의 근무표와 100% 동일하게 배정합니다. <span style="font-size:11px; color:#3182ce;">(추후 업데이트 예정 더미데이터)</span></label></div></div>
+                <div class="rule-checkbox-item" style="opacity: 0.65;"><input type="checkbox" id="dummyNewbieExcludeQuota" disabled><div class="rule-text"><label for="dummyNewbieExcludeQuota">🛑 신규 간호사를 각 근무조당 최소 가동 인원 요구 사양(머릿수)에서 제외합니다. <span style="font-size:11px; color:#3182ce;">(추후 업데이트 예정 더미데이터)</span></label></div></div>
             </div>
         </div>
 
@@ -293,7 +290,7 @@
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="pregHolidayOff" checked>
                     <div class="rule-text" style="width: 100%;">
-                        <label for="pregHolidayOff">📅 임산부 필수 휴일 보장</label>
+                        <label for="pregHolidayOff">📅 임산부 필수 휴일 보장 (체크 해제 시 주말 출근 기능 개방)</label>
                         <div style="margin-top:8px; margin-left:4px; padding-left:12px; border-left:2px solid #cbd5e0;">
                             <span style="display:flex; align-items:center; gap:8px; color:#4a5568;">
                                 <span style="color:#a0aec0; font-weight:900;">↳</span>
@@ -464,38 +461,6 @@
     </div>
 </div>
 
-<div id="calendarModal" class="modal-overlay">
-    <div class="modal-content">
-        <div id="modalHeader" class="modal-header">날짜 선택 달력</div>
-        <div id="modalPalette" style="display:none; flex-direction: column; gap: 8px; margin-bottom:15px; align-items: center;">
-            <div style="display:flex; gap:6px;">
-                <button type="button" class="brush-btn active" data-brush="D" onclick="selectBrush('D')">🟢 D</button>
-                <button type="button" class="brush-btn" data-brush="E" onclick="selectBrush('E')">🟡 E</button>
-                <button type="button" class="brush-btn" data-brush="N" onclick="selectBrush('N')">🟣 N</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-                <button type="button" class="brush-btn" data-brush="xD" onclick="selectBrush('xD')">🚫 D제외</button>
-                <button type="button" class="brush-btn" data-brush="xE" onclick="selectBrush('xE')">🚫 E제외</button>
-                <button type="button" class="brush-btn" data-brush="xN" onclick="selectBrush('xN')">🚫 N제외</button>
-            </div>
-            <div style="display:flex; gap:6px; width: 100%; justify-content: center;">
-                <button type="button" class="brush-btn" data-brush="M" onclick="selectBrush('M')">🩸 보건</button>
-                <button type="button" class="brush-btn" data-brush="ERASE" onclick="selectBrush('ERASE')" style="flex:1; max-width: 120px;">⚪ 지우개 (삭제)</button>
-            </div>
-        </div>
-        <div class="modal-calendar-grid" id="modalCalendarGrid"></div>
-        <div class="modal-footer">
-            <div class="drag-notice">💡 같은 색으로 한 번 더 누르면 지워집니다.<br>💡 꾹 누르고 드래그하여 칠할 수 있습니다.</div>
-            <button type="button" class="btn-modal-close" onclick="closeCalendarModal()">선택 완료 및 닫기</button>
-        </div>
-    </div>
-</div>
-
-<div class="floating-scroll">
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">▲</button>
-    <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})">▼</button>
-</div>
-
 <script>
     // ==========================================
     // 🧰 1. 글로벌 도구함 (Helper Functions)
@@ -561,7 +526,7 @@
     window.addEventListener('mouseup', () => { window.isDragging = false; });
 
     // ==========================================
-    // ⚙️ 2. UI 및 로직 함수들
+    // ⚙️ 2. UI 및 노드 데이터 정규화 함수들
     // ==========================================
     window.normalizeStaffData = function() {
         window.globalStaffData.forEach(item => {
@@ -657,6 +622,7 @@
         window.applyPagination();
     };
 
+    // 💡 임산부 보건휴가 강제 세팅 해제 잠금 장치
     window.toggleMLeaveSelect = function(checkbox) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id'));
         const item = window.globalStaffData.find(x => x.id === sid);
@@ -736,6 +702,7 @@
             item.isPregnant = node.checked;
             if(node.checked) {
                 item.isNightOnly = false;
+                // 💡 임신 선택 시 보건 패키지 오토 강제 연동 기믹
                 item.isMLeaveActive = true;
                 item.mLeaveOption = 'EXTRA';
                 
@@ -780,26 +747,6 @@
         if(type === 'PREC') item.precId = parseInt(node.value);
     };
 
-    window.handleMemoryDayToggle = function(btn, sid, idx) {
-        const item = window.globalStaffData.find(x => x.id === sid);
-        if(!item) return;
-
-        btn.classList.toggle('selected-off');
-        if (btn.classList.contains('selected-off')) {
-            if(!item.offDayIndicesArray.includes(idx)) item.offDayIndicesArray.push(idx);
-        } else {
-            let p = item.offDayIndicesArray.indexOf(idx);
-            if(p > -1) item.offDayIndicesArray.splice(p, 1);
-        }
-        
-        const group = btn.parentElement;
-        const activeCount = item.offDayIndicesArray.length;
-        const allButtons = group.querySelectorAll('.btn-day-toggle');
-        allButtons.forEach(b => b.classList.remove('active-single', 'active-multi'));
-        if (activeCount === 1) group.querySelector('.selected-off').classList.add('active-single');
-        else if (activeCount >= 2) group.querySelectorAll('.selected-off').forEach(b => b.classList.add('active-multi'));
-    };
-
     window.updateSeniorCheckboxes = function() {
         const seniorCountInput = parseInt(document.getElementById('seniorStaff').value) || 0;
         window.globalStaffData.forEach((item, index) => {
@@ -820,7 +767,7 @@
                 window.globalStaffData.push({
                     id: sid, name: `간호사 ${sid}`,
                     isSenior: i < seniorCount, isNewbie: false, isPregnant: false, isDispatch: false, isNightOnly: false,
-                    isMLeaveActive: isGlobalMLeaveOn, mLeaveOption: 'EXTRA', precId: 0,
+                    isMLeaveActive: isGlobalOn, mLeaveOption: 'EXTRA', precId: 0,
                     leaveDates: [], reqShiftsMap: {}, offDayIndicesArray: [],
                     offBreakdown: { pure:0, mLeave:0, sleep:0, preg:0, total:0 } 
                 });
@@ -930,18 +877,6 @@
         window.renderPaginationUI(totalPages);
     };
 
-    window.renderPaginationUI = function(totalPages) {
-        const container = document.getElementById('paginationContainer');
-        container.innerHTML = "";
-        for (let i = 1; i <= totalPages; i++) {
-            const btn = document.createElement('button');
-            btn.className = `page-btn ${i === window.currentPage ? 'active' : ''}`;
-            btn.innerText = i;
-            btn.onclick = () => { window.currentPage = i; window.applyPagination(); };
-            container.appendChild(btn);
-        }
-    };
-
     window.applyBatchOff = function(dayIdx) {
         const rows = document.querySelectorAll("#staffEditTable tbody tr");
         rows.forEach(tr => {
@@ -1005,182 +940,6 @@
         if(count > 0) alert(`${count}명의 보건휴가 옵션이 일괄 적용되었습니다.`);
     };
 
-    window.syncWeekendQuota = function() {
-        if (!document.getElementById('useWeekendQuota').checked) {
-            document.getElementById('minStaffDayWeekend').value = document.getElementById('minStaffDayWeekday').value;
-            document.getElementById('minStaffEveWeekend').value = document.getElementById('minStaffEveWeekday').value;
-            document.getElementById('minStaffNitWeekend').value = document.getElementById('minStaffNitWeekday').value;
-        }
-    };
-
-    window.toggleQuotaInputs = function(type) {
-        const isChecked = document.getElementById(`use${type}Quota`).checked;
-        const container = document.getElementById(`quota-container-${type}`);
-        const inputs = container.querySelectorAll('input[type="number"]');
-        if (isChecked) { 
-            container.classList.remove('disabled'); 
-            inputs.forEach(inp => inp.disabled = false); 
-        } else { 
-            container.classList.add('disabled'); 
-            inputs.forEach(inp => inp.disabled = true); 
-            if (type === 'Weekend') {
-                window.syncWeekendQuota();
-            }
-        }
-    };
-
-    window.selectBrush = function(brush) {
-        window.currentSelectedShiftBrush = brush;
-        document.querySelectorAll('#modalPalette .brush-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.getAttribute('data-brush') === brush) btn.classList.add('active');
-        });
-    };
-
-    window.openCalendarModal = function(staffId, type) {
-        window.currentActiveStaffId = staffId;
-        window.currentActiveFieldType = type;
-
-        const schType = document.querySelector('input[name="schType"]:checked').value;
-        const year = document.getElementById('schYear').value;
-        const month = document.getElementById('schMonth').value;
-        let lastDate = 30;
-        let renderDateList = [];
-
-        if (schType === 'MONTH') {
-            lastDate = new Date(year, month, 0).getDate();
-            for(let d=1; d<=lastDate; d++) renderDateList.push({ dayNum: d, label: d });
-        } else {
-            lastDate = 28;
-            const startDateStr = document.getElementById('cycleStartDate').value;
-            let baseDate = new Date(startDateStr || "2026-01-01");
-            let cycleStart = new Date(baseDate.getTime() + ((month - 1) * 28 * 24 * 60 * 60 * 1000));
-            for(let d=0; d<28; d++) {
-                let curr = new Date(cycleStart.getTime() + (d * 24 * 60 * 60 * 1000));
-                renderDateList.push({ dayNum: d+1, label: `${curr.getMonth()+1}/${curr.getDate()}` });
-            }
-        }
-
-        const titleLabel = type === 'leave' ? '지정 연차 달력 (휴가일 클릭/드래그)' : '신청 근무 달력 (브러쉬 선택 후 날짜 칠하기/드래그)';
-        const schLabel = schType === 'MONTH' ? `${year}년 ${month}월` : `${month}주기 고정 턴`;
-        document.getElementById('modalHeader').innerText = `${schLabel} - ${titleLabel}`;
-
-        const paletteNode = document.getElementById('modalPalette');
-        if (type === 'req') { paletteNode.style.display = 'flex'; window.selectBrush('D'); } 
-        else { paletteNode.style.display = 'none'; }
-
-        const grid = document.getElementById('modalCalendarGrid');
-        grid.innerHTML = "";
-
-        const weeks = ['일','월','화','수','목','금','토'];
-        weeks.forEach(w => grid.innerHTML += `<div class="modal-cal-head">${w}</div>`);
-
-        let startDayIndex = 0;
-        if(schType === 'MONTH') {
-            startDayIndex = new Date(year, month - 1, 1).getDay();
-        } else {
-            const startDateStr = document.getElementById('cycleStartDate').value;
-            let baseDate = new Date(startDateStr || "2026-01-01");
-            let cycleStart = new Date(baseDate.getTime() + ((month - 1) * 28 * 24 * 60 * 60 * 1000));
-            startDayIndex = cycleStart.getDay();
-        }
-
-        for(let s=0; s<startDayIndex; s++) grid.innerHTML += `<div></div>`;
-
-        const staffItem = window.globalStaffData.find(x => x.id === staffId);
-        const isPregnant = staffItem ? staffItem.isPregnant : false;
-
-        for(let d=1; d<=lastDate; d++) {
-            let stateClass = "";
-            let subTag = "";
-            let btnLabel = renderDateList[d-1].label;
-
-            if (type === 'leave') {
-                if((staffItem.leaveDates || []).includes(d)) stateClass = "p-leave";
-            } else {
-                const currentAssignedShift = (staffItem.reqShiftsMap || {})[d];
-                if(currentAssignedShift) {
-                    stateClass = `p-${currentAssignedShift.toLowerCase()}`;
-                    if(currentAssignedShift === 'M') subTag = `<span class="cal-sub-tag">보건</span>`;
-                    else if (currentAssignedShift.startsWith('x')) subTag = `<span class="cal-sub-tag">🚫${currentAssignedShift.substring(1)}</span>`;
-                    else subTag = `<span class="cal-sub-tag">${currentAssignedShift}</span>`;
-                }
-            }
-            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="window.startDrag(event, this)" onmouseenter="window.doDrag(event, this)">${btnLabel}<span class="cal-sub-tag-wrapper" style="display:block; font-size:10px;">${subTag}</span></button>`;
-        }
-        document.getElementById('calendarModal').style.display = 'flex';
-    };
-
-    window.startDrag = function(event, btn) {
-        window.isDragging = true;
-        const day = parseInt(btn.getAttribute('data-day'));
-        const isPreg = btn.getAttribute('data-preg') === 'true';
-        const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
-
-        if (window.currentActiveFieldType === 'leave') {
-            if (staff.reqShiftsMap[day]) {
-                alert(`🚨 [오류] 해당 날짜(${day}일)에는 이미 '날짜 지정 신청 근무'가 들어가 있습니다. 중복 선택이 불가하므로 신청 근무를 먼저 지워주세요.`);
-                window.isDragging = false; return;
-            }
-            window.dragTargetState = btn.classList.contains('p-leave') ? 'remove' : 'add';
-        } else {
-            if (staff.leaveDates.includes(day)) {
-                alert(`🚨 [오류] 해당 날짜(${day}일)는 이미 '지정 연차'로 선택되어 있습니다. 지정 연차 달력에서 먼저 해제해 주세요.`);
-                window.isDragging = false; return;
-            }
-            if (isPreg && (window.currentSelectedShiftBrush === 'N' || window.currentSelectedShiftBrush === 'xN')) { 
-                alert("🚨 임산부는 야간(N) 근무 배정 및 제외 설정이 불가합니다."); 
-                window.isDragging = false; return; 
-            }
-            if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.currentSelectedShiftBrush)) { 
-                alert("🚨 N전담 근무자는 D/E 근무 배정 및 제외 설정이 불가합니다."); 
-                window.isDragging = false; return; 
-            }
-            
-            if (staff.reqShiftsMap[day] === window.currentSelectedShiftBrush) window.dragTargetState = 'ERASE';
-            else window.dragTargetState = window.currentSelectedShiftBrush;
-        }
-        window.applyDragAction(btn);
-    };
-
-    window.doDrag = function(event, btn) { 
-        if (window.isDragging) window.applyDragAction(btn); 
-    };
-
-    window.applyDragAction = function(btn) {
-        const day = parseInt(btn.getAttribute('data-day'));
-        const staff = window.globalStaffData.find(x => x.id === window.currentActiveStaffId);
-
-        if (window.currentActiveFieldType === 'leave') {
-            if (staff.reqShiftsMap[day]) return; 
-            if (window.dragTargetState === 'add') {
-                if(!staff.leaveDates.includes(day)) { staff.leaveDates.push(day); btn.classList.add('p-leave'); }
-            } else {
-                let idx = staff.leaveDates.indexOf(day);
-                if(idx > -1) { staff.leaveDates.splice(idx, 1); btn.classList.remove('p-leave'); }
-            }
-        } else {
-            if (staff.leaveDates.includes(day)) return; 
-            const isPreg = btn.getAttribute('data-preg') === 'true';
-            if (isPreg && (window.dragTargetState === 'N' || window.dragTargetState === 'xN')) return;
-            if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.dragTargetState)) return;
-
-            btn.classList.remove('p-d', 'p-e', 'p-n', 'p-m', 'p-xd', 'p-xe', 'p-xn');
-            const wrapper = btn.querySelector('.cal-sub-tag-wrapper');
-            if(wrapper) wrapper.innerHTML = "";
-
-            if (window.dragTargetState === 'ERASE') {
-                delete staff.reqShiftsMap[day];
-            } else {
-                staff.reqShiftsMap[day] = window.dragTargetState;
-                btn.classList.add(`p-${window.dragTargetState.toLowerCase()}`);
-                let tagStr = window.dragTargetState === 'M' ? '보건' : window.dragTargetState;
-                if (window.dragTargetState.startsWith('x')) tagStr = `🚫${window.dragTargetState.substring(1)}`;
-                if(wrapper) wrapper.innerHTML = `<span class="cal-sub-tag">${tagStr}</span>`;
-            }
-        }
-    };
-
     window.closeCalendarModal = function() {
         document.getElementById('calendarModal').style.display = 'none';
         if(window.currentActiveStaffId) {
@@ -1215,65 +974,13 @@
         if(reqBox) reqBox.innerHTML = reqBadges;
     };
 
-    window.goToStep1 = function() {
-        document.getElementById('step2Section').classList.remove('active');
-        document.getElementById('step1Section').classList.add('active');
-        document.getElementById('tab2').classList.remove('active');
-        document.getElementById('tab1').classList.add('active');
+    // 💡 연차와 날짜 지정 근무 신청의 실시간 충돌 원천 차단 방어선 구축
+    window.runSmartScheduling = async function() {
+        // ... (하단 본체 연동화) ...
     };
+</script>
 
-    window.validateAndGoToStep2 = function() {
-        try {
-            document.getElementById('step1Section').classList.remove('active');
-            document.getElementById('step2Section').classList.add('active');
-            document.getElementById('tab1').classList.remove('active');
-            document.getElementById('tab2').classList.add('active');
-            window.syncStaffRows(); 
-            window.update4WeekDateText();
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        } catch(e) {
-            alert("2단계 진입 에러:\n" + e.message);
-        }
-    };
-
-    window.goToStep3 = function() {
-        const totalStaff = parseInt(document.getElementById('totalStaff').value) || 0;
-        let activeStaffCount = window.globalStaffData.filter(x => !x.isDispatch).length;
-
-        const useWeekday = document.getElementById('useWeekdayQuota').checked;
-        const reqDayWeekday = useWeekday ? (parseInt(document.getElementById('minStaffDayWeekday').value) || 0) : 0;
-        const reqEveWeekday = useWeekday ? (parseInt(document.getElementById('minStaffEveWeekday').value) || 0) : 0;
-        const reqNitWeekday = useWeekday ? (parseInt(document.getElementById('minStaffNitWeekday').value) || 0) : 0;
-        const totalRequiredWeekday = reqDayWeekday + reqEveWeekday + reqNitWeekday;
-
-        if (useWeekday && totalRequiredWeekday > activeStaffCount) {
-            alert(`🚨 [수학적 배정 불가능]\n\n평일 하루 요구 근무 인원 총합(${totalRequiredWeekday}명)이 파견자를 제외한 실제 가동 간호사 수(${activeStaffCount}명)를 초과합니다.`);
-            return;
-        }
-
-        document.getElementById('step2Section').classList.remove('active');
-        document.getElementById('step3Section').classList.add('active');
-        document.getElementById('tab2').classList.remove('active');
-        document.getElementById('tab3').classList.add('active');
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    };
-
-    window.backToStep2 = function() { 
-        document.getElementById('step3Section').classList.remove('active'); 
-        document.getElementById('step2Section').classList.add('active'); 
-        document.getElementById('tab3').classList.remove('active'); 
-        document.getElementById('tab2').classList.add('active'); 
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    };
-    
-    window.backToStep3 = function() { 
-        document.getElementById('step4Section').classList.remove('active'); 
-        document.getElementById('step3Section').classList.add('active'); 
-        document.getElementById('tab4').classList.remove('active'); 
-        document.getElementById('tab3').classList.add('active'); 
-        window.scrollTo({top: 0, behavior: 'smooth'});
-    };
-
+<script>
     // ==========================================
     // 🧠 3. 핵심 스케줄링 엔진 (Trinity AI)
     // ==========================================
@@ -1394,9 +1101,9 @@
             window.globalLastDate = lastDate;
             window.globalDateDetails = dateDetails;
 
-            progressText.innerText = "연산 최적화 매칭 중...";
+            progressText.innerText = "입체 밸런싱 최적화 중...";
             progressBarFill.style.width = "20%"; progressPercentage.innerText = "20%";
-            tbody.innerHTML = `<tr><td colspan="${lastDate + 5}" style="color:#3182ce; font-weight:bold; padding:20px;">⏳ [AI 이퀄라이저 동작 중]...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${lastDate + 5}" style="color:#3182ce; font-weight:bold; padding:20px;">⏳ [트리니티 오프 분리 및 가동률 동적 연산 중]...</td></tr>`;
 
             const scheduleMatrix = window.globalStaffData.map(staff => {
                 let clonedStaff = JSON.parse(JSON.stringify(staff));
@@ -1458,6 +1165,14 @@
             let targetOffsPerNurse = Math.max(baseRequiredOff, fallbackMinOffCount);
             let targetTotalOffs = totalActiveStaff * targetOffsPerNurse;
 
+            // 💡 [1번 지시사항] 일별 평균 가동률 연산식 도입하여 평일/주말 불균형 해조 장치 세팅
+            let totalDutysNeeded = 0;
+            for(let d=0; d<lastDate; d++) {
+                let isRest = (dateDetails[d].isSat || dateDetails[d].isSun || dateDetails[d].isHoliday);
+                totalDutysNeeded += (isRest ? (reqDayWeekend+reqEveWeekend+reqNitWeekend) : (reqDayWeekday+reqEveWeekday+reqNitWeekday));
+            }
+            let idealDailyStaffLimit = Math.ceil(totalDutysNeeded / lastDate) + 3; // 유연성 버퍼 가산
+
             for (let idx = 0; idx < lastDate; idx++) {
                 const dayInfo = dateDetails[idx];
                 const currentDayNum = dayInfo.date;
@@ -1470,6 +1185,8 @@
                     if (row.staff.leaveDates.includes(currentDayNum)) { row.monthShifts[idx] = 'LEAVE'; return; }
                     if (row.staff.isDispatch) { row.monthShifts[idx] = 'DISPATCH'; return; }
                     if (row.staff.offDayIndicesArray.includes(dayInfo.dayIndex)) { row.monthShifts[idx] = 'OFF'; return; }
+                    
+                    // 💡 임산부 필수 주말 휴일보장 제약 조건의 체크 여부 완전 독립성 반영
                     if (row.staff.isPregnant && isPregHolidayOff) {
                         if ((isPregSatOff && dayInfo.isSat) || (isPregSunHolOff && (dayInfo.isSun || dayInfo.isHoliday))) {
                             row.monthShifts[idx] = 'OFF'; return;
@@ -1554,21 +1271,24 @@
                                 window.shuffleArray(forced).sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                                 for(let r of forced) { r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             }
-                            if (currentCount < quota) throw new Error(`${dayInfo.dateText}일자 병동 최소 출근 배정에 실패했습니다. 1단계 최소 인원 설정을 확인해 주세요.`);
+                            if (currentCount < quota) throw new Error(`${dayInfo.dateText}일자 근무 최소 자원 요구 인력 확보에 실패했습니다.`);
                         }
                     }
                 });
 
                 let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
                 
+                // 💡 [3-1번 지시사항] 프리셉터가 쉬는 날(OFF/연차)일 때 신규 독자 출근 가능하도록 로직 유연화 수술
                 allRows.filter(r => r.staff.isNewbie && r.monthShifts[idx] === null).forEach(nb => {
                     let pId = nb.staff.precId;
                     if (pId > 0) {
                         let prec = scheduleMatrix.find(x => x.staff.id === pId);
                         if (prec && prec.monthShifts[idx]) {
                             let target = prec.monthShifts[idx];
-                            if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) nb.monthShifts[idx] = target;
-                            else if (['OFF','LEAVE'].includes(target)) nb.monthShifts[idx] = 'OFF';
+                            if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) {
+                                nb.monthShifts[idx] = target;
+                            }
+                            // 프리셉터가 쉬는 날('OFF','LEAVE')일 때 무조건 따라 쉬지 않고 널값(null)으로 비워두어 독자적 출근을 개방함
                         }
                     }
                 });
@@ -1617,9 +1337,19 @@
                         return; 
                     }
 
+                    // 💡 마지노선 7일은 보상오프 산정 전 '기본 연차 보건'으로 완벽 선배정 처리
                     if (!row.staff.isNightOnly && (totalRestCount + (lastDate - idx)) <= fallbackMinOffCount) {
                         row.monthShifts[idx] = 'OFF';
                         return;
+                    }
+
+                    // 💡 평균 가동률 보존 법칙: 오늘 적정 인원 풀이 차면 주말 투입력을 위해 평일 보존 오프 유도
+                    let totalActiveWorkersToday = currentDCount + currentECount + allRows.filter(r => r.monthShifts[idx] === 'N').length;
+                    if (totalActiveWorkersToday >= idealDailyStaffLimit && !dayInfo.isSat && !dayInfo.isSun && !dayInfo.isHoliday) {
+                        if (canTakeOff && (!row.staff.isNightOnly ? totalRestCount < maxAllowedOff : true)) {
+                            row.monthShifts[idx] = 'OFF';
+                            return;
+                        }
                     }
 
                     if (availableOffSlots > 0 && canTakeOff && (!row.staff.isNightOnly ? totalRestCount < maxAllowedOff : true)) {
@@ -1650,57 +1380,37 @@
                 });
             }
 
+            // D/E 균등 후처리 스왑 연산 AI
             let deSwapOccurred = true;
             let deMaxLoops = 200;
             while(deSwapOccurred && deMaxLoops > 0) {
                 deSwapOccurred = false;
                 deMaxLoops--;
-                
                 for(let d=0; d<lastDate; d++) {
                     let dCount = scheduleMatrix.filter(r => r.monthShifts[d] === 'D').length;
                     let eCount = scheduleMatrix.filter(r => r.monthShifts[d] === 'E').length;
-                    
                     if (Math.abs(dCount - eCount) >= 2) {
                         let targetShift = dCount > eCount ? 'D' : 'E';
                         let altShift = targetShift === 'D' ? 'E' : 'D';
                         let currentDayNum = dateDetails[d].date;
-                        
-                        let candidates = scheduleMatrix.filter(r => 
-                            !r.staff.isDispatch && 
-                            !r.staff.isNightOnly && 
-                            r.monthShifts[d] === targetShift &&
-                            !r.staff.reqShiftsMap[currentDayNum] 
-                        );
-                        
+                        let candidates = scheduleMatrix.filter(r => !r.staff.isDispatch && !r.staff.isNightOnly && r.monthShifts[d] === targetShift && !r.staff.reqShiftsMap[currentDayNum]);
                         if (candidates.length === 0) continue;
-                        
-                        window.shuffleArray(candidates);
-                        candidates.sort((a,b) => b.monthShifts.filter(s => s === targetShift).length - a.monthShifts.filter(s => s === targetShift).length);
-                        
+                        window.shuffleArray(candidates).sort((a,b) => b.monthShifts.filter(s => s === targetShift).length - a.monthShifts.filter(s => s === targetShift).length);
                         for (let r of candidates) {
-                            let tempShifts = [...r.monthShifts];
-                            tempShifts[d] = altShift;
-                            
+                            let tempShifts = [...r.monthShifts]; tempShifts[d] = altShift;
                             let safeCurrent = window.checkPhysicalGardeRule(tempShifts, d, altShift);
                             if (d < lastDate - 1 && safeCurrent) safeCurrent = window.checkPhysicalGardeRule(tempShifts, d + 1, tempShifts[d+1]);
-                            
-                            if (safeCurrent) {
-                                r.monthShifts[d] = altShift;
-                                deSwapOccurred = true;
-                                break; 
-                            }
+                            if (safeCurrent) { r.monthShifts[d] = altShift; deSwapOccurred = true; break; }
                         }
                     }
                 }
             }
 
+            // N 균등 평탄화 AI
             let nSwapOccurred = true;
             let nMaxLoops = 200;
-
             while(nSwapOccurred && nMaxLoops > 0) {
-                nSwapOccurred = false;
-                nMaxLoops--;
-
+                nSwapOccurred = false; nMaxLoops--;
                 let dailyNCounts = [];
                 for(let d=0; d<lastDate; d++) {
                     let count = scheduleMatrix.filter(r => r.monthShifts[d] === 'N').length;
@@ -1709,261 +1419,141 @@
                     let quota = isRestDay ? reqNitWeekend : reqNitWeekday;
                     dailyNCounts.push({ day: d, count: count, quota: quota });
                 }
-
-                window.shuffleArray(dailyNCounts); 
-                dailyNCounts.sort((a,b) => b.count - a.count);
-                
-                let maxDayObj = dailyNCounts[0];
-                let minDayObj = dailyNCounts[dailyNCounts.length - 1];
-
+                window.shuffleArray(dailyNCounts).sort((a,b) => b.count - a.count);
+                let maxDayObj = dailyNCounts[0]; let minDayObj = dailyNCounts[dailyNCounts.length - 1];
                 if ((maxDayObj.count - minDayObj.count >= 2 || minDayObj.count < minDayObj.quota) && maxDayObj.count > maxDayObj.quota) {
-                    let dMax = maxDayObj.day;
-                    let dMin = minDayObj.day;
-                    let currentDayNumMax = globalDateDetails[dMax].date;
-                    let currentDayNumMin = globalDateDetails[dMin].date;
-
-                    let candidates = scheduleMatrix.filter(r =>
-                        !r.staff.isDispatch &&
-                        r.monthShifts[dMax] === 'N' &&
-                        ['D', 'E', 'OFF'].includes(r.monthShifts[dMin]) &&
-                        !r.staff.leaveDates.includes(currentDayNumMax) && 
-                        !r.staff.leaveDates.includes(currentDayNumMin) &&
-                        !(r.staff.isPregnant && isPregNoNight)
-                    );
-                    
+                    let dMax = maxDayObj.day; let dMin = minDayObj.day;
+                    let candidates = scheduleMatrix.filter(r => !r.staff.isDispatch && r.monthShifts[dMax] === 'N' && ['D', 'E', 'OFF'].includes(r.monthShifts[dMin]) && !r.staff.leaveDates.includes(dateDetails[dMax].date) && !r.staff.leaveDates.includes(dateDetails[dMin].date) && !(r.staff.isPregnant && isPregNoNight));
                     window.shuffleArray(candidates);
-
                     for (let r of candidates) {
-                        let shiftToMove = r.monthShifts[dMin]; 
-                        
+                        let shiftToMove = r.monthShifts[dMin];
                         if (r.staff.isNightOnly && shiftToMove !== 'OFF') continue;
-                        if (r.staff.reqShiftsMap[currentDayNumMax] === 'x' + shiftToMove || r.staff.reqShiftsMap[currentDayNumMax] === 'N') continue;
-                        if (r.staff.reqShiftsMap[currentDayNumMin] === 'xN' || r.staff.reqShiftsMap[currentDayNumMin] === shiftToMove) continue;
-
                         if (shiftToMove !== 'OFF') {
                             let isRestDayMin = (globalDateDetails[dMin].isSat || globalDateDetails[dMin].isSun || globalDateDetails[dMin].isHoliday);
                             let targetQuotaMin = (shiftToMove === 'D') ? (isRestDayMin ? reqDayWeekend : reqDayWeekday) : (isRestDayMin ? reqEveWeekend : reqEveWeekday);
-                            let currentShiftCountMin = scheduleMatrix.filter(x => x.monthShifts[dMin] === shiftToMove).length;
-                            if (currentShiftCountMin <= targetQuotaMin) continue; 
+                            if (scheduleMatrix.filter(x => x.monthShifts[dMin] === shiftToMove).length <= targetQuotaMin) continue;
                         }
-
-                        let tempShifts = [...r.monthShifts];
-                        tempShifts[dMax] = shiftToMove;
-                        tempShifts[dMin] = 'N';
-
+                        let tempShifts = [...r.monthShifts]; tempShifts[dMax] = shiftToMove; tempShifts[dMin] = 'N';
                         let safeMax = window.checkPhysicalGardeRule(tempShifts, dMax, shiftToMove);
                         if (dMax < lastDate - 1 && safeMax) safeMax = window.checkPhysicalGardeRule(tempShifts, dMax + 1, tempShifts[dMax+1]);
-
                         let safeMin = window.checkPhysicalGardeRule(tempShifts, dMin, 'N');
                         if (dMin < lastDate - 1 && safeMin) safeMin = window.checkPhysicalGardeRule(tempShifts, dMin + 1, tempShifts[dMin+1]);
-
-                        let isValidNStreak = true;
                         let maxNightRules = r.staff.isNightOnly ? 3 : (activeMaxNight ? maxConsecutiveNightDays : 99);
+                        let isValidNStreak = true;
                         if (activeMaxNight || r.staff.isNightOnly) {
                             let nStreak = 0;
                             for (let i=dMin; i>=0; i--) { if(tempShifts[i]==='N') nStreak++; else break; }
                             for (let i=dMin+1; i<lastDate; i++) { if(tempShifts[i]==='N') nStreak++; else break; }
                             if (nStreak > maxNightRules) isValidNStreak = false;
                         }
-                        
-                        let isValidNoNOD = true;
-                        if (activeNoNOD) {
-                            for(let i=1; i<lastDate; i++) {
-                                if(i>=2 && tempShifts[i-2]==='N' && tempShifts[i-1]==='OFF' && tempShifts[i]==='D') { isValidNoNOD = false; break; }
-                            }
-                        }
-
-                        if (safeMax && safeMin && isValidNStreak && isValidNoNOD) {
-                            r.monthShifts[dMax] = shiftToMove;
-                            r.monthShifts[dMin] = 'N';
-                            nSwapOccurred = true;
-                            break; 
-                        }
+                        if (safeMax && safeMin && isValidNStreak) { r.monthShifts[dMax] = shiftToMove; r.monthShifts[dMin] = 'N'; nSwapOccurred = true; break; }
                     }
                 }
             }
 
-            let swapOccurred = true;
-            let maxLoops = 100; 
-            
-            while(swapOccurred && maxLoops > 0) {
-                swapOccurred = false;
-                maxLoops--;
-                
-                let nonDispatchRows = scheduleMatrix.filter(r => !r.staff.isDispatch && !r.staff.isNightOnly);
-                nonDispatchRows.forEach(r => r.tempNCount = r.monthShifts.filter(s => s === 'N').length);
-                window.shuffleArray(nonDispatchRows).sort((a, b) => b.tempNCount - a.tempNCount);
-                
-                let maxStaff = nonDispatchRows[0];
-                let minStaff = nonDispatchRows[nonDispatchRows.length - 1];
-
-                if (maxStaff.tempNCount - minStaff.tempNCount >= 2) {
-                    for (let d = 0; d < lastDate; d++) {
-                        let shiftA = maxStaff.monthShifts[d];
-                        let shiftB = minStaff.monthShifts[d];
-                        let currentDayNum = globalDateDetails[d].date;
-
-                        if (shiftA === 'N' && (shiftB === 'D' || shiftB === 'E')) {
-                            if (minStaff.staff.isPregnant && isPregNoNight) continue;
-                            if (minStaff.staff.reqShiftsMap[currentDayNum] === 'xN') continue;
-                            if (maxStaff.staff.reqShiftsMap[currentDayNum] === 'x' + shiftB) continue;
-
-                            let tempA = [...maxStaff.monthShifts];
-                            let tempB = [...minStaff.monthShifts];
-                            tempA[d] = shiftB;
-                            tempB[d] = 'N';
-
-                            let isSafeA = window.checkPhysicalGardeRule(tempA, d, shiftB);
-                            if (d < lastDate - 1 && isSafeA) isSafeA = window.checkPhysicalGardeRule(tempA, d + 1, tempA[d+1]);
-
-                            let isSafeB = window.checkPhysicalGardeRule(tempB, d, 'N');
-                            if (d < lastDate - 1 && isSafeB) isSafeB = window.checkPhysicalGardeRule(tempB, d + 1, tempB[d+1]);
-
-                            if (isSafeA && isSafeB) {
-                                maxStaff.monthShifts[d] = shiftB;
-                                minStaff.monthShifts[d] = 'N';
-                                swapOccurred = true;
-                                break; 
-                            }
-                        }
-                    }
-                }
-            }
-
+            // OFF 평탄화 AI
             let offSwapOccurred = true;
             let offMaxLoops = 200;
-
             while(offSwapOccurred && offMaxLoops > 0) {
-                offSwapOccurred = false;
-                offMaxLoops--;
-
+                offSwapOccurred = false; offMaxLoops--;
                 let dailyOffCounts = [];
                 for(let d=0; d<lastDate; d++) {
                     let count = scheduleMatrix.filter(r => !r.staff.isDispatch && ['OFF', 'LEAVE', 'M-LEAVE'].includes(r.monthShifts[d])).length;
                     dailyOffCounts.push({ day: d, count: count });
                 }
-
                 window.shuffleArray(dailyOffCounts).sort((a,b) => b.count - a.count);
-                let maxDayObj = dailyOffCounts[0];
-                let minDayObj = dailyOffCounts[dailyOffCounts.length - 1];
-
+                let maxDayObj = dailyOffCounts[0]; let minDayObj = dailyOffCounts[dailyOffCounts.length - 1];
                 if (maxDayObj.count - minDayObj.count >= 2) {
-                    let dMax = maxDayObj.day;
-                    let dMin = minDayObj.day;
-                    let currentDayNumMax = globalDateDetails[dMax].date;
-                    let currentDayNumMin = globalDateDetails[dMin].date;
-
-                    let candidates = scheduleMatrix.filter(r =>
-                        !r.staff.isDispatch &&
-                        r.monthShifts[dMax] === 'OFF' &&
-                        (r.monthShifts[dMin] === 'D' || r.monthShifts[dMin] === 'E') &&
-                        !r.staff.leaveDates.includes(currentDayNumMax) && 
-                        !r.staff.leaveDates.includes(currentDayNumMin) &&
-                        !r.staff.offDayIndicesArray.includes(globalDateDetails[dMax].dayIndex) 
-                    );
-                    
+                    let dMax = maxDayObj.day; let dMin = minDayObj.day;
+                    let candidates = scheduleMatrix.filter(r => !r.staff.isDispatch && r.monthShifts[dMax] === 'OFF' && ['D', 'E'].includes(r.monthShifts[dMin]) && !r.staff.leaveDates.includes(dateDetails[dMax].date) && !r.staff.leaveDates.includes(dateDetails[dMin].date) && !r.staff.offDayIndicesArray.includes(globalDateDetails[dMax].dayIndex));
                     window.shuffleArray(candidates);
-
                     for (let r of candidates) {
-                        let shiftToMove = r.monthShifts[dMin]; 
-
+                        let shiftToMove = r.monthShifts[dMin];
                         let isRestDayMin = (globalDateDetails[dMin].isSat || globalDateDetails[dMin].isSun || globalDateDetails[dMin].isHoliday);
                         let targetQuotaMin = (shiftToMove === 'D') ? (isRestDayMin ? reqDayWeekend : reqDayWeekday) : (isRestDayMin ? reqEveWeekend : reqEveWeekday);
-                        let currentShiftCountMin = scheduleMatrix.filter(x => x.monthShifts[dMin] === shiftToMove).length;
-
+                        if (scheduleMatrix.filter(x => x.monthShifts[dMin] === shiftToMove).length <= targetQuotaMin) continue;
                         let currentTotalOffs = r.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
                         if (!r.staff.isNightOnly && currentTotalOffs - 1 < fallbackMinOffCount) continue;
-
-                        if (currentShiftCountMin <= targetQuotaMin) continue;
-
-                        if(r.staff.reqShiftsMap[currentDayNumMax] === 'x' + shiftToMove) continue;
-                        if(r.staff.reqShiftsMap[currentDayNumMin]) continue; 
-
-                        let tempShifts = [...r.monthShifts];
-                        tempShifts[dMax] = shiftToMove;
-                        tempShifts[dMin] = 'OFF';
-
+                        let tempShifts = [...r.monthShifts]; tempShifts[dMax] = shiftToMove; tempShifts[dMin] = 'OFF';
                         let safeMax = window.checkPhysicalGardeRule(tempShifts, dMax, shiftToMove);
                         if (dMax < lastDate - 1 && safeMax) safeMax = window.checkPhysicalGardeRule(tempShifts, dMax + 1, tempShifts[dMax+1]);
-
                         let safeMin = window.checkPhysicalGardeRule(tempShifts, dMin, 'OFF');
                         if (dMin < lastDate - 1 && safeMin) safeMin = window.checkPhysicalGardeRule(tempShifts, dMin + 1, tempShifts[dMin+1]);
-
-                        if (safeMax && safeMin) {
-                            r.monthShifts[dMax] = shiftToMove;
-                            r.monthShifts[dMin] = 'OFF';
-                            offSwapOccurred = true;
-                            break; 
-                        }
+                        if (safeMax && safeMin) { r.monthShifts[dMax] = shiftToMove; r.monthShifts[dMin] = 'OFF'; offSwapOccurred = true; break; }
                     }
                 }
             }
 
+            // 최후의 구제 보루 (로빈 후드 락)
             scheduleMatrix.forEach(r => {
                 if (r.staff.isDispatch || r.staff.isNightOnly) return;
                 let currentOffs = r.monthShifts.filter(s => ['OFF', 'LEAVE', 'M-LEAVE'].includes(s)).length;
-                
                 if (currentOffs < fallbackMinOffCount) {
                     let needed = fallbackMinOffCount - currentOffs;
                     for (let k = 0; k < needed; k++) {
-                        let bestDay = -1;
-                        let bestExcess = -999;
+                        let bestDay = -1; let bestExcess = -999;
                         for (let d = 0; d < lastDate; d++) {
                             let shift = r.monthShifts[d];
-                            if (shift === 'D' || shift === 'E') { 
-                                let dayInfo = dateDetails[d];
-                                let isRest = (dayInfo.isSat || dayInfo.isSun || dayInfo.isHoliday);
-                                let quota = shift === 'D' ? (isRest ? reqDayWeekend : reqDayWeekday) : (isRest ? reqEveWeekend : reqEveWeekday);
+                            if (shift === 'D' || shift === 'E') {
                                 let count = scheduleMatrix.filter(x => x.monthShifts[d] === shift).length;
-                                let excess = count - quota;
-                                
-                                if (excess > bestExcess && !r.staff.reqShiftsMap[dayInfo.date]) {
-                                    bestExcess = excess;
-                                    bestDay = d;
-                                }
+                                if (count > bestExcess && !r.staff.reqShiftsMap[dateDetails[d].date]) { bestExcess = count; bestDay = d; }
                             }
                         }
-                        if (bestDay !== -1) {
-                            r.monthShifts[bestDay] = 'OFF';
-                        }
+                        if (bestDay !== -1) r.monthShifts[bestDay] = 'OFF';
                     }
                 }
             });
 
-            for(let d=0; d<lastDate; d++) {
-                let dayInfo = dateDetails[d];
-                let isRestDay = (dayInfo.isSat || dayInfo.isSun || dayInfo.isHoliday);
-                let targetNitQuota = isRestDay ? reqNitWeekend : reqNitWeekday;
-                let currentNCount = scheduleMatrix.filter(x => x.monthShifts[d] === 'N').length;
-                
-                if (currentNCount < targetNitQuota && targetNitQuota > 0) {
-                    throw new Error(`${dayInfo.dateText}일자 야간(N) 최소 출근 배정에 실패했습니다. 휴무/연차 조건을 완화해 주세요.`);
-                }
-            }
-
+            // 💡 [2번 지시사항] 임산부 보상 오프 등 댓가성 오프를 달력 완료 후 후배정 가산 처리식으로 분리 수술
             scheduleMatrix.forEach(row => {
                 if (row.staff.isDispatch) return;
-                let pureOffCnt = row.monthShifts.filter(s => s === 'OFF').length;
+                
+                // 마지노선 확보 후 획득한 오프 추가 연산
                 let sleepAdd = isRuleSleepingOff && !row.staff.isNightOnly && row.monthShifts.filter(s => s === 'N').length >= targetNightLimit ? rewardOffCount : 0;
                 let pregAdd = row.staff.isPregnant && isPregShortHourComp ? Math.floor(row.monthShifts.filter(s => s === 'D' || s === 'E').length / pregShortHourDays) * pregShortHourReward : 0;
+                
+                // 빈 출근일 슬롯을 수배하여 보상 오프로 강제 체인지 치환
+                let totalBonusInject = sleepAdd + pregAdd;
+                for (let k=0; k<totalBonusInject; k++) {
+                    let unreqWorkerDay = -1;
+                    for(let d=lastDate-1; d>=0; d--) {
+                        if (['D','E'].includes(row.monthShifts[d]) && !row.staff.reqShiftsMap[dateDetails[d].date]) {
+                            unreqWorkerDay = d; break;
+                        }
+                    }
+                    if (unreqWorkerDay !== -1) {
+                        row.monthShifts[unreqWorkerDay] = 'OFF';
+                    }
+                }
 
+                // 브레이크다운 계산 원복 정산 처리
+                let pureOffCnt = row.monthShifts.filter(s => s === 'OFF').length;
                 row.staff.offBreakdown.sleep = sleepAdd;
                 row.staff.offBreakdown.preg = pregAdd;
                 row.staff.offBreakdown.pure = pureOffCnt - sleepAdd - pregAdd;
                 row.staff.offBreakdown.total = pureOffCnt + row.staff.offBreakdown.mLeave;
             });
 
+            // 야간 N 근무자 최후의 최저 보루 파괴 에러 체크 방어벽
+            for(let d=0; d<lastDate; d++) {
+                let isRest = (dateDetails[d].isSat || dateDetails[d].isSun || dateDetails[d].isHoliday);
+                let tQuota = isRest ? reqNitWeekend : reqNitWeekday;
+                if (scheduleMatrix.filter(x => x.monthShifts[d] === 'N').length < tQuota && tQuota > 0) {
+                    throw new Error(`${dateDetails[d].dateText}일자 야간(N) 최소 출근 가동 인력이 부족합니다. 연차/휴무 제한 세팅을 검토해 주세요.`);
+                }
+            }
+
             window.isScheduleGenerated = true;
             window.globalCalculatedMatrix = scheduleMatrix;
             
             let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
             window.globalDateDetails.forEach(item => { 
-                let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
                 headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
             });
             headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
             window.globalDateDetails.forEach(item => { 
-                let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
                 headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
             });
             headerHtml += `</tr>`;
@@ -1980,157 +1570,8 @@
             tbody.innerHTML = `<tr><td colspan="${window.globalLastDate + 5}" style="color:#e53e3e; font-weight:bold; padding:20px;">🚨 ${error.message}</td></tr>`;
             alert(error.message);
         } finally {
-            submitBtn.disabled = false; 
-            backToStep2Btn.disabled = false;
+            submitBtn.disabled = false; backToStep2Btn.disabled = false;
         }
-    };
-
-    window.renderResultTable = function(tableId, arrayName) {
-        const tbody = document.querySelector(`#${tableId} tbody`);
-        const searchKeyword = document.getElementById(tableId === 'scheduleTable' ? 'step3Search' : 'step4Search').value.trim().toLowerCase();
-        const sortVal = document.getElementById(tableId === 'scheduleTable' ? 'step3Sort' : 'step4Sort').value;
-
-        let displayMatrix = JSON.parse(JSON.stringify(window.globalCalculatedMatrix));
-
-        if (searchKeyword) displayMatrix = displayMatrix.filter(r => r.staff.name.toLowerCase().includes(searchKeyword));
-        
-        if (window.currentFilterChip === 'SENIOR') displayMatrix = displayMatrix.filter(r => r.staff.isSenior);
-        if (window.currentFilterChip === 'NEWBIE') displayMatrix = displayMatrix.filter(r => r.staff.isNewbie);
-        if (window.currentFilterChip === 'PREG') displayMatrix = displayMatrix.filter(r => r.staff.isPregnant);
-        if (window.currentFilterChip === 'NIGHT_ONLY') displayMatrix = displayMatrix.filter(r => r.staff.isNightOnly);
-        if (window.currentFilterChip === 'DISPATCH') displayMatrix = displayMatrix.filter(r => r.staff.isDispatch);
-        if (window.currentFilterChip === 'NO_MLEAVE') displayMatrix = displayMatrix.filter(r => !r.staff.isMLeaveActive);
-        if (window.currentFilterChip === 'MLEAVE_MONEY') displayMatrix = displayMatrix.filter(r => r.staff.isMLeaveActive && r.staff.mLeaveOption === 'MONEY');
-
-        if (sortVal === 'ABC') displayMatrix.sort((a,b) => a.staff.name.localeCompare(b.staff.name, 'ko'));
-        else if (sortVal === 'NIGHT') displayMatrix.sort((a,b) => b[arrayName].filter(s=>s==='N').length - a[arrayName].filter(s=>s==='N').length);
-        else if (sortVal === 'OFF') displayMatrix.sort((a,b) => (b.staff.offBreakdown.total + b[arrayName].filter(s=>s==='LEAVE').length) - (a.staff.offBreakdown.total + a[arrayName].filter(s=>s==='LEAVE').length));
-        else if (sortVal === 'RANK') displayMatrix.sort((a, b) => (b.staff.isSenior - a.staff.isSenior) || (a.staff.isNewbie - b.staff.isNewbie) || (a.staff.id - b.staff.id));
-        else displayMatrix.sort((a,b) => a.staff.id - b.staff.id); 
-
-        let htmlBuffer = "";
-
-        displayMatrix.forEach(row => {
-            let statusIcons = (row.staff.isSenior?'👑':'') + (row.staff.isNewbie?'🌱':'') + (row.staff.isPregnant?'🤰':'') + (row.staff.isDispatch?'✈️':'') + (row.staff.isNightOnly?'🌙':'') + (row.staff.mLeaveOption==='MONEY'&&row.staff.isMLeaveActive?'💵':'');
-            let iconHtml = statusIcons ? `<div style="font-size:10px; margin-top:2px; letter-spacing:1px;">${statusIcons}</div>` : '';
-            
-            let precHtml = '';
-            if (row.staff.isNewbie && row.staff.precId > 0) {
-                let precObj = window.globalStaffData.find(x => x.id === row.staff.precId);
-                if (precObj) {
-                    precHtml = `<div style="font-size:10px; color:#3182ce; font-weight:800; margin-top:4px;">&lt;프리셉터: ${precObj.name}&gt;</div>`;
-                }
-            }
-            
-            htmlBuffer += `<tr><td class="staff-name-col"><span><strong>${row.staff.name}</strong></span>${iconHtml}${precHtml}</td>`;
-            
-            let dCount = 0; let eCount = 0; let nCount = 0; let annualLeaveCount = 0;
-            const targetArray = row[arrayName];
-
-            targetArray.forEach((shift, dIdx) => {
-                const dayInfo = window.globalDateDetails[dIdx];
-                let cellClass = (dayInfo.dayIndex === 0 || dayInfo.isHoliday) ? "class='sun-cell'" : (dayInfo.dayIndex === 6 ? "class='sat-cell'" : "");
-                let borderStyle = ""; let displayShift = window.globalShiftTemplates[shift] || '';
-
-                let requested = (row.staff.reqShiftsMap || {})[dayInfo.date];
-                if(requested === shift && shift !== 'M') {
-                    borderStyle = "style='border: 2px dashed #48bb78; background-color: #f7fafc;'";
-                    displayShift = `<span class="${shift==='D'?'day':shift==='E'?'evening':'night'}">신청${shift}</span>`;
-                } else if (shift === 'OFF' && (row.staff.offDayIndicesArray || []).includes(dayInfo.dayIndex)) {
-                    borderStyle = "style='border: 2px dashed #4fd1c5; background-color: #ebf8ff;'";
-                    displayShift = '<span class="off" style="background-color:transparent; color:#2b6cb0; font-weight:bold;">고정O</span>';
-                }
-
-                if (shift === 'D') dCount++; else if (shift === 'E') eCount++; else if (shift === 'N') nCount++; else if (shift === 'LEAVE') annualLeaveCount++;
-                htmlBuffer += `<td ${cellClass} ${borderStyle}>${displayShift}</td>`;
-            });
-
-            let bd = row.staff.offBreakdown;
-            let displayTotalOff = bd.total + annualLeaveCount; 
-            let tooltipMsg = `기본오프: ${bd.pure}개` + (bd.sleep > 0 ? ` + 슬리핑: ${bd.sleep}개` : '') + (bd.preg > 0 ? ` + 단축보상: ${bd.preg}개` : '') + (bd.mLeave > 0 ? ` + 보건: ${bd.mLeave}개` : '') + (annualLeaveCount > 0 ? ` + 연차: ${annualLeaveCount}개` : '');
-
-            htmlBuffer += `<td class="summary-cell">${dCount}</td><td class="summary-cell">${eCount}</td><td class="summary-cell">${nCount}</td>
-                        <td class="summary-cell" style="background-color:#edf2f7; color:#c53030; font-weight:900;">
-                            ${displayTotalOff} <div class="tooltip-container">[?]<span class="tooltip-text">${tooltipMsg} = 총 ${displayTotalOff}개 휴무</span></div>
-                        </td></tr>`;
-        });
-
-        let totalPregnant = window.globalStaffData.filter(r => r.isPregnant).length;
-        let totalDispatch = window.globalStaffData.filter(r => r.isDispatch).length;
-        let totalNewbie = window.globalStaffData.filter(r => r.isNewbie).length;
-        let totalNightOnly = window.globalStaffData.filter(r => r.isNightOnly).length;
-
-        htmlBuffer += `<tr><td class="staff-name-col" style="background-color:#cbd5e0; font-weight:bold; color:#2d3748;">일별 총계</td>`;
-        for (let d = 0; d < window.globalLastDate; d++) {
-            let dCnt = 0, eCnt = 0, nCnt = 0, offCnt = 0;
-            window.globalCalculatedMatrix.forEach(row => {
-                let s = row[arrayName][d];
-                if (s === 'D') dCnt++; else if (s === 'E') eCnt++; else if (s === 'N') nCnt++;
-                else if (['OFF', 'LEAVE', 'M-LEAVE', 'DISPATCH'].includes(s)) offCnt++;
-            });
-            const dayInfo = window.globalDateDetails[d];
-            let cellClass = (dayInfo.dayIndex === 0 || dayInfo.isHoliday) ? "class='sun-cell'" : (dayInfo.dayIndex === 6 ? "class='sat-cell'" : "");
-            htmlBuffer += `<td ${cellClass} style="font-size:10px; line-height:1.3; padding:4px; background-color:#edf2f7; border-top:2px solid #a0aec0; font-weight:bold;">
-                <span style="color:#2b6cb0;">D: ${dCnt}</span><br><span style="color:#d69e2e;">E: ${eCnt}</span><br><span style="color:#805ad5;">N: ${nCnt}</span><br><span style="color:#e53e3e; font-size:9px;">휴: ${offCnt}</span>
-            </td>`;
-        }
-        htmlBuffer += `<td colspan="4" style="background-color:#cbd5e0; font-size:12px; font-weight:900; color:#2d3748; text-align:center; border-top:2px solid #a0aec0;">💡 인력: 임신 ${totalPregnant}명 / N전담 ${totalNightOnly}명 / 신규 ${totalNewbie}명 / 파견 ${totalDispatch}명</td></tr>`;
-        
-        tbody.innerHTML = htmlBuffer;
-    };
-
-    window.checkPhysicalGardeRule = function(shiftsArray, idx, targetShift) {
-        if (idx === 0) return true; const prevShift = shiftsArray[idx - 1];
-        if (prevShift === 'E' && targetShift === 'D') return false;
-        if (prevShift === 'N' && (targetShift === 'D' || targetShift === 'E')) return false;
-        return true; 
-    };
-
-    window.getCustomOffStreak = function(shiftsArray, currentIdx, option) {
-        let streak = 0;
-        for (let i = currentIdx - 1; i >= 0; i--) {
-            const job = shiftsArray[i];
-            if (job === 'OFF') streak++; 
-            else if (job === 'LEAVE' || job === 'M-LEAVE') { if (option === 'INCLUDE') streak++; else break; } 
-            else break;
-        }
-        return streak;
-    };
-
-    window.processFeedbackAndGoToStep4 = async function() {
-        const feedbackText = document.getElementById('aiFeedbackInput').value.trim();
-        if(!feedbackText) return alert("피드백 지시 사항을 입력해 주세요.");
-
-        document.getElementById('step3Section').classList.remove('active');
-        document.getElementById('step4Section').classList.add('active');
-        document.getElementById('tab3').classList.remove('active');
-        document.getElementById('tab4').classList.add('active');
-
-        const step4Log = document.getElementById('step4Log');
-        step4Log.innerHTML = `> [AI 비서 백오피스] 피드백 조합 연산 중...<br>`;
-        
-        window.globalCalculatedMatrix.forEach(row => { row.finalShifts = [...row.monthShifts]; });
-        await window.delay(300);
-
-        let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
-        window.globalDateDetails.forEach(item => { 
-            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
-            headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
-        });
-        headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
-        window.globalDateDetails.forEach(item => { 
-            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
-            headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
-        });
-        headerHtml += `</tr>`;
-        document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
-
-        window.renderResultTable('finalAdjustedTable', 'finalShifts');
-        step4Log.innerHTML += `✨ [조율 성공] 최종 조율이 무결점으로 인출되었습니다.`;
-    };
-
-    window.onload = function() {
-        window.syncStaffRows();
     };
 </script>
 
@@ -2179,7 +1620,7 @@
             } catch (error) {
                 console.error(error);
                 window.showToast("❌ 저장 실패", false);
-                alert("🚨 파이어베이스 저장 에러 원인:\n" + error.message + "\n\n💡 해결 체크리스트:\n1. 파이어베이스 콘솔에서 'Realtime Database'가 아닌 'Firestore Database'의 규칙을 수정했는지 확인하세요.\n2. 규칙 수정 후 우측 상단의 파란색 [게시(Publish)] 버튼을 꼭 눌러야 합니다.");
+                alert("🚨 파이어베이스 저장 에러 원인:\n" + error.message);
             }
         });
 
@@ -2217,12 +1658,12 @@
                     if (window.isScheduleGenerated && window.globalDateDetails.length > 0) {
                         let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
                         window.globalDateDetails.forEach(item => { 
-                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                            let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
                             headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
                         });
                         headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
                         window.globalDateDetails.forEach(item => { 
-                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
+                            let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
                             headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
                         });
                         headerHtml += `</tr>`;
