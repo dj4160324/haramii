@@ -510,6 +510,23 @@
     // 🧰 1. 글로벌 도구함 (Helper Functions)
     // ==========================================
     window.delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    window.checkPhysicalGardeRule = function(shiftsArray, idx, targetShift) {
+        if (idx === 0) return true; const prevShift = shiftsArray[idx - 1];
+        if (prevShift === 'E' && targetShift === 'D') return false;
+        if (prevShift === 'N' && (targetShift === 'D' || targetShift === 'E')) return false;
+        return true; 
+    };
+
+    window.getCustomOffStreak = function(shiftsArray, currentIdx, option) {
+        let streak = 0;
+        for (let i = currentIdx - 1; i >= 0; i--) {
+            const job = shiftsArray[i];
+            if (job === 'OFF') streak++; 
+            else if (job === 'LEAVE' || job === 'M-LEAVE') { if (option === 'INCLUDE') streak++; else break; } 
+            else break;
+        }
+        return streak;
+    };
 
     window.shuffleArray = function(array) {
         for (let i = array.length - 1; i > 0; i--) {
