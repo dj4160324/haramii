@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>우리 병원 근무 관리 시스템 (궁극의 마스터 에디션 - UI 다이어트 및 달력 패치)</title>
+    <title>우리 병원 근무 관리 시스템 (공휴일 입체 마스터 패치 완료)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #e2e8f0; margin: 0; padding: 20px 20px 100px 20px; color: #333; }
         .container { max-width: 98%; margin: 0 auto; background: #f8fafc; padding: 25px 35px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
@@ -168,21 +168,17 @@
         .btn-cal-day:hover { border-color: #cbd5e0; background-color: #f8fafc; }
         .btn-cal-day.p-holiday { background-color: #e53e3e !important; color: white !important; border-color: #c53030 !important; }
         
+        /* 💡 UI 마스터 패치: 달력 모달 전용 일요일/공휴일 및 토요일 구분 스펙 장착 */
+        .btn-cal-day.modal-sun { color: #e53e3e !important; }
+        .btn-cal-day.modal-sat { color: #2b6cb0 !important; }
+        .btn-cal-day.p-leave, .btn-cal-day.p-d, .btn-cal-day.p-e, .btn-cal-day.p-n, .btn-cal-day.p-m, .btn-cal-day.p-holiday { color: white !important; }
+
         .modal-footer { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; }
         .drag-notice { font-size: 12px; color: #718096; line-height: 1.6; text-align: center; font-weight: bold; font-family: inherit; background: #f8fafc; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; border: 1px dashed #cbd5e0; }
         .btn-modal-close { background: #3182ce; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: 800; width: 100%; }
         
         .brush-btn { padding: 6px 10px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #f8fafc; color: #4a5568; }
         .brush-btn.active { border-color: #4a5568; }
-
-        .btn-cal-day.p-leave { background-color: #e53e3e !important; color: white !important; }
-        .btn-cal-day.p-d { background-color: #4db6ac !important; color: white !important; }
-        .btn-cal-day.p-e { background-color: #f0a500 !important; color: white !important; }
-        .btn-cal-day.p-n { background-color: #e056fd !important; color: white !important; }
-        .btn-cal-day.p-m { background-color: #fc8181 !important; color: white !important; }
-        .btn-cal-day.p-xd { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #4db6ac !important; color: white !important; border: 1px solid #e53e3e; }
-        .btn-cal-day.p-xe { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #f0a500 !important; color: white !important; border: 1px solid #e53e3e; }
-        .btn-cal-day.p-xn { background: linear-gradient(to top right, transparent calc(50% - 2px), #e53e3e calc(50% - 1px), #e53e3e calc(50% + 1px), transparent calc(50% + 2px)), #e056fd !important; color: white !important; border: 1px solid #e53e3e; }
 
         .floating-scroll { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 8px; z-index: 9999; opacity: 0.6; transition: opacity 0.3s; }
         .floating-scroll:hover { opacity: 1; }
@@ -228,7 +224,7 @@
                 <div class="config-item" id="periodSelectZone"><label for="schMonth" id="periodLabel">스케줄 월 <span class="mark-required">*</span></label><select id="schMonth" onchange="window.clearCustomHolidays(); update4WeekDateText();"><option value="1">1월</option><option value="2">2월</option><option value="3">3월</option><option value="4">4월</option><option value="5">5월</option><option value="6" selected>6월</option><option value="7">7월</option><option value="8">8월</option><option value="9">9월</option><option value="10">10월</option><option value="11">11월</option><option value="12">12월</option></select></div>
                 
                 <div class="config-item">
-                    <label>🏥 병원 자체 공휴일 지정</label>
+                    <label>🏥 병원 자체 공휴일 지정 <span style="font-size:11px; color:#718096; font-weight:normal;">(※ 대체공휴일 등도 자유롭게 지정 가능)</span></label>
                     <div id="hospitalHolidayBox" class="picker-click-box" onclick="openCalendarModal(null, 'holiday')" style="margin-top:2px;">클릭하여 날짜 선택</div>
                 </div>
             </div>
@@ -268,7 +264,8 @@
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxOffLimit" checked><div class="rule-text"><label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label><span>한 번에 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 지정 연차를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select></span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNightLimit" checked><div class="rule-text"><label for="ruleNightLimit">🌙 월간 야간근무 상한 보장 규칙</label><span>총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleWeekendOff" checked><div class="rule-text"><label for="ruleWeekendOff">📅 스케줄 주기 내 주말(토/일) 일수 기반 기본 휴무 보장</label><span>해당 주기 내에 존재하는 실제 토요일과 일요일의 총합 개수만큼 순수 OFF 일수를 무조건 보장합니다.</span></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleHolidayAddOff" checked><div class="rule-text"><label for="ruleHolidayAddOff">🇰🇷 평일 국경일/대체휴일 수만큼 보너스 OFF 추가 가산</label><span>해당 주기의 주 중(월~금)에 낀 공휴일 수만큼, 공휴일 특별 오프(OFF)를 추가 지급합니다.</span></div></div>
+                
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleHolidayAddOff" checked><div class="rule-text"><label for="ruleHolidayAddOff">🇰🇷 평일 국경일/대체휴일 수만큼 보너스 OFF 추가 가산 <span style="font-size:11px; color:#3182ce; font-weight:normal;">(※ 병원자체 공휴일 지정 날짜 자동 포함)</span></label><span>해당 주기의 주 중(월~금)에 낀 공휴일 수만큼, 공휴일 특별 오프(OFF)를 추가 지급합니다.</span></div></div>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; width: 100%; margin: 10px 0;">
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNoNOD" checked><div class="rule-text"><label for="ruleNoNOD">⚠️ 야간 근로 보호 확장 규칙 (N-Off-D 원천 금지)</label></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxConsecutive" checked><div class="rule-text"><label for="ruleMaxConsecutive">📅 연속 근로 제한 (최대 연투 제약 조항)</label><span>연속 <input type="number" id="maxConsecutiveWorkDays" class="inline-input-num" value="5" min="2" max="10">일을 초과하여 연속 근무를 할 수 없게 차단합니다.</span></div></div>
@@ -303,8 +300,8 @@
                         <div style="margin-top:8px; margin-left:4px; padding-left:12px; border-left:2px solid #cbd5e0;">
                             <span style="display:flex; align-items:center; gap:8px; color:#4a5568;">
                                 <span style="color:#a0aec0; font-weight:900;">↳</span>
-                                <label style="cursor:pointer; display:flex; align-items:center; gap:4px; margin:0;"><input type="checkbox" id="pregSatOff" checked style="margin:0;">토요일</label> , 
-                                <label style="cursor:pointer; display:flex; align-items:center; gap:4px; margin:0;"><input type="checkbox" id="pregSunOff" checked style="margin:0;">일요일</label> , 
+                                <label style="cursor:pointer; display:flex; align-items:center; gap:4px; margin:0;"><input type="checkbox" id="pregSatOff" style="margin:0;">토요일</label> , 
+                                <label style="cursor:pointer; display:flex; align-items:center; gap:4px; margin:0;"><input type="checkbox" id="pregSunOff" style="margin:0;">일요일</label> , 
                                 <label style="cursor:pointer; display:flex; align-items:center; gap:4px; margin:0;"><input type="checkbox" id="pregHolOff" checked style="margin:0;">법정공휴일</label>
                             </span>
                         </div>
@@ -474,38 +471,6 @@
     </div>
 </div>
 
-<div id="calendarModal" class="modal-overlay">
-    <div class="modal-content">
-        <div id="modalHeader" class="modal-header">날짜 선택 달력</div>
-        <div id="modalPalette" style="display:none; flex-direction: column; gap: 8px; margin-bottom:15px; align-items: center;">
-            <div style="display:flex; gap:6px;">
-                <button type="button" class="brush-btn active" data-brush="D" onclick="selectBrush('D')">🟢 D</button>
-                <button type="button" class="brush-btn" data-brush="E" onclick="selectBrush('E')">🟡 E</button>
-                <button type="button" class="brush-btn" data-brush="N" onclick="selectBrush('N')">🟣 N</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-                <button type="button" class="brush-btn" data-brush="xD" onclick="selectBrush('xD')">🚫 D제외</button>
-                <button type="button" class="brush-btn" data-brush="xE" onclick="selectBrush('xE')">🚫 E제외</button>
-                <button type="button" class="brush-btn" data-brush="xN" onclick="selectBrush('xN')">🚫 N제외</button>
-            </div>
-            <div style="display:flex; gap:6px; width: 100%; justify-content: center;">
-                <button type="button" class="brush-btn" data-brush="M" onclick="selectBrush('M')">🩸 보건</button>
-                <button type="button" class="brush-btn" data-brush="ERASE" onclick="selectBrush('ERASE')" style="flex:1; max-width: 120px;">⚪ 지우개 (삭제)</button>
-            </div>
-        </div>
-        <div class="modal-calendar-grid" id="modalCalendarGrid"></div>
-        <div class="modal-footer">
-            <div class="drag-notice">💡 같은 색으로 한 번 더 누르면 지워집니다.<br>💡 꾹 누르고 드래그하여 칠할 수 있습니다.</div>
-            <button type="button" class="btn-modal-close" onclick="closeCalendarModal()">선택 완료 및 닫기</button>
-        </div>
-    </div>
-</div>
-
-<div class="floating-scroll">
-    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">▲</button>
-    <button onclick="window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})">▼</button>
-</div>
-
 <script>
     // ==========================================
     // 🧰 1. 글로벌 도구함 (Helper Functions)
@@ -538,13 +503,32 @@
         return array;
     };
 
+    window.parseMultiDates = function(dateStr) {
+        if (!dateStr || dateStr.trim() === "") return [];
+        const resultDates = new Set();
+        const parts = dateStr.split(",");
+        parts.forEach(part => {
+            part = part.trim();
+            if (part.includes("-")) {
+                const range = part.split("-");
+                const start = parseInt(range[0]);
+                const end = parseInt(range[1]);
+                if (!isNaN(start) && !isNaN(end) && start <= end) { for (let i = start; i <= end; i++) { if (i >= 1 && i <= 31) resultDates.add(i); } }
+            } else {
+                const num = parseInt(part);
+                if (!isNaN(num) && num >= 1 && num <= 31) resultDates.add(num);
+            }
+        });
+        return Array.from(resultDates);
+    };
+
     window.koreanHolidays = {
         "2026": { "1-1": "신정", "2-16": "설날 연휴", "2-17": "설날", "2-18": "설날 연휴", "2-19": "대체공휴일", "3-1": "삼일절", "3-2": "대체공휴일", "5-5": "어린이날", "5-24": "부처님오신날", "5-25": "대체공휴일", "6-6": "현충일", "8-15": "광복절", "8-17": "대체공휴일", "9-24": "추석 연휴", "9-25": "추석", "9-26": "추석 연휴", "10-3": "개천절", "10-5": "대체공휴일", "10-9": "한글날", "12-25": "성탄절" },
         "2027": { "1-1": "신정", "2-6": "설날 연휴", "2-7": "설날", "2-8": "설날 연휴", "2-9": "대체공휴일", "3-1": "삼일절", "5-5": "어린이날", "5-13": "부처님오신날", "6-6": "현충일", "8-15": "광복절", "8-16": "대체공휴일", "9-14": "추석 연휴", "9-15": "추석", "9-16": "추석 연휴", "10-3": "개천절", "10-4": "대체공휴일", "10-9": "한글날", "12-25": "성탄절" }
     };
 
     window.globalStaffData = []; 
-    window.globalCustomHolidays = []; // 💡 병원 자체 공휴일 글로벌 배열 추가
+    window.globalCustomHolidays = []; 
     window.globalLastDate = 30;
     window.globalDateDetails = [];
     window.globalCalculatedMatrix = [];
@@ -600,7 +584,6 @@
         }, 3000);
     };
 
-    // 💡 스케줄 타입/월 변경 시 병원 자체 공휴일 배열 꼬임 방지를 위한 안전 초기화
     window.clearCustomHolidays = function() {
         window.globalCustomHolidays = [];
         const box = document.getElementById('hospitalHolidayBox');
@@ -1052,7 +1035,7 @@
         });
     };
 
-    // 💡 달력 모달에 '병원 자체 공휴일(holiday)' 타입 대응 로직 추가
+    // 💡 UI 튜닝 1번번: 달력 모달에 일요일/토요일 외에 '법정 공휴일' 및 명칭 데이터까지 실시간 입체 표기
     window.openCalendarModal = function(staffId, type) {
         window.currentActiveStaffId = staffId;
         window.currentActiveFieldType = type;
@@ -1065,7 +1048,11 @@
 
         if (schType === 'MONTH') {
             lastDate = new Date(year, month, 0).getDate();
-            for(let d=1; d<=lastDate; d++) renderDateList.push({ dayNum: d, label: d });
+            for(let d=1; d<=lastDate; d++) {
+                let holidayKey = `${month}-${d}`;
+                let isHol = window.koreanHolidays[year] && window.koreanHolidays[year][holidayKey];
+                renderDateList.push({ dayNum: d, label: d, isHoliday: !!isHol, holidayName: isHol || "" });
+            }
         } else {
             lastDate = 28;
             const startDateStr = document.getElementById('cycleStartDate').value;
@@ -1073,7 +1060,9 @@
             let cycleStart = new Date(baseDate.getTime() + ((month - 1) * 28 * 24 * 60 * 60 * 1000));
             for(let d=0; d<28; d++) {
                 let curr = new Date(cycleStart.getTime() + (d * 24 * 60 * 60 * 1000));
-                renderDateList.push({ dayNum: d+1, label: `${curr.getMonth()+1}/${curr.getDate()}` });
+                let holidayKey = `${curr.getMonth()+1}-${curr.getDate()}`;
+                let isHol = window.koreanHolidays[curr.getFullYear()] && window.koreanHolidays[curr.getFullYear()][holidayKey];
+                renderDateList.push({ dayNum: d+1, label: `${curr.getMonth()+1}/${curr.getDate()}`, isHoliday: !!isHol, holidayName: isHol || "" });
             }
         }
 
@@ -1117,7 +1106,8 @@
         for(let d=1; d<=lastDate; d++) {
             let stateClass = "";
             let subTag = "";
-            let btnLabel = renderDateList[d-1].label;
+            let dateInfo = renderDateList[d-1];
+            let btnLabel = dateInfo.label;
 
             if (type === 'leave') {
                 if(staffItem && (staffItem.leaveDates || []).includes(d)) stateClass = "p-leave";
@@ -1137,7 +1127,12 @@
                     }
                 }
             }
-            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="window.startDrag(event, this)" onmouseenter="window.doDrag(event, this)">${btnLabel}<span class="cal-sub-tag-wrapper" style="display:block; font-size:10px;">${subTag}</span></button>`;
+
+            let dayIndex = (startDayIndex + d - 1) % 7;
+            let modalDayClass = (dayIndex === 0 || dateInfo.isHoliday) ? "modal-sun" : (dayIndex === 6 ? "modal-sat" : "");
+            let holNameTag = dateInfo.holidayName ? `<span style="font-size:9px; display:block; color:#e53e3e; font-weight:bold; margin-top:2px;">${dateInfo.holidayName}</span>` : "";
+
+            grid.innerHTML += `<button type="button" class="btn-cal-day ${stateClass} ${modalDayClass}" data-day="${d}" data-preg="${isPregnant}" onmousedown="window.startDrag(event, this)" onmouseenter="window.doDrag(event, this)">${btnLabel}${holNameTag}<span class="cal-sub-tag-wrapper" style="display:block; font-size:10px;">${subTag}</span></button>`;
         }
         document.getElementById('calendarModal').style.display = 'flex';
     };
@@ -1166,14 +1161,14 @@
                 if (isPreg && (window.currentSelectedShiftBrush === 'N' || window.currentSelectedShiftBrush === 'xN')) { 
                     alert("🚨 임산부는 야간(N) 근무 배정 및 제외 설정이 불가합니다."); 
                     window.isDragging = false; return; 
-                }
-                if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.currentSelectedShiftBrush)) { 
-                    alert("🚨 N전담 근무자는 D/E 근무 배정 및 제외 설정이 불가합니다."); 
-                    window.isDragging = false; return; 
-                }
-                
-                if (staff.reqShiftsMap[day] === window.currentSelectedShiftBrush) window.dragTargetState = 'ERASE';
-                else window.dragTargetState = window.currentSelectedShiftBrush;
+            }
+            if (staff.isNightOnly && ['D', 'E', 'xD', 'xE'].includes(window.currentSelectedShiftBrush)) { 
+                alert("🚨 N전담 근무자는 D/E 근무 배정 및 제외 설정이 불가합니다."); 
+                window.isDragging = false; return; 
+            }
+            
+            if (staff.reqShiftsMap[day] === window.currentSelectedShiftBrush) window.dragTargetState = 'ERASE';
+            else window.dragTargetState = window.currentSelectedShiftBrush;
             }
         }
         window.applyDragAction(btn);
@@ -1406,14 +1401,13 @@
             const fallbackMinOffCount = parseInt(document.getElementById('fallbackMinOffCount').value) || 7;
 
             const isPregHolidayOff = document.getElementById('pregHolidayOff').checked;
-            // 💡 임산부 필수 휴무 분리 매핑 적용
             const isPregSatOff = document.getElementById('pregSatOff').checked;
             const isPregSunOff = document.getElementById('pregSunOff').checked;
             const isPregHolOff = document.getElementById('pregHolOff').checked;
             
             const isPregShortHourComp = document.getElementById('pregShortHourComp').checked;
-            const pregShortHourDays = 4; // 하드코딩
-            const pregShortHourReward = 1; // 하드코딩
+            const pregShortHourDays = 4; 
+            const pregShortHourReward = 1; 
 
             const isRuleSleepingOff = document.getElementById('ruleSleepingOff').checked;
             const targetNightLimit = parseInt(document.getElementById('targetNightLimit').value) || 7;
@@ -1424,7 +1418,7 @@
             const isNewbieMaxN = document.getElementById('newbieMaxN').checked;
             const newbieMaxNCount = parseInt(document.getElementById('newbieMaxNCount').value) || 0;
 
-            const parsedHospitalHolidays = window.globalCustomHolidays; // 💡 캘린더 피커 배열로 교체
+            const parsedHospitalHolidays = window.globalCustomHolidays; 
             let lastDate = 30;
             const dateDetails = [];
             const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
@@ -1479,65 +1473,6 @@
             
             let nOnlyMaxCap = Math.floor(lastDate / 2);
 
-            window.talentsAvailableForShift = function(rows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight) {
-                return rows.filter(row => {
-                    if (row.monthShifts[idx] !== null) return false;
-                    if (!window.checkPhysicalGardeRule(row.monthShifts, idx, shift)) return false;
-                    if (shift === 'N' && row.staff.isPregnant && isPregNoNight) return false;
-                    if (row.staff.reqShiftsMap[window.globalDateDetails[idx].date] === 'x' + shift) return false;
-                    if (row.staff.isNightOnly && shift !== 'N' && shift !== 'OFF') return false; 
-
-                    let available = ['D', 'E', 'N', 'OFF'];
-                    
-                    if (row.staff.isNightOnly) {
-                        if (row.monthShifts.filter(s => s === 'N').length >= nOnlyMaxCap) available = available.filter(s => s !== 'N');
-                        
-                        let actualMaxNight = activeMaxNight ? Math.min(3, maxConsecutiveNightDays) : 3;
-                        let cn = 0; for(let i=1; i<=actualMaxNight; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
-                        if(cn >= actualMaxNight) available = available.filter(s => s !== 'N');
-                        
-                    } else {
-                        if (activeNightLimit && row.monthShifts.filter(s => s === 'N').length >= maxNightAllowed) available = available.filter(s => s !== 'N');
-                        if (activeMaxNight && idx >= maxConsecutiveNightDays) {
-                            let cn = 0; for(let i=1; i<=maxConsecutiveNightDays; i++) { if(row.monthShifts[idx-i] === 'N') cn++; }
-                            if(cn >= maxConsecutiveNightDays) available = available.filter(s => s !== 'N');
-                        }
-                    }
-
-                    if (activeNoNOD && idx >= 2 && row.monthShifts[idx-2] === 'N' && row.monthShifts[idx-1] === 'OFF') available = available.filter(s => s !== 'D');
-                    if (activeMaxConsecutive && idx >= maxConsecutiveWorkDays) {
-                        let wc = 0; for(let i=1; i<=maxConsecutiveWorkDays; i++) { if(row.monthShifts[idx-i] !== 'OFF' && row.monthShifts[idx-i] !== 'LEAVE' && row.monthShifts[idx-i] !== 'M-LEAVE' && row.monthShifts[idx-i] !== null) wc++; }
-                        if(wc >= maxConsecutiveWorkDays) available = ['OFF'];
-                    }
-                    let currentOffStreak = window.getCustomOffStreak(row.monthShifts, idx, leaveIncludeOption);
-                    if (activeMaxOffLimit && !row.staff.isNightOnly && currentOffStreak >= maxOffStreakAllowed) available = available.filter(s => s !== 'OFF');
-
-                    return available.includes(shift);
-                });
-            };
-
-            let weekendCount = dateDetails.filter(x => x.isSat || x.isSun).length;
-            let holidayCount = dateDetails.filter(x => x.isHoliday && !x.isSat && !x.isSun).length;
-            let baseRequiredOff = 0;
-            if (activeWeekendOff) baseRequiredOff += weekendCount;
-            if (activeHolidayAddOff) baseRequiredOff += holidayCount;
-            let maxAllowedOff = baseRequiredOff + 4;
-
-            let allActiveRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
-            let totalActiveStaff = allActiveRows.length;
-            let totalActiveSeniors = allActiveRows.filter(r => r.staff.isSenior).length;
-            let seniorRatio = totalActiveStaff > 0 ? (totalActiveSeniors / totalActiveStaff) : 0;
-
-            let targetOffsPerNurse = Math.max(baseRequiredOff, fallbackMinOffCount);
-            let targetTotalOffs = totalActiveStaff * targetOffsPerNurse;
-
-            let totalDutysNeeded = 0;
-            for(let d=0; d<lastDate; d++) {
-                let isRest = (dateDetails[d].isSat || dateDetails[d].isSun || dateDetails[d].isHoliday);
-                totalDutysNeeded += (isRest ? (reqDayWeekend+reqEveWeekend+reqNitWeekend) : (reqDayWeekday+reqEveWeekday+reqNitWeekday));
-            }
-            let idealDailyStaffLimit = Math.ceil(totalDutysNeeded / lastDate) + 3; 
-
             for (let idx = 0; idx < lastDate; idx++) {
                 const dayInfo = dateDetails[idx];
                 const currentDayNum = dayInfo.date;
@@ -1551,7 +1486,6 @@
                     if (row.staff.isDispatch) { row.monthShifts[idx] = 'DISPATCH'; return; }
                     if (row.staff.offDayIndicesArray.includes(dayInfo.dayIndex)) { row.monthShifts[idx] = 'OFF'; return; }
                     
-                    // 💡 임산부 분리된 요일/휴일 검증 엔진 교체
                     if (row.staff.isPregnant && isPregHolidayOff) {
                         let shouldOff = false;
                         if (isPregSatOff && dayInfo.dayIndex === 6) shouldOff = true;
@@ -1747,8 +1681,7 @@
             let deSwapOccurred = true;
             let deMaxLoops = 200;
             while(deSwapOccurred && deMaxLoops > 0) {
-                deSwapOccurred = false;
-                deMaxLoops--;
+                deSwapOccurred = false; deMaxLoops--;
                 for(let d=0; d<lastDate; d++) {
                     let dCount = scheduleMatrix.filter(r => r.monthShifts[d] === 'D').length;
                     let eCount = scheduleMatrix.filter(r => r.monthShifts[d] === 'E').length;
@@ -1864,10 +1797,8 @@
                 }
             });
 
-            // 💡 임산부 보상 오프 고정 수치(4:1)를 반영하여 추가 오프 달력 배정 및 정산
             scheduleMatrix.forEach(row => {
                 if (row.staff.isDispatch) return;
-                
                 let sleepAdd = isRuleSleepingOff && !row.staff.isNightOnly && row.monthShifts.filter(s => s === 'N').length >= targetNightLimit ? rewardOffCount : 0;
                 let pregAdd = row.staff.isPregnant && isPregShortHourComp ? Math.floor(row.monthShifts.filter(s => s === 'D' || s === 'E').length / pregShortHourDays) * pregShortHourReward : 0;
                 
@@ -1902,14 +1833,15 @@
             window.isScheduleGenerated = true;
             window.globalCalculatedMatrix = scheduleMatrix;
             
+            // 💡 UI 튜닝 5번번: 3단계 표 헤더에서 공휴일(isHoliday)도 일요일과 합산하여 새빨간색(sun) 백그라운드 표기
             let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
             window.globalDateDetails.forEach(item => { 
-                let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
+                let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
                 headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
             });
             headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
             window.globalDateDetails.forEach(item => { 
-                let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
+                let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
                 headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
             });
             headerHtml += `</tr>`;
@@ -1921,6 +1853,10 @@
             feedbackContainer.style.display = "block";
             window.showToast("✅ 스케줄 생성이 완료되었습니다!");
 
+        } catch (error) {
+            progressText.innerText = "연산 실패"; progressBarFill.style.width = "0%";
+            tbody.innerHTML = `<tr><td colspan="${window.globalLastDate + 5}" style="color:#e53e3e; font-weight:bold; padding:20px;">🚨 ${error.message}</td></tr>`;
+            alert(error.message);
         } catch (error) {
             progressText.innerText = "연산 실패"; progressBarFill.style.width = "0%";
             tbody.innerHTML = `<tr><td colspan="${window.globalLastDate + 5}" style="color:#e53e3e; font-weight:bold; padding:20px;">🚨 ${error.message}</td></tr>`;
@@ -1972,6 +1908,7 @@
             let dCount = 0; let eCount = 0; let nCount = 0; let annualLeaveCount = 0;
             const targetArray = row[arrayName];
 
+            // 💡 UI 튜닝 5번번: 3단계 대장 표 내부 셀(Cell) 연산에서도 공휴일 셀은 연한 연분홍(sun-cell) 바탕색 자동 미러링 연동
             targetArray.forEach((shift, dIdx) => {
                 const dayInfo = window.globalDateDetails[dIdx];
                 let cellClass = (dayInfo.dayIndex === 0 || dayInfo.isHoliday) ? "class='sun-cell'" : (dayInfo.dayIndex === 6 ? "class='sat-cell'" : "");
@@ -2039,14 +1976,15 @@
         window.globalCalculatedMatrix.forEach(row => { row.finalShifts = [...row.monthShifts]; });
         await window.delay(300);
 
+        // 💡 UI 튜닝 5번번: 4단계 최종 피드백 표 헤더에서도 공휴일(isHoliday)도 새빨간색(sun) 마스터 미러링 연동
         let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
         window.globalDateDetails.forEach(item => { 
-            let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
+            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
             headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
         });
         headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
         window.globalDateDetails.forEach(item => { 
-            let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
+            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
             headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
         });
         headerHtml += `</tr>`;
@@ -2097,7 +2035,7 @@
                     calculatedMatrix: window.globalCalculatedMatrix,
                     globalDateDetails: window.globalDateDetails,
                     globalLastDate: window.globalLastDate,
-                    globalCustomHolidays: window.globalCustomHolidays, // 💡 병원 자체 공휴일 배열 저장 연동
+                    globalCustomHolidays: window.globalCustomHolidays, 
                     isScheduleGenerated: window.isScheduleGenerated,
                     currentStep: document.querySelector('.step-section.active').id, 
                     updatedAt: new Date().toISOString()
@@ -2123,7 +2061,7 @@
                     window.globalStaffData = loadedData.staffData || [];
                     window.globalCalculatedMatrix = loadedData.calculatedMatrix || [];
                     window.globalDateDetails = loadedData.globalDateDetails || [];
-                    window.globalCustomHolidays = loadedData.globalCustomHolidays || []; // 💡 병원 자체 공휴일 복구
+                    window.globalCustomHolidays = loadedData.globalCustomHolidays || []; 
                     window.globalLastDate = loadedData.globalLastDate || 30;
                     window.isScheduleGenerated = loadedData.isScheduleGenerated || false;
                     
@@ -2144,17 +2082,17 @@
                     window.normalizeStaffData(); 
                     window.applyPagination();
                     window.update4WeekDateText();
-                    window.updateHolidayBox(); // 💡 UI 박스 텍스트 복구
+                    window.updateHolidayBox(); 
 
                     if (window.isScheduleGenerated && window.globalDateDetails.length > 0) {
                         let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
                         window.globalDateDetails.forEach(item => { 
-                            let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
+                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
                             headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; 
                         });
                         headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
                         window.globalDateDetails.forEach(item => { 
-                            let labelClass = item.isSun ? "sun" : (item.isSat ? "sat" : "");
+                            let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : "");
                             headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; 
                         });
                         headerHtml += `</tr>`;
