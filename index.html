@@ -519,23 +519,22 @@
         return array;
     };
 
-    window.parseMultiDates = function(dateStr) {
-        if (!dateStr || dateStr.trim() === "") return [];
-        const resultDates = new Set();
-        const parts = dateStr.split(",");
-        parts.forEach(part => {
-            part = part.trim();
-            if (part.includes("-")) {
-                const range = part.split("-");
-                const start = parseInt(range[0]);
-                const end = parseInt(range[1]);
-                if (!isNaN(start) && !isNaN(end) && start <= end) { for (let i = start; i <= end; i++) { if (i >= 1 && i <= 31) resultDates.add(i); } }
-            } else {
-                const num = parseInt(part);
-                if (!isNaN(num) && num >= 1 && num <= 31) resultDates.add(num);
-            }
-        });
-        return Array.from(resultDates);
+    window.checkPhysicalGardeRule = function(shiftsArray, idx, targetShift) {
+        if (idx === 0) return true; const prevShift = shiftsArray[idx - 1];
+        if (prevShift === 'E' && targetShift === 'D') return false;
+        if (prevShift === 'N' && (targetShift === 'D' || targetShift === 'E')) return false;
+        return true; 
+    };
+
+    window.getCustomOffStreak = function(shiftsArray, currentIdx, option) {
+        let streak = 0;
+        for (let i = currentIdx - 1; i >= 0; i--) {
+            const job = shiftsArray[i];
+            if (job === 'OFF') streak++; 
+            else if (job === 'LEAVE' || job === 'M-LEAVE') { if (option === 'INCLUDE') streak++; else break; } 
+            else break;
+        }
+        return streak;
     };
 
     window.koreanHolidays = {
@@ -727,6 +726,13 @@
         } 
         else if (type === 'SENIOR' && !checkbox.checked) { 
             item.isSenior = false; 
+        }
+
+        // 💡 [기능 추가] 아래 표에서 선임 체크박스를 조작하면 상단의 '총 선임간호사 수'가 실시간으로 동기화됨
+        if (type === 'SENIOR') {
+            const totalSeniors = window.globalStaffData.filter(s => s.isSenior).length;
+            const seniorInput = document.getElementById('seniorStaff');
+            if (seniorInput) seniorInput.value = totalSeniors;
         }
     };
 
