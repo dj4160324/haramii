@@ -175,7 +175,8 @@
 
         .modal-footer { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 10px; }
         .drag-notice { font-size: 12px; color: #718096; line-height: 1.6; text-align: center; font-weight: bold; font-family: inherit; background: #f8fafc; padding: 12px; border-radius: 8px; width: 100%; box-sizing: border-box; border: 1px dashed #cbd5e0; }
-        .btn-modal-close { background: #3182ce; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: 800; width: 100%; }
+        .btn-modal-close { background-color: #3182ce; color: white; border: none; padding: 14px 30px; font-size: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; transition: all 0.2s; box-shadow: 0 4px 6px rgba(49, 130, 206, 0.2); width: 100%; letter-spacing: 1px; }
+        .btn-modal-close:hover { background-color: #2b6cb0; transform: translateY(-1px); box-shadow: 0 6px 8px rgba(49, 130, 206, 0.3); }
         
         .brush-btn { padding: 6px 10px; font-size: 12px; font-weight: 800; border-radius: 6px; cursor: pointer; border: 2px solid transparent; background-color: #f8fafc; color: #4a5568; }
         .brush-btn.active { border-color: #4a5568; }
@@ -214,8 +215,10 @@
                 <div class="type-option"><label><input type="radio" name="schType" value="MONTH" checked onchange="switchScheduleTypeUI()"> 📅 일반 월별 기준 (1월~12월)</label></div>
                 <div class="type-option">
                     <label><input type="radio" name="schType" value="4WEEK" onchange="switchScheduleTypeUI()"> 🔄 4주 주기 고정 기준 (28일 고정 턴)</label>
-                    <div id="cycleStartZone" class="inline-date-picker" style="display:none;">
-                        <span style="font-size:13px; font-weight:800; color:#2b6cb0;">🌱 1주기 시작일:</span><input type="date" id="cycleStartDate" value="2026-01-01" onchange="window.clearCustomHolidays(); update4WeekDateText();">
+                    <div id="cycleStartZone" class="inline-date-picker" style="display:none; background:transparent; border:none; padding:0; margin-left:10px;">
+                        <span style="font-size:13px; font-weight:800; color:#2b6cb0;">🌱 1주기 시작일:</span>
+                        <div id="cycleStartBox" class="picker-click-box" onclick="openCalendarModal(null, 'cycleStart')" style="padding:4px 12px; margin:0; display:inline-flex; min-height:auto;">2026.01.01</div>
+                        <input type="hidden" id="cycleStartDate" value="2026-01-01">
                     </div>
                 </div>
             </div>
@@ -678,7 +681,7 @@
         }
     };
 
-    window.toggleMutualExclusion = function(checkbox, type) {
+window.toggleMutualExclusion = function(checkbox, type) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id'));
         const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return;
@@ -691,7 +694,7 @@
                 const newbieCheck = tr.querySelector('.check-newbie');
                 if(newbieCheck) newbieCheck.checked = false;
                 const precContainer = tr.querySelector('.preceptor-container');
-                if(precContainer) precContainer.classList.remove('active');
+                if(precContainer) precContainer.classList.remove('active'); // 즉시 숨김
             }
         } 
         else if (type === 'NEWBIE' && checkbox.checked) { 
@@ -700,14 +703,14 @@
                 const seniorCheck = tr.querySelector('.check-senior');
                 if(seniorCheck) seniorCheck.checked = false;
                 const precContainer = tr.querySelector('.preceptor-container');
-                if(precContainer) precContainer.classList.add('active');
+                if(precContainer) precContainer.classList.add('active'); // 즉시 나타남
             }
         } 
         else if (type === 'NEWBIE' && !checkbox.checked) { 
             item.isNewbie = false; item.precId = 0; 
             if(tr) {
                 const precContainer = tr.querySelector('.preceptor-container');
-                if(precContainer) precContainer.classList.remove('active');
+                if(precContainer) precContainer.classList.remove('active'); // 체크 해제 시 즉시 숨김
             }
         } 
         else if (type === 'SENIOR' && !checkbox.checked) { 
