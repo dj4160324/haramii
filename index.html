@@ -86,8 +86,8 @@
         .quota-sub-title { font-size: 15px; font-weight: 800; margin-bottom: 15px; border-bottom: 2px dashed #cbd5e0; padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         .quota-inline { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; font-weight: bold; color: #4a5568; align-items: center; }
         .quota-container.disabled { opacity: 0.4; filter: grayscale(100%); }
-        .inline-input-num { width: 55px; padding: 4px 8px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 4px; text-align: center; font-weight: bold; }
-        .inline-select { padding: 4px 8px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; font-weight: bold; color: #4a5568; }
+        .inline-input-num { width: 55px; padding: 8px 10px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 8px; text-align: center; font-weight: bold; background-color: #fff; }
+        .inline-select { padding: 8px 12px; margin: 0 5px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 13px; font-weight: bold; color: #4a5568; background-color: #fff; cursor: pointer; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02); }
 
         .rules-group { display: flex; flex-direction: column; gap: 14px; }
         .rule-checkbox-item { display: flex; align-items: flex-start; padding: 8px 10px; border-radius: 6px; transition: background 0.2s; }
@@ -180,6 +180,49 @@
         .progress-bar-bg { background-color: #edf2f7; border-radius: 12px; height: 20px; width: 100%; overflow: hidden; margin-bottom: 15px; border: 1px solid #e2e8f0; }
         .progress-bar-fill { background-color: #48bb78; height: 100%; width: 0%; transition: width 0.4s; }
         .progress-status-log { font-size: 12px; color: #a0aec0; background: #1a202c; padding: 15px; border-radius: 8px; max-height: 150px; overflow-y: auto; line-height: 1.5; font-family: monospace; }
+        /* --- 🎨 전체 글꼴, 둥근 드롭박스, 모달 간격 및 버튼 디자인 덮어쓰기 --- */
+        body, input, button, select, textarea { 
+            font-family: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important; 
+        }
+        
+        .config-item input, .config-item select { 
+            padding: 12px 14px !important; 
+            border-radius: 8px !important; 
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02) !important; 
+            background-color: #fff !important; 
+        }
+        
+        .inline-select { 
+            padding: 8px 12px !important; 
+            border-radius: 8px !important; 
+            background-color: #fff !important; 
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02) !important; 
+        }
+        
+        .inline-input-num { 
+            padding: 8px 10px !important; 
+            border-radius: 8px !important; 
+            background-color: #fff !important; 
+        }
+        
+        .drag-notice { 
+            padding: 15px !important; 
+            margin-top: 25px !important; 
+            margin-bottom: 25px !important; 
+        }
+        
+        .btn-modal-close { 
+            padding: 14px 30px !important; 
+            font-size: 15px !important; 
+            border-radius: 8px !important; 
+            box-shadow: 0 4px 6px rgba(49, 130, 206, 0.2) !important; 
+            letter-spacing: 1px !important; 
+        }
+        
+        .btn-modal-close:hover { 
+            transform: translateY(-1px) !important; 
+            box-shadow: 0 6px 8px rgba(49, 130, 206, 0.3) !important; 
+        }
     </style>
 </head>
 <body>
@@ -253,11 +296,11 @@
             <div class="type-switch-box">
                 <div class="type-option"><label><input type="radio" name="schType" value="MONTH" checked onchange="switchScheduleTypeUI()"> 📅 일반 월별 기준 (1월~12월)</label></div>
                 
-                <div class="type-option">
-                    <label><input type="radio" name="schType" value="4WEEK" onchange="switchScheduleTypeUI()"> 🔄 4주 주기 고정 기준 (28일 고정 턴)</label>
-                    <div id="cycleStartZone" class="inline-date-picker" style="display:none; background:transparent; border:none; padding:0; margin-left:10px;">
-                        <span style="font-size:13px; font-weight:800; color:#2b6cb0;">🌱 1주기 시작일:</span>
-                        <div id="cycleStartBox" class="picker-click-box" onclick="openCalendarModal(null, 'cycleStart')" style="padding:4px 12px; margin:0; display:inline-flex; min-height:auto;">2026.01.01</div>
+                <div class="type-option" style="display: flex; align-items: center; flex-direction: row;">
+                    <label style="margin: 0; white-space: nowrap;"><input type="radio" name="schType" value="4WEEK" onchange="switchScheduleTypeUI()"> 🔄 4주 주기 고정 기준 (28일 고정 턴)</label>
+                    <div id="cycleStartZone" class="inline-date-picker" style="display:none; background:transparent; border:none; padding:0; margin-left:8px;">
+                        <span style="font-size:13px; font-weight:800; color:#2b6cb0; margin-right: 6px;">🌱 1주기 시작일:</span>
+                        <div id="cycleStartBox" class="picker-click-box" onclick="openCalendarModal(null, 'cycleStart')" style="padding:6px 14px; margin:0; display:inline-flex; border-radius:8px;">2026.01.01</div>
                         <input type="hidden" id="cycleStartDate" value="2026-01-01">
                     </div>
                 </div>
@@ -751,47 +794,22 @@
     };
 
     // 💡 UX 로직 픽스: 신규 체크 해제 시 프리셉터 지정창 완벽 즉각 숨김 처리 반영
-    window.toggleMutualExclusion = function(checkbox, type) {
-        const sid = parseInt(checkbox.getAttribute('data-staff-id'));
-        const item = window.globalStaffData.find(x => x.id === sid);
-        if(!item) return;
-        
-        const tr = checkbox.closest('tr');
+window.toggleMutualExclusion = function(checkbox, type) {
+        const sid = parseInt(checkbox.getAttribute('data-staff-id')); const item = window.globalStaffData.find(x => x.id === sid);
+        if(!item) return; const tr = checkbox.closest('tr');
 
         if (type === 'SENIOR' && checkbox.checked) { 
             item.isSenior = true; item.isNewbie = false; item.precId = 0; 
-            if(tr) {
-                const newbieCheck = tr.querySelector('.check-newbie');
-                if(newbieCheck) newbieCheck.checked = false;
-                const precContainer = tr.querySelector('.preceptor-container');
-                if(precContainer) precContainer.classList.remove('active');
-            }
-        } 
-        else if (type === 'NEWBIE' && checkbox.checked) { 
+            if(tr) { const newbieCheck = tr.querySelector('.check-newbie'); if(newbieCheck) newbieCheck.checked = false; const precContainer = tr.querySelector('.preceptor-container'); if(precContainer) precContainer.style.display = 'none'; }
+        } else if (type === 'NEWBIE' && checkbox.checked) { 
             item.isSenior = false; item.isNewbie = true; 
-            if(tr) {
-                const seniorCheck = tr.querySelector('.check-senior');
-                if(seniorCheck) seniorCheck.checked = false;
-                const precContainer = tr.querySelector('.preceptor-container');
-                if(precContainer) precContainer.classList.add('active');
-            }
-        } 
-        else if (type === 'NEWBIE' && !checkbox.checked) { 
+            if(tr) { const seniorCheck = tr.querySelector('.check-senior'); if(seniorCheck) seniorCheck.checked = false; const precContainer = tr.querySelector('.preceptor-container'); if(precContainer) precContainer.style.display = 'block'; }
+        } else if (type === 'NEWBIE' && !checkbox.checked) { 
             item.isNewbie = false; item.precId = 0; 
-            if(tr) {
-                const precContainer = tr.querySelector('.preceptor-container');
-                if(precContainer) precContainer.classList.remove('active'); 
-            }
-        } 
-        else if (type === 'SENIOR' && !checkbox.checked) { 
-            item.isSenior = false; 
-        }
+            if(tr) { const precContainer = tr.querySelector('.preceptor-container'); if(precContainer) precContainer.style.display = 'none'; }
+        } else if (type === 'SENIOR' && !checkbox.checked) { item.isSenior = false; }
 
-        if (type === 'SENIOR') {
-            const totalSeniors = window.globalStaffData.filter(s => s.isSenior).length;
-            const seniorInput = document.getElementById('seniorStaff');
-            if (seniorInput) seniorInput.value = totalSeniors;
-        }
+        if (type === 'SENIOR') { const totalSeniors = window.globalStaffData.filter(s => s.isSenior).length; const seniorInput = document.getElementById('seniorStaff'); if (seniorInput) seniorInput.value = totalSeniors; }
     };
 
     window.updatePreceptorDropdownsRealtime = function(inputNode, sid) { const item = window.globalStaffData.find(x => x.id === sid); if(item) item.name = inputNode.value.trim(); };
@@ -877,7 +895,7 @@
                     <td style="text-align: center; font-size:12px; vertical-align: top; padding-top: 12px;">
                         <label style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:2px;"><input type="checkbox" class="check-senior" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'SENIOR')" ${item.isSenior?'checked':''}>👑 선임</label>
                         <label style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:2px; color:#38a169; margin-top:6px;"><input type="checkbox" class="check-newbie" data-staff-id="${item.id}" onchange="toggleMutualExclusion(this, 'NEWBIE')" ${item.isNewbie?'checked':''}>🌱 신규</label>
-                        <div class="preceptor-container ${item.isNewbie?'active':''}" style="margin-top:10px; padding:6px 4px; text-align:center;"><span style="color:#2b6cb0; font-weight:bold; display:block; margin-bottom:4px; font-size:11px;">↳ 프리셉터</span><select class="select-preceptor inline-select" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREC')" style="width:95%; margin:0; padding:4px;">${preceptorOptions}</select></div>
+                        <div class="preceptor-container" style="display: ${item.isNewbie ? 'block' : 'none'}; margin-top:10px; padding:6px 4px; text-align:center;"><span style="color:#2b6cb0; font-weight:bold; display:block; margin-bottom:4px; font-size:11px;">↳ 프리셉터</span><select class="select-preceptor inline-select" data-staff-id="${item.id}" onchange="updateMemoryFields(this, 'PREC')" style="width:95%; margin:0; padding:4px;">${preceptorOptions}</select></div>
                     </td>
                     <td><input type="text" class="input-staff-name" value="${item.name}" oninput="updatePreceptorDropdownsRealtime(this, ${item.id})"></td>
                     <td style="text-align: center; font-size:12px;">
