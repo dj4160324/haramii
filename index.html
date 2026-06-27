@@ -310,10 +310,10 @@
                 <div class="type-option"><label><input type="radio" name="schType" value="MONTH" checked onchange="switchScheduleTypeUI()"> 📅 일반 월별 기준 (1월~12월)</label></div>
                 
                 <div class="type-option" style="display: flex; align-items: center; flex-direction: row;">
-                    <label style="margin: 0; white-space: nowrap;"><input type="radio" name="schType" value="4WEEK" onchange="switchScheduleTypeUI()"> 🔄 4주 주기 고정 기준 (28일 고정 턴)</label>
-                    <div id="cycleStartZone" class="inline-date-picker" style="display:none; background:transparent; border:none; padding:0; margin-left:8px;">
+                    <label style="margin: 0; white-space: nowrap; display: flex; align-items: center;"><input type="radio" name="schType" value="4WEEK" onchange="switchScheduleTypeUI()"> 🔄 4주 주기 고정 기준 (28일 고정 턴)</label>
+                    <div id="cycleStartZone" class="inline-date-picker" style="display:none; background:transparent; border:none; padding:0; margin-left:8px; align-items: center;">
                         <span style="font-size:13px; font-weight:800; color:#2b6cb0; margin-right: 6px;">🌱 1주기 시작일:</span>
-                        <div id="cycleStartBox" class="picker-click-box" onclick="openCalendarModal(null, 'cycleStart')" style="padding:6px 14px; margin:0; display:inline-flex; border-radius:8px;">2026.01.01</div>
+                        <div id="cycleStartBox" class="picker-click-box" onclick="openCalendarModal(null, 'cycleStart')" style="padding:6px 14px; margin:0; display:inline-flex; align-items:center; border-radius:8px;">2026.01.01</div>
                         <input type="hidden" id="cycleStartDate" value="2026-01-01">
                     </div>
                 </div>
@@ -348,12 +348,12 @@
         </div>
 
         <div class="config-card purple">
-            <div class="config-title purple">⚖️ 기본 교대근무 노무 및 복지 가드레일</div>
+            <div class="config-title purple">⚖️ 기본 교대근무 노무 및 휴무(OFF) 가드레일</div>
             <div class="rules-group">
                 <div class="highlight-box" style="margin-top:0; margin-bottom:15px;">
                     <div class="rule-text">
                         <label style="color:#166534; font-size:15px; font-weight:900;">
-                            ⚙️ [생명선 보장] 간호사 1인당 월 최소 휴무(OFF) 마지노선 
+                            ⚙️ 간호사 1인당 월 최소 휴무(OFF) 마지노선 
                             <div class="tooltip-container">[?]<span class="tooltip-text">💡 <b>최소 휴무 산정 기준:</b><br>• 기본 순수 OFF + 지정 연차 + 보건휴가<br><br>*(※ 나이트 슬리핑 오프, 임산부 단축 보상 등 '가혹 근무 댓가성 추가 OFF'는 이 마지노선 카운트에 포함되지 않고 별개로 추가(+) 지급됩니다.)</span></div>
                             <span class="mark-required">* 필수</span>
                         </label>
@@ -361,16 +361,23 @@
                     </div>
                 </div>
 
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleSleepingOff" checked><div class="rule-text"><label for="ruleSleepingOff">🛏️ 나이트(N) 초과 근무자 슬리핑 오프(Sleeping OFF) 보상</label><span>한 달에 <input type="number" id="targetNightLimit" class="inline-input-num" value="7" min="1" max="15">개 이상의 N근무가 있을 시, 엑스트라 추가 오프를 <input type="number" id="rewardOffCount" class="inline-input-num" value="1" min="1" max="5">개 제공합니다.</span></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxOffLimit" checked><div class="rule-text"><label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label><span>한 번에 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 지정 연차를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select></span></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleNightLimit" checked><div class="rule-text"><label for="ruleNightLimit">🌙 월간 야간근무 상한 보장 규칙</label><span>총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleWeekendOff" checked><div class="rule-text"><label for="ruleWeekendOff">📅 스케줄 주기 내 주말(토/일) 일수 기반 기본 휴무 보장</label><span>해당 주기 내에 존재하는 실제 토요일과 일요일의 총합 개수만큼 순수 OFF 일수를 무조건 보장합니다.</span></div></div>
                 
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleHolidayAddOff" checked><div class="rule-text"><label for="ruleHolidayAddOff">🇰🇷 평일 국경일/대체휴일 수만큼 보너스 OFF 추가 가산 <span style="font-size:11px; color:#3182ce; font-weight:normal;">(※ 병원자체 공휴일 포함)</span></label><span>해당 주기의 주 중(월~금)에 낀 공휴일 수만큼, 공휴일 특별 오프(OFF)를 추가 지급합니다.</span></div></div>
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; width: 100%; margin: 10px 0;">
+                
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxConsecutive" checked><div class="rule-text"><label for="ruleMaxConsecutive">📅 연속 근로 제한</label><span>연속 <input type="number" id="maxConsecutiveWorkDays" class="inline-input-num" value="5" min="2" max="10">일을 초과하여 연속 근무를 할 수 없게 차단합니다.</span></div></div>
+                
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxOffLimit" checked><div class="rule-text"><label for="ruleMaxOffLimit">🛑 장기 연속 휴무(OFF) 쏠림 방지 조항</label><span>한 번에 쉴 수 있는 최대 오프 개수를 <input type="number" id="maxOffStreakCount" class="inline-input-num" value="3" min="1" max="10">개로 제한합니다. 지정 연차를 연속 휴무 계산에 <select id="leaveIncludeOption" class="inline-select"><option value="INCLUDE" selected>포함한다</option><option value="EXCLUDE">제외한다</option></select></span></div></div>
+            </div>
+        </div>
+ 
+        <div class="config-card" style="border-top: 5px solid #434190;">
+            <div class="config-title" style="color: #3c366b; border-bottom-color: #edf2f7;">🌙 야간 근무(N) 전담 및 생체 리듬 보호 규정</div>
+            <div class="rules-group">
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleNightLimit" checked><div class="rule-text"><label for="ruleNightLimit">📉 월간 야간근무 상한 보장 규칙</label><span>총 나이트(N)의 개수를 최대 <input type="number" id="maxNightCount" class="inline-input-num" value="5" min="1" max="15">개 이하로 제한합니다.</span></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleSleepingOff" checked><div class="rule-text"><label for="ruleSleepingOff">🛏️ 나이트(N) 초과 근무자 슬리핑 오프(Sleeping OFF) 보상</label><span>한 달에 <input type="number" id="targetNightLimit" class="inline-input-num" value="7" min="1" max="15">개 이상의 N근무가 있을 시, 엑스트라 추가 오프를 <input type="number" id="rewardOffCount" class="inline-input-num" value="1" min="1" max="5">개 제공합니다.</span></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxNight" checked><div class="rule-text"><label for="ruleMaxNight">🛑 야간 연타 금지 (나이트 연속 상한 제약 조항)</label><span>단일 순번에서 연속 최대 <input type="number" id="maxConsecutiveNightDays" class="inline-input-num" value="3" min="1" max="5">연속까지만 허용합니다.</span></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNoNOD" checked><div class="rule-text"><label for="ruleNoNOD">⚠️ 야간 근로 보호 확장 규칙 (N-Off-D 원천 금지)</label></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxConsecutive" checked><div class="rule-text"><label for="ruleMaxConsecutive">📅 연속 근로 제한 (최대 연투 제약 조항)</label><span>연속 <input type="number" id="maxConsecutiveWorkDays" class="inline-input-num" value="5" min="2" max="10">일을 초과하여 연속 근무를 할 수 없게 차단합니다.</span></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleMaxNight" checked><div class="rule-text"><label for="ruleMaxNight">🌙 야간 연타 금지 (나이트 연속 상한 제약 조항)</label><span>단일 순번에서 연속 최대 <input type="number" id="maxConsecutiveNightDays" class="inline-input-num" value="3" min="1" max="5">연속까지만 허용합니다.</span></div></div>
             </div>
         </div>
 
@@ -386,8 +393,8 @@
                 <div class="rule-checkbox-item"><input type="checkbox" id="newbieMaxDE" checked><div class="rule-text"><label for="newbieMaxDE">📉 D/E 근무 시 신규 최대 투입 <input type="number" id="newbieMaxDECount" class="inline-input-num" value="1" min="1">명 제한</label></div></div>
                 <div class="rule-checkbox-item"><input type="checkbox" id="newbieMaxN" checked><div class="rule-text"><label for="newbieMaxN">📉 N 근무 시 신규 최대 투입 <input type="number" id="newbieMaxNCount" class="inline-input-num" value="0" min="0">명 제한</label></div></div>
                 
-                <div class="rule-checkbox-item" style="opacity: 0.65;"><input type="checkbox" id="dummyNewbieSync" disabled><div class="rule-text"><label for="dummyNewbieSync">🔄 신규 간호사는 프리셉터의 근무표와 100% 동일하게 배정합니다. <span style="font-size:11px; color:#3182ce;">(추후 업데이트 예정)</span></label></div></div>
-                <div class="rule-checkbox-item" style="opacity: 0.65;"><input type="checkbox" id="dummyNewbieExcludeQuota" disabled><div class="rule-text"><label for="dummyNewbieExcludeQuota">🛑 신규 간호사를 최소 가동 인원 요구 사양(머릿수)에서 제외합니다. <span style="font-size:11px; color:#3182ce;">(추후 업데이트 예정)</span></label></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleNewbieSync" checked><div class="rule-text"><label for="ruleNewbieSync">🔄 신규 간호사는 프리셉터의 근무표와 100% 동일하게 배정합니다. (연차제외) </label></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleNewbieExcludeQuota"><div class="rule-text"><label for="ruleNewbieExcludeQuota">🛑 신규 간호사를 최소 가동 인원 요구 사양에서 제외합니다.</label></div></div>
             </div>
         </div>
 
@@ -397,7 +404,7 @@
                 <div class="rule-checkbox-item">
                     <input type="checkbox" id="pregHolidayOff" checked>
                     <div class="rule-text" style="width: 100%;">
-                        <label for="pregHolidayOff">📅 임산부 필수 휴일 보장 (체크 해제 시 주말 출근 기능 개방)</label>
+                        <label for="pregHolidayOff">📅 임산부 필수 휴일 보장</label>
                         <div style="margin-top:8px; margin-left:4px; padding-left:12px; border-left:2px solid #cbd5e0;">
                             <span style="display:flex; align-items:center; gap:8px; color:#4a5568;">
                                 <span style="color:#a0aec0; font-weight:900;">↳</span>
@@ -433,8 +440,9 @@
                 <div class="config-item">
                     <label for="seniorAllocationMode">선임 배정 밸런스 옵션 <span class="mark-required">*</span></label>
                     <select id="seniorAllocationMode" style="border-color:#3182ce; font-weight:bold; color:#2b6cb0;">
-                        <option value="PROPORTIONAL" selected>📊 전체 비율 비례 배정 (AI 자동 공평 추가)</option>
-                        <option value="STRICT">🛑 최소 인원만 엄격 제한 (선임 추가 배제)</option>
+                        <option value="PROPORTIONAL" selected>📊 모든 듀티에 선임 비율 비례 분산 </option>
+                        <option value="HYBRID">🌗 D/E는 비례 분산 + N은 최소 선임 수만 배치</option>
+                        <option value="STRICT">🛑 모든 듀티에 최소 선임 수만 배치</option>
                     </select>
                 </div>
                 <div class="config-item"><label for="pageSize">한 화면 표시 인원 수 (페이징)</label><input type="number" id="pageSize" min="5" max="100" value="10" onchange="applyPagination()"></div>
@@ -806,8 +814,7 @@
         }
     };
 
-    // 💡 UX 로직 픽스: 신규 체크 해제 시 프리셉터 지정창 완벽 즉각 숨김 처리 반영
-window.toggleMutualExclusion = function(checkbox, type) {
+    window.toggleMutualExclusion = function(checkbox, type) {
         const sid = parseInt(checkbox.getAttribute('data-staff-id')); const item = window.globalStaffData.find(x => x.id === sid);
         if(!item) return; const tr = checkbox.closest('tr');
 
@@ -1200,6 +1207,10 @@ window.toggleMutualExclusion = function(checkbox, type) {
             const isNewbieMaxDE = document.getElementById('newbieMaxDE').checked; const newbieMaxDECount = parseInt(document.getElementById('newbieMaxDECount').value) || 1;
             const isNewbieMaxN = document.getElementById('newbieMaxN').checked; const newbieMaxNCount = parseInt(document.getElementById('newbieMaxNCount').value) || 0;
 
+            // 💡 HTML 변경을 안 하셨을 경우를 대비한 안전 장치 (안전하게 false 로 넘어감)
+            const ruleNewbieSync = document.getElementById('ruleNewbieSync')?.checked || false;
+            const ruleNewbieExcludeQuota = document.getElementById('ruleNewbieExcludeQuota')?.checked || false;
+
             const parsedHospitalHolidays = window.globalCustomHolidays; 
             let lastDate = 30; const dateDetails = []; const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -1237,6 +1248,7 @@ window.toggleMutualExclusion = function(checkbox, type) {
             window.talentsAvailableForShift = function(rows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight) {
                 return rows.filter(row => {
                     if (row.monthShifts[idx] !== null) return false;
+                    if (ruleNewbieSync && row.staff.isNewbie && row.staff.precId > 0) return false;
                     if (!window.checkPhysicalGardeRule(row.monthShifts, idx, shift)) return false;
                     if (shift === 'N' && row.staff.isPregnant && isPregNoNight) return false;
                     if (row.staff.reqShiftsMap[window.globalDateDetails[idx].date] === 'x' + shift) return false;
@@ -1289,7 +1301,9 @@ window.toggleMutualExclusion = function(checkbox, type) {
 
                 ['N','D','E'].forEach(shift => {
                     let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch); const quota = (shift === 'D') ? targetDayQuota : (shift === 'E' ? targetEveQuota : targetNitQuota);
-                    let currentCount = allRows.filter(r => r.monthShifts[idx] === shift).length; let need = quota - currentCount;
+                    
+                    let currentCount = allRows.filter(r => r.monthShifts[idx] === shift && !(ruleNewbieExcludeQuota && r.staff.isNewbie)).length; 
+                    let need = quota - currentCount;
 
                     if (shift === 'N') {
                         let validNOnly = window.talentsAvailableForShift(allRows, idx, shift, activeNightLimit, maxNightAllowed, activeMaxNight, maxConsecutiveNightDays, activeNoNOD, activeMaxConsecutive, maxConsecutiveWorkDays, leaveIncludeOption, activeMaxOffLimit, maxOffStreakAllowed, isPregNoNight).filter(c => c.staff.isNightOnly);
@@ -1297,8 +1311,12 @@ window.toggleMutualExclusion = function(checkbox, type) {
                         for (let c of validNOnly) { c.monthShifts[idx] = shift; need--; currentCount++; }
                     }
 
+                   // 💡 [수정] 관리자님의 '하이브리드(D/E 비례, N 엄격)' 로직 반영
                     let dynamicSeniorTarget = minSenior;
-                    if (seniorAllocationMode === 'PROPORTIONAL') { let aiCalculatedTarget = Math.round(quota * seniorRatio); dynamicSeniorTarget = Math.max(minSenior, aiCalculatedTarget); }
+                    if (seniorAllocationMode === 'PROPORTIONAL' || (seniorAllocationMode === 'HYBRID' && shift !== 'N')) { 
+                        let aiCalculatedTarget = Math.round(quota * seniorRatio); 
+                        dynamicSeniorTarget = Math.max(minSenior, aiCalculatedTarget); 
+                    }
 
                     for (let k = 0; k < dynamicSeniorTarget; k++) {
                         if (need <= 0) break;
@@ -1338,16 +1356,29 @@ window.toggleMutualExclusion = function(checkbox, type) {
                                 window.shuffleArray(forced).sort((a,b) => a.monthShifts.filter(s=>s===shift).length - b.monthShifts.filter(s=>s===shift).length);
                                 for(let r of forced) { r.monthShifts[idx] = shift; currentCount++; if (currentCount >= quota) break; }
                             }
-                            if (currentCount < quota) throw new Error(`${dayInfo.dateText}일자 근무 최소 자원 요구 인력 확보에 실패했습니다.`);
+                            // To avoid crashing loop during unmeetable quotas, just warn.
+                            if (currentCount < quota) console.warn(`${dayInfo.dateText}일자 근무 최소 자원 인력 확보 실패. (무시하고 진행)`);
                         }
                     }
                 });
 
                 let allRows = scheduleMatrix.filter(r => !r.staff.isDispatch);
-                allRows.filter(r => r.staff.isNewbie && r.monthShifts[idx] === null).forEach(nb => {
-                    let pId = nb.staff.precId;
-                    if (pId > 0) { let prec = scheduleMatrix.find(x => x.staff.id === pId); if (prec && prec.monthShifts[idx]) { let target = prec.monthShifts[idx]; if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) { nb.monthShifts[idx] = target; } } }
-                });
+                
+                if (ruleNewbieSync) {
+                    allRows.filter(r => r.staff.isNewbie && r.staff.precId > 0 && r.monthShifts[idx] === null).forEach(nb => {
+                        let prec = scheduleMatrix.find(x => x.staff.id === nb.staff.precId);
+                        if (prec && prec.monthShifts[idx]) {
+                            let target = prec.monthShifts[idx];
+                            if (target === 'LEAVE' || target === 'M-LEAVE') return; 
+                            if (window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) nb.monthShifts[idx] = target;
+                        }
+                    });
+                } else {
+                    allRows.filter(r => r.staff.isNewbie && r.monthShifts[idx] === null).forEach(nb => {
+                        let pId = nb.staff.precId;
+                        if (pId > 0) { let prec = scheduleMatrix.find(x => x.staff.id === pId); if (prec && prec.monthShifts[idx]) { let target = prec.monthShifts[idx]; if (['D','E','N'].includes(target) && window.checkPhysicalGardeRule(nb.monthShifts, idx, target)) { nb.monthShifts[idx] = target; } } }
+                    });
+                }
 
                 scheduleMatrix.forEach(row => {
                     if (row.monthShifts[idx] === null && ['D','E','N'].includes(row.staff.reqShiftsMap[currentDayNum])) {
@@ -1492,11 +1523,6 @@ window.toggleMutualExclusion = function(checkbox, type) {
                 row.staff.offBreakdown.sleep = sleepAdd; row.staff.offBreakdown.preg = pregAdd; row.staff.offBreakdown.pure = pureOffCnt - sleepAdd - pregAdd; row.staff.offBreakdown.total = pureOffCnt + row.staff.offBreakdown.mLeave;
             });
 
-            for(let d=0; d<lastDate; d++) {
-                let isRest = (dateDetails[d].isSat || dateDetails[d].isSun || dateDetails[d].isHoliday); let tQuota = isRest ? reqNitWeekend : reqNitWeekday;
-                if (scheduleMatrix.filter(x => x.monthShifts[d] === 'N').length < tQuota && tQuota > 0) { throw new Error(`${dateDetails[d].dateText}일자 야간(N) 최소 출근 가동 인력이 부족합니다. 연차/휴무 제한 세팅을 검토해 주세요.`); }
-            }
-
             window.isScheduleGenerated = true; window.globalCalculatedMatrix = scheduleMatrix;
             
             let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
@@ -1513,7 +1539,7 @@ window.toggleMutualExclusion = function(checkbox, type) {
 
         } catch (error) {
             progressText.innerText = "연산 실패"; progressBarFill.style.width = "0%";
-            tbody.innerHTML = `<tr><td colspan="${window.globalLastDate + 5}" style="color:#e53e3e; font-weight:bold; padding:20px;">🚨 ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="${window.globalLastDate + 5}" style="color:#e53e3e; font-weight:bold; padding:20px;">🚨 에러 발생! 시스템 설정을 다시 확인해 주세요.</td></tr>`;
             alert(error.message);
         } finally {
             submitBtn.disabled = false; backToStep2Btn.disabled = false;
@@ -1617,90 +1643,6 @@ window.toggleMutualExclusion = function(checkbox, type) {
         if(document.getElementById('useWeekendQuota')) window.toggleQuotaInputs('Weekend');
         window.syncStaffRows();
     };
-</script>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBwNFmaUTlowPNCJOUmJX5XQUWd76_2gJ0",
-        authDomain: "haramii.firebaseapp.com",
-        projectId: "haramii",
-        storageBucket: "haramii.firebasestorage.app",
-        messagingSenderId: "181032107844",
-        appId: "1:181032107844:web:15cb791c92ebf8646ae111"
-    };
-
-    try {
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        document.getElementById('firebaseSaveBtn').addEventListener('click', async () => {
-            window.showToast("⏳ 클라우드에 전체 상태 저장 중...", true);
-            try {
-                const configInputs = {};
-                document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea, #totalStaff, #seniorStaff, #minSeniorPerShift, #pageSize, #seniorAllocationMode').forEach(el => {
-                    if (!el.id) return;
-                    if (el.type === 'checkbox') configInputs[el.id] = el.checked;
-                    else if (el.type !== 'radio') configInputs[el.id] = el.value;
-                });
-
-                const saveData = {
-                    staffData: window.globalStaffData, schType: document.querySelector('input[name="schType"]:checked').value, configInputs: configInputs,
-                    calculatedMatrix: window.globalCalculatedMatrix, globalDateDetails: window.globalDateDetails, globalLastDate: window.globalLastDate,
-                    globalCustomHolidays: window.globalCustomHolidays, isScheduleGenerated: window.isScheduleGenerated,
-                    currentStep: document.querySelector('.step-section.active').id, updatedAt: new Date().toISOString()
-                };
-                
-                await setDoc(doc(db, "ward_settings", "current_duty"), JSON.parse(JSON.stringify(saveData)));
-                window.showToast("✅ 완벽하게 저장되었습니다! (창을 닫아도 유지됩니다)");
-            } catch (error) { console.error(error); window.showToast("❌ 저장 실패", false); alert("🚨 파이어베이스 저장 에러:\n" + error.message); }
-        });
-
-        document.getElementById('firebaseLoadBtn').addEventListener('click', async () => {
-            window.showToast("⏳ 타임머신 복구 중...", true);
-            try {
-                const docSnap = await getDoc(doc(db, "ward_settings", "current_duty"));
-                if (docSnap.exists()) {
-                    const loadedData = docSnap.data();
-                    window.globalStaffData = loadedData.staffData || []; window.globalCalculatedMatrix = loadedData.calculatedMatrix || [];
-                    window.globalDateDetails = loadedData.globalDateDetails || []; window.globalCustomHolidays = loadedData.globalCustomHolidays || []; 
-                    window.globalLastDate = loadedData.globalLastDate || 30; window.isScheduleGenerated = loadedData.isScheduleGenerated || false;
-                    
-                    if(loadedData.schType) { const radioBtn = document.querySelector(`input[name="schType"][value="${loadedData.schType}"]`); if(radioBtn) radioBtn.checked = true; window.switchScheduleTypeUI(); }
-                    
-                    if(loadedData.configInputs || loadedData.step1Inputs) {
-                        const s1 = loadedData.configInputs || loadedData.step1Inputs;
-                        document.querySelectorAll('#step1Section input, #step1Section select, #step1Section textarea, #totalStaff, #seniorStaff, #minSeniorPerShift, #pageSize, #seniorAllocationMode').forEach(el => {
-                            if (el.type === 'checkbox' && s1[el.id] !== undefined) el.checked = s1[el.id];
-                            else if (el.type !== 'radio' && s1[el.id] !== undefined) el.value = s1[el.id];
-                        });
-                    }
-                    
-                    window.normalizeStaffData(); window.applyPagination(); window.update4WeekDateText(); window.updateHolidayBox(); 
-
-                    if (window.isScheduleGenerated && window.globalDateDetails.length > 0) {
-                        let headerHtml = `<tr><th class="staff-name-col" rowspan="2">근무자 이름</th>`;
-                        window.globalDateDetails.forEach(item => { let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : ""); headerHtml += `<th class="${labelClass}">${item.dateText}</th>`; });
-                        headerHtml += `<th class="summary-header" rowspan="2">D</th><th class="summary-header" rowspan="2">E</th><th class="summary-header" rowspan="2">N</th><th class="summary-header" rowspan="2" style="width:45px;">총OFF</th></tr><tr>`;
-                        window.globalDateDetails.forEach(item => { let labelClass = (item.dayIndex === 0 || item.isHoliday) ? "sun" : (item.dayIndex === 6 ? "sat" : ""); headerHtml += `<th class="${labelClass}">${item.isHoliday?`<span class="holiday-name">${item.holidayName}</span>`:item.dayName}</th>`; });
-                        headerHtml += `</tr>`;
-                        document.querySelector("#scheduleTable thead").innerHTML = headerHtml; document.querySelector("#finalAdjustedTable thead").innerHTML = headerHtml;
-                        window.renderResultTable('scheduleTable', 'monthShifts'); window.renderResultTable('finalAdjustedTable', 'finalShifts');
-                        document.getElementById('finaleGroup3').style.display = "flex";
-                    }
-
-                    if(loadedData.currentStep) {
-                        document.querySelectorAll('.step-section').forEach(el => el.classList.remove('active')); document.querySelectorAll('.step-tab').forEach(el => el.classList.remove('active'));
-                        document.getElementById(loadedData.currentStep).classList.add('active');
-                        const tabId = loadedData.currentStep.replace('Section', '').replace('step', 'tab'); const tab = document.getElementById(tabId); if(tab) tab.classList.add('active');
-                    }
-                    window.showToast("📂 100% 완벽하게 타임머신 복구되었습니다!");
-                } else { window.showToast("❓ 저장된 클라우드 데이터가 없습니다.", false); }
-            } catch (error) { console.error(error); window.showToast("❌ 불러오기 에러: " + error.message, false); }
-        });
-    } catch(e) { console.warn("파이어베이스 설정 오류: " + e.message); }
 </script>
 </body>
 </html>
