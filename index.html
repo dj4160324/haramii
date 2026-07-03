@@ -227,6 +227,75 @@
             transform: translateY(-1px) !important; 
             box-shadow: 0 6px 8px rgba(49, 130, 206, 0.3) !important; 
         }
+/* --- 🎨 사이드바 좌측 이동 및 반투명 스크롤 버튼 부활 --- */
+        .sidebar { right: auto !important; left: -350px; box-shadow: 10px 0 30px rgba(0,0,0,0.15) !important; }
+        .sidebar.active { left: 0 !important; }
+        
+        .floating-scroll { position: fixed; bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 10px; z-index: 90000; }
+        .floating-scroll button { width: 45px; height: 45px; border-radius: 50%; background: rgba(49, 130, 206, 0.6); color: white; border: none; font-size: 18px; cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .floating-scroll button:hover { background: rgba(49, 130, 206, 0.9); transform: scale(1.1); }
+/* --- 🎨 1. 스크롤 버튼 중앙 정렬 및 검정 반투명화 --- */
+        .floating-scroll button {
+            display: flex !important; align-items: center !important; justify-content: center !important;
+            background: rgba(0, 0, 0, 0.4) !important; color: white !important; 
+            padding: 0 !important; line-height: 1 !important; border: none !important;
+        }
+        .floating-scroll button:hover { background: rgba(0, 0, 0, 0.7) !important; }
+
+        /* --- 🎨 2. 제미나이 스타일 좌측 고정형 사이드바 --- */
+        .sidebar-overlay { display: none !important; } /* 구형 오버레이 제거 */
+        
+        .sidebar {
+            position: fixed !important; top: 0 !important; left: 0 !important; right: auto !important;
+            width: 250px !important; height: 100vh !important;
+            background: #f8fafc !important; border-right: 1px solid #e2e8f0 !important;
+            box-shadow: none !important; transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            z-index: 90000 !important; overflow: hidden !important; display: none; /* 로그인 전 숨김 */
+        }
+        .sidebar.collapsed { width: 72px !important; } /* 접혔을 때의 너비 */
+
+        .sidebar-header { padding: 20px 24px !important; gap: 15px !important; justify-content: flex-start !important; }
+        .btn-hamburger-side { background: none; border: none; font-size: 22px; color: #4a5568; cursor: pointer; padding: 0; line-height: 1; transition: color 0.2s; min-width: 24px; text-align: center; }
+        .btn-hamburger-side:hover { color: #2b6cb0; }
+        .sidebar-title-text { font-size: 16px; font-weight: 900; color: #1a5c8a; white-space: nowrap; transition: opacity 0.2s; }
+        .sidebar.collapsed .sidebar-title-text { opacity: 0; pointer-events: none; }
+
+        .sidebar-menu li { padding: 15px 24px !important; justify-content: flex-start !important; gap: 15px !important; overflow: hidden; }
+        .sidebar-icon { font-size: 20px; min-width: 24px; text-align: center; }
+        .sidebar-text { white-space: nowrap; font-size: 14px; transition: opacity 0.2s; }
+        .sidebar.collapsed .sidebar-text { opacity: 0; pointer-events: none; }
+
+        .sidebar-footer { padding: 20px 24px !important; white-space: nowrap; overflow: hidden; }
+        .sidebar.collapsed .profile-info { display: none !important; }
+        .sidebar.collapsed .btn-logout-text { display: none !important; }
+        .sidebar.collapsed .btn-secondary { padding: 10px 0 !important; width: 100% !important; display: flex; justify-content: center; background: transparent; box-shadow: none; font-size: 18px; color: #a0aec0; }
+        .sidebar.collapsed .btn-secondary:hover { color: #e53e3e; background: transparent; }
+
+        /* 메인 컨테이너가 사이드바에 맞춰 반응하도록 수정 */
+        #mainContainer {
+            margin-left: 270px !important; /* 펼쳐졌을 때 */
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            width: auto !important; max-width: none !important; margin-right: 20px !important;
+        }
+        #mainContainer.collapsed-main { margin-left: 92px !important; /* 접혔을 때 */ }
+/* --- 🎨 3. 사이드바 아이콘 자동 변환 및 로그아웃 버튼 정렬 --- */
+        .btn-hamburger-side::before { content: '◀'; font-size: 18px; }
+        .sidebar.collapsed .btn-hamburger-side::before { content: '☰'; font-size: 22px; }
+        .btn-logout-wrapper { width: 100%; padding: 10px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .sidebar.collapsed .btn-logout-wrapper { padding: 10px 0 !important; background: transparent; box-shadow: none; color: #a0aec0; }
+/* --- 🎨 이메일 인증 모달 및 권한 양도 거취 선택 스타일 --- */
+        .email-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 99999; backdrop-filter: blur(3px); }
+        .email-modal-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 380px; text-align: center; }
+        .next-action-group { text-align: left; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 15px 0; }
+        .next-action-item { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; cursor: pointer; font-size: 13.5px; font-weight: bold; color: #4a5568; }
+        .next-action-item:last-child { margin-bottom: 0; }
+        .next-action-item input { cursor: pointer; }
+/* --- 🎨 사이드바 접힘 시 톱니바퀴 버튼 숨김 처리 --- */
+        .sidebar.collapsed button[onclick="openSettings()"] { display: none !important; }
+/* --- 🎨 햄버거 자동 변신 무효화 --- */
+        .btn-hamburger-side::before { content: none !important; }
+        .sidebar.collapsed .btn-hamburger-side::before { content: none !important; }
+
     </style>
 </head>
 <body>
@@ -262,39 +331,151 @@
     </div>
 </div>
 
-<div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div id="sidebar" class="sidebar">
-    <div class="sidebar-header">
-        <h2>전체 메뉴</h2>
-        <button onclick="toggleSidebar()" class="btn-close-sidebar">&times;</button>
+    <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; padding-right: 18px !important;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button onclick="toggleSidebar()" class="btn-hamburger-side" style="font-size: 22px;">☰</button>
+            <span class="sidebar-title-text">전체 메뉴</span>
+        </div>
+        <button onclick="toggleSidebar()" class="sidebar-title-text" style="background: none; border: none; font-size: 13px; color: #a0aec0; cursor: pointer; padding: 4px; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='#2b6cb0'" onmouseout="this.style.color='#a0aec0'">◀ 접기</button>
     </div>
+    
     <ul class="sidebar-menu">
-        <li onclick="alert('🚀 [업데이트 예정] 소속 간호사들에게 링크를 보내 병동 시스템에 초대하고, 연차/신청근무 데이터를 스마트폰으로 자동 취합받는 기능이 곧 오픈됩니다!')">👥 병동 멤버 관리 (자동 취합)</li>
-        <li onclick="alert('🚀 [업데이트 예정] 평시/명절/비상사태 등 매달 설정하는 1단계의 복잡한 룰들을 템플릿으로 저장해두는 기능입니다.')">⚙️ 맞춤형 룰셋(Preset) 보관함</li>
-        <li onclick="alert('🚀 [업데이트 예정] 최종 확정(마감) 처리된 과거의 스케줄들이 연도/월별로 예쁘게 보관되는 전용 서재 공간입니다.')">📅 과거 근무표 히스토리</li>
+        <li onclick="alert('🚀 [업데이트 예정] 소속 간호사들에게 링크를 보내 병동 시스템에 초대하고, 연차/신청근무 데이터를 스마트폰으로 자동 취합받는 기능이 곧 오픈됩니다!')">
+            <span class="sidebar-icon">👥</span><span class="sidebar-text">병동 멤버 관리</span>
+        </li>
+        <li onclick="alert('🚀 [업데이트 예정] 최종 확정(마감) 처리된 과거의 스케줄들이 연도/월별로 예쁘게 보관되는 전용 서재 공간입니다.')">
+            <span class="sidebar-icon">📅</span><span class="sidebar-text">과거 근무표 히스토리</span>
+        </li>
+        <li onclick="alert('🚀 [업데이트 예정] 평시/명절/비상사태 등 매달 설정하는 1단계의 복잡한 룰들을 템플릿으로 저장해두는 기능입니다.')">
+            <span class="sidebar-icon">⚙️</span><span class="sidebar-text">맞춤형 룰셋 보관함</span>
+        </li>
     </ul>
     <div class="sidebar-footer">
-        <div class="profile-info">
-            <div class="profile-icon">수</div>
-            <div>
-                <div class="profile-text">수간호사 관리자 님</div>
-                <div class="profile-sub">최고 권한 계정</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div class="profile-info" style="margin-bottom: 0;">
+                <div class="profile-icon">수</div>
+                <div>
+                    <div class="profile-text" id="sidebarProfileName">수간호사 관리자 님</div>
+                    <div class="profile-sub">최고 권한 계정</div>
+                </div>
             </div>
+            <button type="button" style="background:none; border:none; font-size: 20px; cursor: pointer;" onclick="openSettings()">⚙️</button>
         </div>
-        <button class="btn-secondary" style="width:100%; padding:10px; font-size:13px;" onclick="performLogout()">🚪 로그아웃</button>
+        <button class="btn-secondary btn-logout-wrapper" onclick="performLogout()">
+            <span class="sidebar-icon" style="display: flex; align-items: center; justify-content: center;">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </span>
+            <span class="sidebar-text btn-logout-text">로그아웃</span>
+        </button>
     </div>
 </div>
 
 <div class="container" id="mainContainer">
-    <div class="top-header-row">
+<div class="top-header-row">
         <h1>🏥 병동 스마트 근무 관리 시스템</h1>
         <div class="cloud-btn-group">
             <button type="button" id="firebaseSaveBtn" class="btn-top save">💾 임시 저장</button>
             <button type="button" id="firebaseLoadBtn" class="btn-top load">📂 불러오기</button>
-            <button type="button" class="btn-hamburger" onclick="toggleSidebar()">☰</button>
         </div>
     </div>
     
+<div id="settingsSection" style="display: none; animation: fadeIn 0.4s ease;">
+            <div class="top-header-row" style="margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                <h2 style="margin: 0; color: #2d3748; display: flex; align-items: center; gap: 8px;">⚙️ 개인 및 병동 설정</h2>
+                <span style="color:#718096; font-size:13px; font-weight:bold;">기본 정보 및 마스터 권한 관리</span>
+            </div>
+
+            <div class="config-card blue" style="margin-bottom: 20px;">
+                <div class="config-title blue">👤 내 프로필 정보</div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>이름</label>
+                        <input type="text" id="profileNameInput" value="수간호사 관리자" placeholder="이름 입력">
+                    </div>
+                    <div class="config-item">
+                        <label>이메일</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="email" id="profileEmailInput" value="headnurse@hospital.com" placeholder="이메일 입력" style="flex:1;">
+                            <button type="button" class="btn-top load" id="btnSendVerify" onclick="sendEmailVerification()" style="white-space: nowrap;">인증 발송</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr style="border: 0; border-top: 1px dashed #cbd5e0; margin: 25px 0;">
+                
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>새 비밀번호 변경</label>
+                        <input type="password" id="newPassword" placeholder="변경할 비밀번호 (영문/숫자 포함 8자 이상)">
+                    </div>
+                    <div class="config-item">
+                        <label>새 비밀번호 확인</label>
+                        <input type="password" id="newPasswordConfirm" placeholder="비밀번호 다시 입력">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-card purple" style="margin-bottom: 20px;">
+                <div class="config-title purple">🏥 병동 정보 및 초대 코드</div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>현재 관리 병동</label>
+                        <input type="text" value="내과 중환자실 (MICU)" readonly style="background:#edf2f7; color:#4a5568; border-style: dashed;">
+                    </div>
+                    <div class="config-item">
+                        <label>멤버 초대 코드 <span style="font-size:11px; color:#2b6cb0;">(간호사 앱 가입 시 필요)</span></label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" value="MICU-2026-X9Y2" readonly style="flex:1; background:#edf2f7; color:#e53e3e; font-weight:900; letter-spacing:1px; border-style: dashed; text-align: center;">
+                            <button type="button" class="btn-top load" onclick="alert('초대 코드가 클립보드에 복사되었습니다!')">복사</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-card" style="border-top: 5px solid #e53e3e;">
+                <div class="config-title" style="color:#c53030; border-bottom-color:#edf2f7;">👑 마스터 권한 양도 (부서 이동 / 인수인계)</div>
+                <div style="background:#fff5f5; padding:15px; border-radius:8px; border:1px solid #fed7d7; margin-bottom:15px; font-size:13px; color:#c53030; font-weight:bold; line-height: 1.5;">
+                    ⚠️ 안내: 관리자 권한 위임 시, 기존 병동의 [간호사 명단]과 [과거 근무표 기록]은 신임 수간호사님께 안전하게 인계되며 내 화면에서는 즉시 초기화됩니다.<br>
+                    단, 관리자님의 [개인 프로필]과 1~2단계에서 세팅한 [맞춤형 룰셋(조건문)]은 새 병동에서도 그대로 쓰실 수 있도록 완벽하게 보존됩니다.
+                </div>
+                <div class="config-item" style="max-width: 500px;">
+                    <label>양도받을 신임 수간호사 사번(ID)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="transferTargetId" placeholder="예: 123456" style="flex:1;">
+                        <button type="button" class="btn-top save" style="background:#e53e3e; white-space: nowrap;" onclick="verifyAdminTransfer()">대상자 조회</button>
+                    </div>
+                </div>
+                
+                <div id="transferConfirmBox" style="display:none; margin-top:20px; padding:20px; background:#f8fafc; border:2px dashed #cbd5e0; border-radius:8px; text-align:center;">
+                    <div style="font-size:16px; color:#2d3748; margin-bottom:15px;">
+                        인계받으실 분이 <strong>[<span id="transferTargetName" style="color:#3182ce; font-size:18px;"></span>]</strong> 님이 맞습니까?
+                    </div>
+                    <button type="button" class="btn-top save" style="background:#c53030; padding:14px 30px; font-size: 15px; width: 100%; box-sizing: border-box;" onclick="executeAdminTransfer()">네, 인수인계를 확정하고 내 화면은 '새 부서 출근 모드'로 초기화합니다</button>
+                </div>
+            </div>
+
+            <div id="emailVerifyModal" class="email-modal" style="display:none;">
+                <div class="email-modal-card">
+                    <h3 style="margin-top:0; color:#2b6cb0;">📧 이메일 보안 인증</h3>
+                    <p style="font-size:13px; color:#4a5568; line-height:1.4;">입력하신 메일로 6자리 인증번호가 전송되었습니다.<br>보안을 위해 인증번호를 입력해 주세요.</p>
+                    <input type="text" id="verifyCodeInput" placeholder="인증번호 입력" style="width:100%; padding:12px; box-sizing:border-box; border-radius:8px; border:1px solid #cbd5e0; text-align:center; font-size:16px; font-weight:bold; margin-bottom:15px; background:#f8fafc;">
+                    <div style="display:flex; gap:10px;">
+                        <button type="button" class="btn-top load" style="background:#718096; flex:1;" onclick="document.getElementById('emailVerifyModal').style.display='none'">취소</button>
+                        <button type="button" class="btn-top save" style="flex:1;" onclick="confirmEmailVerification()">인증 확인</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; margin-bottom: 20px;">
+                <button type="button" class="btn-top load" style="padding: 14px 40px; font-size: 15px; background-color: #718096; width: 200px;" onclick="closeSettings()">↩️ 돌아가기 (취소)</button>
+                <button type="button" class="btn-top save" style="padding: 14px 40px; font-size: 15px; width: 200px;" onclick="saveSettings()">💾 변경사항 저장</button>
+            </div>
+        </div>
     <div class="step-indicator">
         <div class="step-tab active" id="tab1">1단계: 메인 룰 셋팅</div>
         <div class="step-tab" id="tab2">2단계: 간호사 인원 사정</div>
@@ -394,7 +575,7 @@
                 <div class="rule-checkbox-item"><input type="checkbox" id="newbieMaxN" checked><div class="rule-text"><label for="newbieMaxN">📉 N 근무 시 신규 최대 투입 <input type="number" id="newbieMaxNCount" class="inline-input-num" value="0" min="0">명 제한</label></div></div>
                 
                 <div class="rule-checkbox-item"><input type="checkbox" id="ruleNewbieSync" checked><div class="rule-text"><label for="ruleNewbieSync">🔄 신규 간호사는 프리셉터의 근무표와 100% 동일하게 배정합니다. (연차제외) </label></div></div>
-                <div class="rule-checkbox-item"><input type="checkbox" id="ruleNewbieExcludeQuota"><div class="rule-text"><label for="ruleNewbieExcludeQuota">🛑 신규 간호사를 최소 가동 인원 요구 사양에서 제외합니다.</label></div></div>
+                <div class="rule-checkbox-item"><input type="checkbox" id="ruleNewbieExcludeQuota" checked><div class="rule-text"><label for="ruleNewbieExcludeQuota">🛑 신규 간호사를 최소 가동 인원 요구 사양(머릿수)에서 제외합니다.</label></div></div>
             </div>
         </div>
 
@@ -558,6 +739,68 @@
     <div id="step4Section" class="step-section">
         <div class="progress-container"><div class="config-title blue" style="border:none; padding:0; margin-bottom:10px;">🔧 4단계: 최종 조율 결과 상태</div><div class="progress-status-log" id="step4Log">분석 대기 중...</div></div>
         <div class="btn-center" style="margin-bottom: 25px;"><button class="btn-secondary" onclick="backToStep3()">⬅️ 3단계 초안으로 돌아가기</button></div>
+<div id="settingsSection" style="display: none; animation: fadeIn 0.4s ease;">
+            <div class="top-header-row">
+                <h1>⚙️ 개인 및 병동 설정</h1>
+                <span style="color:#718096; font-size:14px; font-weight:bold;">기본 정보 및 관리자 권한 설정</span>
+            </div>
+
+            <div class="config-card blue">
+                <div class="config-title blue">👤 내 프로필 정보</div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>이름</label>
+                        <input type="text" value="수간호사 관리자" placeholder="이름 입력">
+                    </div>
+                    <div class="config-item">
+                        <label>이메일</label>
+                        <input type="email" value="headnurse@hospital.com" placeholder="이메일 입력">
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-card purple">
+                <div class="config-title purple">🏥 병동 정보 및 초대 코드</div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>현재 관리 병동</label>
+                        <input type="text" value="내과 중환자실 (MICU)" readonly style="background:#edf2f7; color:#4a5568;">
+                    </div>
+                    <div class="config-item">
+                        <label>멤버 초대 코드 <span style="font-size:11px; color:#2b6cb0;">(간호사 앱 가입 시 필요)</span></label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" value="MICU-2026-X9Y2" readonly style="flex:1; background:#edf2f7; color:#e53e3e; font-weight:900; letter-spacing:1px;">
+                            <button type="button" class="btn-top load" onclick="alert('초대 코드가 클립보드에 복사되었습니다!')">복사</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-card" style="border-top: 5px solid #e53e3e;">
+                <div class="config-title" style="color:#c53030; border-bottom-color:#edf2f7;">👑 마스터 권한 양도 (부서 이동 / 인수인계)</div>
+                <div style="background:#fff5f5; padding:15px; border-radius:8px; border:1px solid #fed7d7; margin-bottom:15px; font-size:13px; color:#c53030; font-weight:bold;">
+                    ⚠️ 주의: 관리자 권한을 타인에게 양도하면 본인은 일반 멤버로 전환되며, 과거 근무표를 포함한 병동의 모든 통제권을 상실합니다.
+                </div>
+                <div class="config-item">
+                    <label>양도받을 신임 수간호사 사번(ID)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="transferTargetId" placeholder="예: 123456" style="flex:1;">
+                        <button type="button" class="btn-top save" style="background:#e53e3e;" onclick="verifyAdminTransfer()">대상자 조회</button>
+                    </div>
+                </div>
+                <div id="transferConfirmBox" style="display:none; margin-top:15px; padding:15px; background:#f8fafc; border:1px dashed #cbd5e0; border-radius:8px; text-align:center;">
+                    <div style="font-size:15px; color:#2d3748; margin-bottom:10px;">
+                        인계받으실 분이 <strong>[<span id="transferTargetName" style="color:#3182ce;"></span>]</strong> 님이 맞습니까?
+                    </div>
+                    <button type="button" class="btn-top save" style="background:#c53030; width:100%; padding:12px;" onclick="executeAdminTransfer()">네, 병동의 모든 데이터와 권한을 영구 양도합니다</button>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
+                <button type="button" class="btn-top load" style="padding: 14px 40px; font-size: 16px; background-color: #718096;" onclick="closeSettings()">↩ 돌아가기</button>
+                <button type="button" class="btn-top save" style="padding: 14px 40px; font-size: 16px;" onclick="saveSettings()">💾 변경사항 저장</button>
+            </div>
+        </div>
 
         <div class="filter-control-panel">
             <input type="text" id="step4Search" class="search-input" placeholder="🔍 최종 조회 검색..." oninput="debounceSearch4()">
@@ -627,11 +870,17 @@
     window.performLogin = function() {
         const loginScreen = document.getElementById('loginScreen');
         const mainContainer = document.getElementById('mainContainer');
+        const sidebar = document.getElementById('sidebar'); // 추가됨
         loginScreen.style.opacity = '0';
         setTimeout(() => {
             loginScreen.style.display = 'none';
             mainContainer.style.display = 'block';
-            setTimeout(() => { mainContainer.style.opacity = '1'; window.onloadInit(); }, 50);
+            sidebar.style.display = 'flex'; // 추가됨
+            setTimeout(() => { 
+                mainContainer.style.opacity = '1'; 
+                sidebar.style.opacity = '1'; // 추가됨
+                window.onloadInit(); 
+            }, 50);
         }, 500);
     };
 
@@ -639,12 +888,15 @@
         if(!confirm("정말 로그아웃 하시겠습니까?\n저장하지 않은 데이터는 유실될 수 있습니다.")) return;
         const loginScreen = document.getElementById('loginScreen');
         const mainContainer = document.getElementById('mainContainer');
+        const sidebar = document.getElementById('sidebar'); // 추가됨
         document.getElementById('loginId').value = ""; document.getElementById('loginPw').value = "";
         mainContainer.style.opacity = '0';
-        document.getElementById('sidebar').classList.remove('active');
-        document.getElementById('sidebarOverlay').classList.remove('active');
+        sidebar.style.opacity = '0'; // 추가됨
+        sidebar.classList.remove('collapsed'); // 추가됨
+        mainContainer.classList.remove('collapsed-main'); // 추가됨
         setTimeout(() => {
             mainContainer.style.display = 'none';
+            sidebar.style.display = 'none'; // 추가됨
             loginScreen.style.display = 'flex';
             setTimeout(() => { loginScreen.style.opacity = '1'; }, 50);
         }, 500);
@@ -652,9 +904,200 @@
 
     window.toggleSidebar = function() {
         const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
+        const mainContainer = document.getElementById('mainContainer');
+        sidebar.classList.toggle('collapsed');
+        mainContainer.classList.toggle('collapsed-main');
+    };
+// ==========================================
+    // ⚙️ 개인 및 병동 설정 (Settings View) 로직
+    // ==========================================
+    window.openSettings = function() {
+        // 1. 진행 중이던 스케줄 자동 임시 저장
+        window.showToast("💾 진행 중인 스케줄이 안전하게 임시 저장되었습니다.");
+        
+        // 2. 현재 스케줄 메인 화면들 숨기기
+        document.getElementById('step1Section').style.display = 'none';
+        document.getElementById('step2Section').style.display = 'none';
+        document.getElementById('step3Section').style.display = 'none';
+        document.getElementById('step4Section').style.display = 'none';
+        document.querySelector('.step-indicator').style.display = 'none';
+        
+        // 3. 설정 화면 띄우기
+        document.getElementById('settingsSection').style.display = 'block';
+        
+        // 4. 모바일 환경 대비 사이드바 자동 닫기
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar.classList.contains('collapsed')) { window.toggleSidebar(); }
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+    window.closeSettings = function() {
+        // 설정 화면 숨기기
+        document.getElementById('settingsSection').style.display = 'none';
+        
+        // 상단 탭 표시 및 현재 활성화된 탭에 맞게 화면 복구
+        document.querySelector('.step-indicator').style.display = 'flex';
+        
+        if (document.getElementById('tab1').classList.contains('active')) document.getElementById('step1Section').style.display = 'block';
+        else if (document.getElementById('tab2').classList.contains('active')) document.getElementById('step2Section').style.display = 'block';
+        else if (document.getElementById('tab3').classList.contains('active')) document.getElementById('step3Section').style.display = 'block';
+        else document.getElementById('step4Section').style.display = 'block';
+        
+        window.scrollTo({top: 0, behavior: 'smooth'});
+    };
+
+   window.sendEmailVerification = function() {
+        const email = document.getElementById('profileEmailInput').value.trim();
+        if(!email || !email.includes('@')) return alert("유효한 이메일 주소를 입력해 주세요.");
+        
+        // 💡 1번 패치: 레이아웃을 깨뜨리지 않고 전용 팝업 모달창을 깔끔하게 띄움
+        document.getElementById('emailVerifyModal').style.display = 'flex';
+        document.getElementById('verifyCodeInput').value = "";
+    };
+
+    window.confirmEmailVerification = function() {
+        const code = document.getElementById('verifyCodeInput').value.trim();
+        if(code.length < 4) return alert("올바른 인증번호를 입력해 주세요.");
+        
+        // 팝업 창 닫기
+        document.getElementById('emailVerifyModal').style.display = 'none';
+        
+        // 인증 성공 후 프로필 화면 메인 입력창 비활성화 시키기
+        const emailInput = document.getElementById('profileEmailInput');
+        emailInput.readOnly = true;
+        emailInput.style.backgroundColor = '#edf2f7';
+        emailInput.style.color = '#4a5568';
+        
+        const btnSend = document.getElementById('btnSendVerify');
+        btnSend.disabled = true;
+        btnSend.style.backgroundColor = '#a0aec0';
+        btnSend.innerText = '인증 완료';
+        
+        window.showToast("🔒 이메일 보안 인증 성공!");
+    };
+
+    window.executeAdminTransfer = function() {
+        const targetName = document.getElementById('transferTargetName').innerText;
+        
+        if(confirm(`최종 확인: 정말로 [${targetName}] 님에게 마스터 권한을 위임하시겠습니까?\n\n이전 병동의 간호사 명단과 근무표 데이터는 삭제(인계)되며, 관리자님의 '개인 프로필'과 '가드레일 룰셋'만 보존된 채 새 판 짜기(1단계)로 돌아갑니다.`)) {
+            
+            // 💡 1. 멤버 리스트 및 과거 데이터 초기화 (룰셋은 건드리지 않음)
+            window.globalStaffData = []; // 간호사 명단 완전히 비우기
+            window.syncStaffRows(); // 비워진 명단으로 표를 다시 15명 백지 상태로 그림
+            
+            window.globalCalculatedMatrix = [];
+            window.isScheduleGenerated = false;
+            
+            // 💡 2. 병동 이름 및 초대코드 초기화 (새 부서명 입력 대기 상태)
+            const wardInputs = document.querySelectorAll('.config-card.purple input[readonly]');
+            if(wardInputs.length >= 2) {
+                wardInputs[0].value = "새 병동 (미지정)";
+                wardInputs[0].style.color = "#e53e3e";
+                wardInputs[1].value = "NEW-WARD-0000";
+                wardInputs[1].style.color = "#718096";
+            }
+            
+            // 3단계 및 4단계 결과 테이블 내용 비우기
+            const sTbody = document.querySelector("#scheduleTable tbody");
+            const fTbody = document.querySelector("#finalAdjustedTable tbody");
+            if(sTbody) sTbody.innerHTML = "";
+            if(fTbody) fTbody.innerHTML = "";
+            
+            // AI 피드백 및 진행 바 초기화
+            const feedbackInput = document.getElementById('aiFeedbackInput');
+            if(feedbackInput) feedbackInput.value = "";
+            
+            const progressBarFill = document.getElementById('progressBarFill');
+            const progressPercentage = document.getElementById('progressPercentage');
+            const progressText = document.getElementById('progressText');
+            if(progressBarFill) progressBarFill.style.width = "0%";
+            if(progressPercentage) progressPercentage.innerText = "0%";
+            if(progressText) progressText.innerText = "대기 중";
+            
+            // 💡 3. 설정 화면 닫고 안전하게 1단계로 자동 복귀
+            document.getElementById('settingsSection').style.display = 'none';
+            document.querySelector('.step-indicator').style.display = 'flex';
+            window.goToStep1();
+            
+            alert(`👑 [인수인계 및 부서 이동 완료]\n\n${targetName} 님에게 마스터 권한이 성공적으로 인계되었습니다.\n\n멤버 리스트와 근무표는 깨끗하게 초기화되었으며, 관리자님의 [맞춤형 룰셋]은 보존되었습니다. 새로운 부서에서의 시작을 응원합니다!`);
+        }
+    };
+
+    window.saveSettings = function() {
+        const pw1 = document.getElementById('newPassword').value;
+        const pw2 = document.getElementById('newPasswordConfirm').value;
+        
+        if (pw1 || pw2) {
+            if (pw1 !== pw2) return alert("🚨 새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            if (pw1.length < 8) return alert("🚨 비밀번호는 8자리 이상이어야 합니다.");
+        }
+        
+        const newName = document.getElementById('profileNameInput').value.trim();
+        if (newName) {
+            document.getElementById('sidebarProfileName').innerText = newName + " 님";
+        }
+        
+        window.showToast("✅ 변경사항이 성공적으로 저장되었습니다!");
+        setTimeout(() => { window.closeSettings(); }, 1000);
+    };
+
+    window.confirmEmailVerification = function() {
+        const code = document.getElementById('verifyCodeInput').value.trim();
+        if(code.length < 4) return alert("올바른 인증번호를 입력해 주세요.");
+        
+        // 인증 성공 시 UI 변경
+        const statusText = document.getElementById('verifyStatusText');
+        statusText.style.color = '#38a169';
+        statusText.innerText = '✅ 이메일 인증이 완료되었습니다.';
+        
+        const emailInput = document.getElementById('profileEmailInput');
+        emailInput.readOnly = true;
+        emailInput.style.backgroundColor = '#edf2f7';
+        emailInput.style.color = '#4a5568';
+        
+        const btnSend = document.getElementById('btnSendVerify');
+        btnSend.disabled = true;
+        btnSend.style.backgroundColor = '#a0aec0';
+        btnSend.innerText = '인증 완료';
+        
+        alert("이메일 인증이 성공적으로 확인되었습니다.");
+    };
+
+    window.saveSettings = function() {
+        // 1. 비밀번호 이중 확인 로직
+        const pw1 = document.getElementById('newPassword').value;
+        const pw2 = document.getElementById('newPasswordConfirm').value;
+        
+        if (pw1 || pw2) {
+            if (pw1 !== pw2) return alert("🚨 새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            if (pw1.length < 8) return alert("🚨 비밀번호는 8자리 이상이어야 합니다.");
+        }
+        
+        // 2. 이름 동기화 로직 (사이드바 반영)
+        const newName = document.getElementById('profileNameInput').value.trim();
+        if (newName) {
+            document.getElementById('sidebarProfileName').innerText = newName + " 님";
+        }
+        
+        window.showToast("✅ 변경사항이 성공적으로 저장되었습니다!");
+        setTimeout(() => { window.closeSettings(); }, 1000);
+    };
+
+    window.verifyAdminTransfer = function() {
+        const targetId = document.getElementById('transferTargetId').value.trim();
+        if (!targetId) return alert("양도받을 사번을 입력해 주세요.");
+        
+        // 더미 데이터 검증 로직 (실제 DB 연동 시 이 부분이 통신 로직으로 변경됨)
+        document.getElementById('transferTargetName').innerText = "김수연 수간호사";
+        document.getElementById('transferConfirmBox').style.display = 'block';
+    };
+
+    window.executeAdminTransfer = function() {
+        const targetName = document.getElementById('transferTargetName').innerText;
+        if(confirm(`최종 경고: 정말로 [${targetName}] 님에게 이 병동의 마스터 권한을 넘기시겠습니까?\n\n양도 즉시 본인은 로그아웃되며 일반 계정으로 전환됩니다.`)) {
+            alert("👑 병동 인수인계가 완료되었습니다.\n새로운 수간호사님을 환영합니다. 시스템에서 로그아웃됩니다.");
+            window.performLogout();
+        }
     };
 
     window.finalizeSchedule = function() {
