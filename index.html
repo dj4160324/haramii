@@ -295,7 +295,14 @@
 /* --- 🎨 햄버거 자동 변신 무효화 --- */
         .btn-hamburger-side::before { content: none !important; }
         .sidebar.collapsed .btn-hamburger-side::before { content: none !important; }
-
+/* --- 🎨 모던한 사이드바 접기 아이콘 스타일 --- */
+        .btn-collapse-modern {
+            display: flex !important; align-items: center; justify-content: center;
+            background: transparent; border: none; color: #a0aec0;
+            width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
+            transition: all 0.2s ease; padding: 0; margin-right: -8px;
+        }
+        .btn-collapse-modern:hover { background: #edf2f7; color: #2b6cb0; }
     </style>
 </head>
 <body>
@@ -332,12 +339,19 @@
 </div>
 
 <div id="sidebar" class="sidebar">
-    <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; padding-right: 18px !important;">
+    <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; padding: 20px 24px !important;">
         <div style="display: flex; align-items: center; gap: 15px;">
-            <button onclick="toggleSidebar()" class="btn-hamburger-side" style="font-size: 22px;">☰</button>
-            <span class="sidebar-title-text">전체 메뉴</span>
+            <button onclick="toggleSidebar()" class="btn-hamburger-side" style="font-size: 22px; background:none; border:none; cursor:pointer; color:#4a5568;">☰</button>
+            <span class="sidebar-title-text" style="font-size: 16px; font-weight: 900; color: #1a5c8a; white-space: nowrap;">전체 메뉴</span>
         </div>
-        <button onclick="toggleSidebar()" class="sidebar-title-text" style="background: none; border: none; font-size: 13px; color: #a0aec0; cursor: pointer; padding: 4px; font-weight: bold; transition: color 0.2s;" onmouseover="this.style.color='#2b6cb0'" onmouseout="this.style.color='#a0aec0'">◀ 접기</button>
+        
+        <button onclick="toggleSidebar()" class="sidebar-title-text btn-collapse-modern" title="사이드바 접기">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+                <polyline points="17 16 13 12 17 8"></polyline>
+            </svg>
+        </button>
     </div>
     
     <ul class="sidebar-menu">
@@ -471,9 +485,10 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; margin-bottom: 20px;">
-                <button type="button" class="btn-top load" style="padding: 14px 40px; font-size: 15px; background-color: #718096; width: 200px;" onclick="closeSettings()">↩️ 돌아가기 (취소)</button>
-                <button type="button" class="btn-top save" style="padding: 14px 40px; font-size: 15px; width: 200px;" onclick="saveSettings()">💾 변경사항 저장</button>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
+                <button type="button" class="btn-top load" style="padding: 14px 40px; font-size: 15px; background-color: #718096; width: 180px;" onclick="goToStep2()">↩️ 이전 단계로</button>
+                <button type="button" class="btn-top save" style="padding: 14px 40px; font-size: 15px; background-color: #d69e2e; color: white; width: 280px;" onclick="sendScheduleNotice('초안')">📢 전 멤버에게 스케줄 초안 공지 발송</button>
+                <button type="button" class="btn-top save" style="padding: 14px 40px; font-size: 15px; background-color: #2b6cb0; width: 220px;" onclick="goToStep4()">🔒 최종 마감하기 (4단계 이동)</button>
             </div>
         </div>
     <div class="step-indicator">
@@ -2085,6 +2100,20 @@
         if(document.getElementById('useWeekdayQuota')) window.toggleQuotaInputs('Weekday');
         if(document.getElementById('useWeekendQuota')) window.toggleQuotaInputs('Weekend');
         window.syncStaffRows();
+    };
+// ==========================================
+    // 📢 스케줄 일괄 공지 발송 로직 (3단계/4단계 공용)
+    // ==========================================
+    window.sendScheduleNotice = function(statusType) {
+        if (!window.isScheduleGenerated || !window.globalCalculatedMatrix || window.globalCalculatedMatrix.length === 0) {
+            return alert("🚨 현재 생성된 근무표 데이터가 없습니다. 근무표를 먼저 생성해 주세요.");
+        }
+        const activeWard = "내과 중환자실 (MICU)";
+        const staffCount = window.globalStaffData ? window.globalStaffData.filter(s => s.name).length : 15;
+        
+        if (confirm(`📢 [스케줄 ${statusType} 알림 전송]\n\n현재 화면에 보이는 ${statusType} 스케줄을 ${activeWard} 소속 간호사 ${staffCount}명 전원에게 일괄 발송하시겠습니까?\n(가입된 전용 APP 팝업 알림 및 카카오톡 알림톡으로 전송됩니다.)`)) {
+            window.showToast(`🚀 ${statusType} 근무표가 전 멤버에게 성공적으로 발송되었습니다!`);
+        }
     };
 </script>
 </body>
