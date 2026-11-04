@@ -1,0 +1,3 @@
+4a9948a30735d2eb09b4d79d604a4e72953c563bbc98324e2334aacb46d2b2f9  haramii-v0.12.4-recovery.2-applied-methods-20261103.zip
+f82cc6a01ac9102f6097237ac1841e5f2a5f6d6aef23671dd22238a464e9145b  haramii-v0.12.4-recovery.2-applied-methods-20261103.html
+19e58cda6314c517c6a8bd2f5713705352844bd5fe8e7ec085957c607596f0ad  haramii-v0.12.4-recovery.2-applied-methods-20261103-README.md
