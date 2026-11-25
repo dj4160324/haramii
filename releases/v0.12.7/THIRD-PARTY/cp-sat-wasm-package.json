@@ -1,0 +1,64 @@
+{
+  "name": "cp-sat-wasm",
+  "version": "2.1.0",
+  "description": "Google OR-Tools CP-SAT for JavaScript and TypeScript, with browser and Node WASM runtimes.",
+  "keywords": [
+    "or-tools",
+    "ortools",
+    "google-or-tools",
+    "optimization",
+    "operations-research",
+    "solver",
+    "combinatorial-optimization",
+    "wasm",
+    "webassembly",
+    "nodejs",
+    "client-side",
+    "cp-sat",
+    "sat",
+    "constraint",
+    "constraint-programming",
+    "constraint-solver",
+    "integer-programming",
+    "scheduling",
+    "job-shop-scheduling",
+    "timetabling",
+    "assignment",
+    "bin-packing",
+    "knapsack",
+    "resource-allocation",
+    "shift-scheduling",
+    "constraint-satisfaction"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Axelwickm/or-tools-wasm.git"
+  },
+  "homepage": "https://github.com/Axelwickm/or-tools-wasm",
+  "bugs": {
+    "url": "https://github.com/Axelwickm/or-tools-wasm/issues"
+  },
+  "type": "module",
+  "main": "./build/javascript/node/cp-sat.js",
+  "types": "./build/javascript/lib/cp-sat.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/javascript/lib/cp-sat.d.ts",
+      "bun": "./build/javascript/node/cp-sat.js",
+      "deno": "./build/javascript/node/cp-sat.js",
+      "node": "./build/javascript/node/cp-sat.js",
+      "browser": "./build/javascript/browser/cp-sat.js",
+      "import": "./build/javascript/browser/cp-sat.js",
+      "default": "./build/javascript/browser/cp-sat.js"
+    }
+  },
+  "files": [
+    "build/javascript"
+  ],
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.17.0",
+    "long": "^5.3.2",
+    "protobufjs": "^8.8.1"
+  }
+}
